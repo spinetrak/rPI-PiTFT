@@ -82,7 +82,7 @@ public class Main extends Application {
             try {
                 // add a item of random data to queue
                 dataQ.add(Math.random());
-                Thread.sleep(50);
+                Thread.sleep(500);
                 executor.execute(this);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -101,10 +101,12 @@ public class Main extends Application {
     }
 
     private void addDataToSeries() {
-        for (int i = 0; i < 20; i++) { //-- add 20 numbers to the plot+
-            if (dataQ.isEmpty()) break;
-            series.getData().add(new AreaChart.Data(xSeriesData++, dataQ.remove()));
-        }
+        //for (int i = 0; i < 20; i++) { //-- add 20 numbers to the plot+
+            if (!dataQ.isEmpty())
+            {
+                series.getData().add(new AreaChart.Data(xSeriesData++, dataQ.remove()));
+            }
+        //}
         // remove points to keep us at no more than MAX_DATA_POINTS
         if (series.getData().size() > MAX_DATA_POINTS) {
             series.getData().remove(0, series.getData().size() - MAX_DATA_POINTS);
