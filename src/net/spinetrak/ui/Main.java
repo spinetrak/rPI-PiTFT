@@ -31,56 +31,60 @@ import static javafx.application.Platform.exit;
 
 public class Main extends Application
 {
-  private static final int MAX_DATA_POINTS = 240;
+  private static final int MAX_DATA_POINTS = 320;
   private int _xSeriesData = 0;
   private ExecutorService _executor;
   private ConcurrentLinkedQueue<Power> _powerQueue;
-  private NumberAxis _xAxis;
-  private NumberAxis _yAxis;
-  private XYChart.Series<Number, Number> _voltageSeries;
-  private XYChart.Series<Number, Number> _upperSeries;
-  private XYChart.Series<Number, Number> _middleSeries;
-  private XYChart.Series<Number, Number> _lowerSeries;
-  private LineChart<Number, Number> _lineChart;
+  private NumberAxis _xPowerAxis;
+  private NumberAxis _yPowerAxis;
+  private XYChart.Series<Number, Number> _mainVoltageSeries;
+  private XYChart.Series<Number, Number> _upperVoltageSeries;
+  private XYChart.Series<Number, Number> _middleVoltageSeries;
+  private XYChart.Series<Number, Number> _lowerVoltageSeries;
+  private LineChart<Number, Number> _powerLineChart;
 
   private void init(final Stage stage_)
   {
-    _powerQueue = new ConcurrentLinkedQueue<>();
-    _voltageSeries = new XYChart.Series<>();
-    _upperSeries = new XYChart.Series<>();
-    _middleSeries = new XYChart.Series<>();
-    _lowerSeries = new XYChart.Series<>();
-
-    _xAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
-    _xAxis.setTickLabelsVisible(false);
-    _xAxis.setTickUnit(10);
-    _xAxis.setForceZeroInRange(false);
-    _xAxis.setAutoRanging(false);
-
-    _yAxis = new NumberAxis();
-    _yAxis.setLowerBound(4.25);
-    _yAxis.setUpperBound(5.75);
-    _yAxis.setTickUnit(0.25);
-    _yAxis.setForceZeroInRange(false);
-    _yAxis.setAutoRanging(false);
-
-    _lineChart = new LineChart<>(_xAxis, _yAxis);
-    _lineChart.setCreateSymbols(false);
-    _lineChart.setLegendVisible(false);
-    _lineChart.setAnimated(false);
-    _lineChart.setHorizontalGridLinesVisible(true);
-    _lineChart.getData().addAll(_voltageSeries, _upperSeries, _middleSeries, _lowerSeries);
-
+    initPowerLinechart();
 
     final BorderPane border = new BorderPane();
     border.setTop(setTop());
     border.setBottom(setBottom());
-    border.setCenter(_lineChart);
+    border.setCenter(_powerLineChart);
 
     final Scene scene = new Scene(border, 320, 240);
     scene.getStylesheets().add("stylesheet.css");
     stage_.setScene(scene);
     stage_.setFullScreen(true);
+  }
+
+  private void initPowerLinechart()
+  {
+    _powerQueue = new ConcurrentLinkedQueue<>();
+    _mainVoltageSeries = new XYChart.Series<>();
+    _upperVoltageSeries = new XYChart.Series<>();
+    _middleVoltageSeries = new XYChart.Series<>();
+    _lowerVoltageSeries = new XYChart.Series<>();
+
+    _xPowerAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
+    _xPowerAxis.setTickLabelsVisible(false);
+    _xPowerAxis.setTickUnit(10);
+    _xPowerAxis.setForceZeroInRange(false);
+    _xPowerAxis.setAutoRanging(false);
+
+    _yPowerAxis = new NumberAxis();
+    _yPowerAxis.setLowerBound(4.25);
+    _yPowerAxis.setUpperBound(5.75);
+    _yPowerAxis.setTickUnit(0.25);
+    _yPowerAxis.setForceZeroInRange(false);
+    _yPowerAxis.setAutoRanging(false);
+
+    _powerLineChart = new LineChart<>(_xPowerAxis, _yPowerAxis);
+    _powerLineChart.setCreateSymbols(false);
+    _powerLineChart.setLegendVisible(false);
+    _powerLineChart.setAnimated(false);
+    _powerLineChart.setHorizontalGridLinesVisible(true);
+    _powerLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries, _lowerVoltageSeries);
   }
 
   private HBox setBottom()
@@ -230,26 +234,26 @@ public class Main extends Application
     while (!_powerQueue.isEmpty())
     {
       final Power power = _powerQueue.remove();
-      _voltageSeries.getData().add(new XYChart.Data<>(_xSeriesData++, power.getVoltage()));
-      _upperSeries.getData().add(new XYChart.Data<>(_xSeriesData, 5.25));
-      _middleSeries.getData().add(new XYChart.Data<>(_xSeriesData, 5.00));
-      _lowerSeries.getData().add(new XYChart.Data<>(_xSeriesData, 4.75));
+      _mainVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData++, power.getVoltage()));
+      _upperVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData, 5.25));
+      _middleVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData, 5.00));
+      _lowerVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData, 4.75));
 
       if (Power.BATTERY.equals(power.getSource()))
       {
-        _voltageSeries.nodeProperty().get().setStyle("-fx-stroke: red;");
+        _mainVoltageSeries.nodeProperty().get().setStyle("-fx-stroke: red;");
       }
       else if (Power.PRIMARY.equals(power.getSource()))
       {
-        _voltageSeries.nodeProperty().get().setStyle("-fx-stroke: green;");
+        _mainVoltageSeries.nodeProperty().get().setStyle("-fx-stroke: green;");
       }
 
-      if (_voltageSeries.getData().size() > MAX_DATA_POINTS)
+      if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
       {
-        _voltageSeries.getData().remove(0, _voltageSeries.getData().size() - MAX_DATA_POINTS);
+        _mainVoltageSeries.getData().remove(0, _mainVoltageSeries.getData().size() - MAX_DATA_POINTS);
       }
-      _xAxis.setLowerBound(_xSeriesData - MAX_DATA_POINTS);
-      _xAxis.setUpperBound(_xSeriesData - 1);
+      _xPowerAxis.setLowerBound(_xSeriesData - MAX_DATA_POINTS);
+      _xPowerAxis.setUpperBound(_xSeriesData - 1);
     }
   }
 
