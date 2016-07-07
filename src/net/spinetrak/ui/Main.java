@@ -2,7 +2,6 @@ package net.spinetrak.ui;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -12,6 +11,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -96,12 +96,15 @@ public class Main extends Application
     exit.setOnKeyPressed(new EventHandler<KeyEvent>()
     {
       @Override
-      public void handle(final KeyEvent event)
+      public void handle(final KeyEvent event_)
       {
-        exit.setText("exiting...");
-        exit();
-        exit.setText("done...");
-        System.exit(0);
+        if(event_.getCode().equals(KeyCode.ENTER))
+        {
+          exit.setText("exiting...");
+          exit();
+          exit.setText("done...");
+          System.exit(0);
+        }
       }
     });
 
@@ -109,42 +112,48 @@ public class Main extends Application
 
     final Button restart = new Button("Restart");
     restart.setFont(Font.font("Courier New", FontWeight.BOLD, 11));
-    restart.setOnAction(new EventHandler<ActionEvent>()
+    restart.setOnKeyPressed(new EventHandler<KeyEvent>()
     {
       @Override
-      public void handle(final ActionEvent e)
+      public void handle(final KeyEvent event_)
       {
-        final Runtime runtime = Runtime.getRuntime();
-        try
+        if (event_.getCode().equals(KeyCode.ENTER))
         {
-          final Process proc = runtime.exec("sudo shutdown -r now");
+          final Runtime runtime = Runtime.getRuntime();
+          try
+          {
+            final Process proc = runtime.exec("sudo shutdown -r now");
+          }
+          catch (final IOException ex_)
+          {
+            ex_.printStackTrace();
+          }
+          System.exit(0);
         }
-        catch (final IOException ex_)
-        {
-          ex_.printStackTrace();
-        }
-        System.exit(0);
       }
     });
     bottom.getChildren().add(restart);
 
     final Button shutdown = new Button("Shutdown");
     shutdown.setFont(Font.font("Courier New", FontWeight.BOLD, 11));
-    shutdown.setOnAction(new EventHandler<ActionEvent>()
+    shutdown.setOnKeyPressed(new EventHandler<KeyEvent>()
     {
       @Override
-      public void handle(final ActionEvent e)
+      public void handle(final KeyEvent event_)
       {
-        final Runtime runtime = Runtime.getRuntime();
-        try
+        if (event_.getCode().equals(KeyCode.ENTER))
         {
-          final Process proc = runtime.exec("sudo shutdown now");
+          final Runtime runtime = Runtime.getRuntime();
+          try
+          {
+            final Process proc = runtime.exec("sudo shutdown now");
+          }
+          catch (final IOException ex_)
+          {
+            ex_.printStackTrace();
+          }
+          System.exit(0);
         }
-        catch (final IOException ex_)
-        {
-          ex_.printStackTrace();
-        }
-        System.exit(0);
       }
     });
     bottom.getChildren().add(shutdown);
