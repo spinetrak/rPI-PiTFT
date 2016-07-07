@@ -1,7 +1,9 @@
-package sample;
+package net.spinetrak.ui;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -18,10 +20,13 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+
+import static javafx.application.Platform.exit;
 
 public class Main extends Application
 {
@@ -45,7 +50,7 @@ public class Main extends Application
     _middleSeries = new XYChart.Series<>();
     _lowerSeries = new XYChart.Series<>();
 
-    _xAxis = new NumberAxis(0,MAX_DATA_POINTS,MAX_DATA_POINTS/10);
+    _xAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
     _xAxis.setTickLabelsVisible(false);
     _xAxis.setTickUnit(10);
     _xAxis.setForceZeroInRange(false);
@@ -63,35 +68,12 @@ public class Main extends Application
     _lineChart.setLegendVisible(false);
     _lineChart.setAnimated(false);
     _lineChart.setHorizontalGridLinesVisible(true);
-    _lineChart.getData().addAll(_voltageSeries,_upperSeries,_middleSeries,_lowerSeries);
+    _lineChart.getData().addAll(_voltageSeries, _upperSeries, _middleSeries, _lowerSeries);
 
 
     final BorderPane border = new BorderPane();
-
-    final FlowPane top = new FlowPane(Orientation.HORIZONTAL);
-    top.setPadding(new Insets(5));
-
-    for(final String label : new String[]{"[10:11:44]","[4807.038 N]","[1131.000 E]","[1600.7 M]", "[2345678]", "[23.6 C°]", "[cpu 17%]", "[hd 23%]", "[bat 100.00%]", "[308.19 mA]"})
-    {
-      final Text text = new Text(label);
-      text.setFont(Font.font("Courier New", FontWeight.BOLD, 12));
-      top.getChildren().add(text);
-    }
-    border.setTop(top);
-
-    final HBox bottom = new HBox();
-    bottom.setPadding(new Insets(5));
-    bottom.setSpacing(5);
-    bottom.setAlignment(Pos.CENTER_RIGHT);
-
-    for(final String label : new String[]{"Exit","Restart","Shutdown"})
-    {
-      final Button button = new Button(label);
-      button.setFont(Font.font("Courier New", FontWeight.BOLD, 11));
-      bottom.getChildren().add(button);
-    }
-    border.setBottom(bottom);
-
+    border.setTop(setTop());
+    border.setBottom(setBottom());
     border.setCenter(_lineChart);
 
     final Scene scene = new Scene(border, 320, 240);
@@ -100,14 +82,95 @@ public class Main extends Application
     stage_.setFullScreen(true);
   }
 
+  private HBox setBottom()
+  {
+    final HBox bottom = new HBox();
+    bottom.setPadding(new Insets(5));
+    bottom.setSpacing(5);
+    bottom.setAlignment(Pos.CENTER_RIGHT);
+
+
+    final Button exit = new Button("Exit");
+    exit.setFont(Font.font("Courier New", FontWeight.BOLD, 11));
+    exit.setOnAction(new EventHandler<ActionEvent>()
+    {
+      @Override
+      public void handle(ActionEvent e)
+      {
+        exit();
+      }
+    });
+    bottom.getChildren().add(exit);
+
+    final Button restart = new Button("Restart");
+    restart.setFont(Font.font("Courier New", FontWeight.BOLD, 11));
+    restart.setOnAction(new EventHandler<ActionEvent>()
+    {
+      @Override
+      public void handle(ActionEvent e)
+      {
+        final Runtime runtime = Runtime.getRuntime();
+        try
+        {
+          final Process proc = runtime.exec("sudo shutdown -r now");
+        }
+        catch (final IOException ex_)
+        {
+          ex_.printStackTrace();
+        }
+        System.exit(0);
+      }
+    });
+    bottom.getChildren().add(restart);
+
+    final Button shutdown = new Button("Shutdown");
+    shutdown.setFont(Font.font("Courier New", FontWeight.BOLD, 11));
+    shutdown.setOnAction(new EventHandler<ActionEvent>()
+    {
+      @Override
+      public void handle(ActionEvent e)
+      {
+        final Runtime runtime = Runtime.getRuntime();
+        try
+        {
+          final Process proc = runtime.exec("sudo shutdown now");
+        }
+        catch (final IOException ex_)
+        {
+          ex_.printStackTrace();
+        }
+        System.exit(0);
+      }
+    });
+    bottom.getChildren().add(shutdown);
+    return bottom;
+  }
+
+  private FlowPane setTop()
+  {
+    final FlowPane top = new FlowPane(Orientation.HORIZONTAL);
+    top.setPadding(new Insets(5));
+
+    for (final String label : new String[]{"[10:11:44]", "[4807.038 N]", "[1131.000 E]", "[1600.7 M]", "[2345678]", "[23.6 C°]", "[cpu 17%]", "[hd 23%]", "[bat 100.00%]", "[308.19 mA]"})
+    {
+      final Text text = new Text(label);
+      text.setFont(Font.font("Courier New", FontWeight.BOLD, 12));
+      top.getChildren().add(text);
+    }
+    return top;
+  }
+
   @Override
-  public void start(final Stage stage_) {
+  public void start(final Stage stage_)
+  {
     init(stage_);
     stage_.show();
 
-    _executor = Executors.newCachedThreadPool(new ThreadFactory() {
+    _executor = Executors.newCachedThreadPool(new ThreadFactory()
+    {
       @Override
-      public Thread newThread(final Runnable runnable_) {
+      public Thread newThread(final Runnable runnable_)
+      {
         final Thread thread = new Thread(runnable_);
         thread.setDaemon(true);
         return thread;
@@ -158,11 +221,11 @@ public class Main extends Application
       _middleSeries.getData().add(new XYChart.Data<>(_xSeriesData, 5.00));
       _lowerSeries.getData().add(new XYChart.Data<>(_xSeriesData, 4.75));
 
-      if(Power.BATTERY.equals(power.getSource()))
+      if (Power.BATTERY.equals(power.getSource()))
       {
         _voltageSeries.nodeProperty().get().setStyle("-fx-stroke: red;");
       }
-      else if(Power.PRIMARY.equals(power.getSource()))
+      else if (Power.PRIMARY.equals(power.getSource()))
       {
         _voltageSeries.nodeProperty().get().setStyle("-fx-stroke: green;");
       }
@@ -196,8 +259,8 @@ public class Main extends Application
 
     public Power()
     {
-      _source = Math.random() > 0.5? PRIMARY:BATTERY;
-      _voltage = Math.random()+4.5;
+      _source = Math.random() > 0.5 ? PRIMARY : BATTERY;
+      _voltage = Math.random() + 4.5;
     }
   }
 
