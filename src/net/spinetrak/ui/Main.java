@@ -97,7 +97,9 @@ public class Main extends Application
       @Override
       public void handle(final ActionEvent e)
       {
+        exit.setText("exiting...");
         exit();
+        exit.setText("done...");
         System.exit(0);
       }
     });
