@@ -12,6 +12,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -92,10 +93,10 @@ public class Main extends Application
 
     final Button exit = new Button("Exit");
     exit.setFont(Font.font("Courier New", FontWeight.BOLD, 11));
-    exit.setOnAction(new EventHandler<ActionEvent>()
+    exit.setOnKeyPressed(new EventHandler<KeyEvent>()
     {
       @Override
-      public void handle(final ActionEvent e)
+      public void handle(final KeyEvent event)
       {
         exit.setText("exiting...");
         exit();
@@ -103,6 +104,7 @@ public class Main extends Application
         System.exit(0);
       }
     });
+
     bottom.getChildren().add(exit);
 
     final Button restart = new Button("Restart");
