@@ -95,9 +95,10 @@ public class Main extends Application
     exit.setOnAction(new EventHandler<ActionEvent>()
     {
       @Override
-      public void handle(ActionEvent e)
+      public void handle(final ActionEvent e)
       {
         exit();
+        System.exit(0);
       }
     });
     bottom.getChildren().add(exit);
@@ -107,7 +108,7 @@ public class Main extends Application
     restart.setOnAction(new EventHandler<ActionEvent>()
     {
       @Override
-      public void handle(ActionEvent e)
+      public void handle(final ActionEvent e)
       {
         final Runtime runtime = Runtime.getRuntime();
         try
@@ -128,7 +129,7 @@ public class Main extends Application
     shutdown.setOnAction(new EventHandler<ActionEvent>()
     {
       @Override
-      public void handle(ActionEvent e)
+      public void handle(final ActionEvent e)
       {
         final Runtime runtime = Runtime.getRuntime();
         try
