@@ -49,6 +49,7 @@ public class Main extends Application
   private ConcurrentLinkedQueue<Power> _powerQueue;
   private Text _temperature;
   private Text _time;
+  private FlowPane _top;
   private Text _trackPoints;
   private XYChart.Series<Number, Number> _upperVoltageSeries;
   private NumberAxis _xPowerAxis;
@@ -98,12 +99,14 @@ public class Main extends Application
       if (Power.BATTERY.equals(power.getSource()))
       {
         _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
-        _batteryPower.lookup("text").setStyle(FX_STROKE_RED);
+        _batteryPower.setStyle(FX_STROKE_RED);
+        _batteryCapacity.setStyle(FX_STROKE_RED);
       }
       else if (Power.PRIMARY.equals(power.getSource()))
       {
         _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
-        _batteryPower.lookup("text").setStyle(FX_STROKE_BLACK);
+        _batteryPower.setStyle(FX_STROKE_BLACK);
+        _batteryCapacity.setStyle(FX_STROKE_BLACK);
       }
 
       if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
@@ -125,7 +128,8 @@ public class Main extends Application
     initPowerLinechart();
 
     final BorderPane border = new BorderPane();
-    border.setTop(setTop());
+    _top = setTop();
+    border.setTop(_top);
     border.setBottom(setBottom());
     border.setCenter(_powerLineChart);
 
@@ -285,7 +289,6 @@ public class Main extends Application
 
     _batteryPower = new Text("[xxx.xxx mA]");
     top.getChildren().add(_batteryPower);
-
     return top;
   }
 

@@ -19,10 +19,6 @@
     -fx-stroke: #ff0000;
 }
 
-.button {
+.root {
     -fx-font: bold 11px "Courier New";
-}
-
-.text {
-    -fx-font: bold 12px "Courier New";
 }
