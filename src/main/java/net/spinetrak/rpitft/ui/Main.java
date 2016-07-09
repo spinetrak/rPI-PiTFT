@@ -144,7 +144,7 @@ public class Main extends Application
         _cpu.setStyle(FX_STROKE_BLACK);
       }
 
-      _disk.setText(String.format("[%.2f hd]", disk));
+      _disk.setText(String.format("[%.2f%% hd]", disk));
       if (disk >= 90 && !_diskAlert)
       {
         _diskAlert = true;
