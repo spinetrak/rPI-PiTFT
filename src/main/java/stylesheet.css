@@ -1,0 +1,28 @@
+.chart-series-line {
+    -fx-stroke-width: 1px;
+    -fx-effect: null;
+}
+
+.default-color0.chart-series-line {
+    -fx-stroke: #00ff00;
+}
+
+.default-color1.chart-series-line {
+    -fx-stroke: #ff0000;
+}
+
+.default-color2.chart-series-line {
+    -fx-stroke: #0000ff;
+}
+
+.default-color3.chart-series-line {
+    -fx-stroke: #ff0000;
+}
+
+.button {
+    -fx-font: bold 11px "Courier New";
+}
+
+.text {
+    -fx-font: bold 12px "Courier New";
+}
