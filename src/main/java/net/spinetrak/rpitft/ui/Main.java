@@ -30,6 +30,9 @@ import static javafx.application.Platform.exit;
 
 public class Main extends Application
 {
+  public static final String FX_STROKE_BLACK = "-fx-stroke: black;";
+  public static final String FX_STROKE_GREEN = "-fx-stroke: green;";
+  public static final String FX_STROKE_RED = "-fx-stroke: red;";
   private static final int MAX_DATA_POINTS = 320;
   private Text _altitude;
   private Text _batteryCapacity;
@@ -94,11 +97,13 @@ public class Main extends Application
 
       if (Power.BATTERY.equals(power.getSource()))
       {
-        _mainVoltageSeries.nodeProperty().get().setStyle("-fx-stroke: red;");
+        _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
+        _batteryPower.lookup(".text").setStyle(FX_STROKE_RED);
       }
       else if (Power.PRIMARY.equals(power.getSource()))
       {
-        _mainVoltageSeries.nodeProperty().get().setStyle("-fx-stroke: green;");
+        _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
+        _batteryPower.lookup(".text").setStyle(FX_STROKE_BLACK);
       }
 
       if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
@@ -125,7 +130,8 @@ public class Main extends Application
     border.setCenter(_powerLineChart);
 
     final Scene scene = new Scene(border, 320, 240);
-    scene.getStylesheets().add("stylesheet.css");
+    scene.getStylesheets().add(getClass().
+      getResource("/style/myStyle.css").toExternalForm());
     stage_.setScene(scene);
     stage_.setFullScreen(true);
   }
