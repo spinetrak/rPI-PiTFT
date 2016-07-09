@@ -34,17 +34,6 @@ public class Device
     parse(result);
   }
 
-  private void parse(final String data_)
-  {
-    final String[] tokens = data_.split("/");
-    if (tokens.length == 3)
-    {
-      _cpu = Float.parseFloat(tokens[0]);
-      _disk = Float.parseFloat(tokens[1]);
-      _temperature = Float.parseFloat(tokens[2]);
-    }
-  }
-
   public float getCpu()
   {
     return _cpu;
@@ -55,6 +44,11 @@ public class Device
     return _disk;
   }
 
+  public float getTemperature()
+  {
+    return _temperature;
+  }
+
   private void parse(final String data_)
   {
     final String[] tokens = data_.split("/");
@@ -64,11 +58,6 @@ public class Device
       _disk = Float.parseFloat(tokens[1]);
       _temperature = Float.parseFloat(tokens[2]);
     }
-  }
-
-  public float getTemperature()
-  {
-    return _temperature;
   }
 
   static
