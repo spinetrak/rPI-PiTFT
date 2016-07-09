@@ -85,8 +85,8 @@ public class Main extends Application
     {
       final Power power = _powerQueue.remove();
 
-      _batteryCapacity.setText(power.getCapacity() + "% bat");
-      _batteryPower.setText(power.getPower() + " mA");
+      _batteryCapacity.setText(String.format("[%.2f% bat]", power.getCapacity()));
+      _batteryPower.setText(String.format("[%.2f mA]", power.getPower()));
       _mainVoltageSeries.getData().add(new XYChart.Data<Number, Number>(_xSeriesData++, power.getVoltage()));
       _upperVoltageSeries.getData().add(new XYChart.Data<Number, Number>(_xSeriesData, 5.25));
       _middleVoltageSeries.getData().add(new XYChart.Data<Number, Number>(_xSeriesData, 5.00));
