@@ -129,7 +129,7 @@ public class Main extends Application
     {
       final Device device = _deviceQueue.remove();
       final float cpu = device.getCpu();
-      final int disk = device.getDisk();
+      final float disk = device.getDisk();
       final float temperature = device.getTemperature();
 
       _cpu.setText(String.format("[%.2f%% cpu]", cpu));
@@ -144,7 +144,7 @@ public class Main extends Application
         _cpu.setStyle(FX_STROKE_BLACK);
       }
 
-      _disk.setText(String.format("[%d hd]", disk));
+      _disk.setText(String.format("[%.2f hd]", disk));
       if (disk >= 90 && !_diskAlert)
       {
         _diskAlert = true;

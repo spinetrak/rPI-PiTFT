@@ -15,24 +15,33 @@ import java.util.Set;
 
 public class Device
 {
-  private final static String CPU_STATUS = "/cpu.sh";
-  private final static String DISK_STATUS = "/disk.sh";
-  private final static String TEMPERATURE_STATUS = "/temperature.sh";
+  private final static String DEVICE_STATUS = "/device.sh";
   private static final String VAR_TMP = "/var/tmp";
   private float _cpu;
-  private int _disk;
+  private float _disk;
   private float _temperature;
   public Device()
   {
+    String result = "";
     try
     {
-      _disk = Integer.parseInt(Command.execute(VAR_TMP + DISK_STATUS));
-      _cpu = Float.parseFloat(Command.execute(VAR_TMP + CPU_STATUS));
-      _temperature = Float.parseFloat(Command.execute(VAR_TMP + TEMPERATURE_STATUS));
+      result = Command.execute(VAR_TMP + DEVICE_STATUS);
     }
     catch (final Exception ex_)
     {
-      //ex_.printStackTrace();
+      ex_.printStackTrace();
+    }
+    parse(result);
+  }
+
+  private void parse(final String data_)
+  {
+    final String[] tokens = data_.split("/");
+    if (tokens.length == 3)
+    {
+      _cpu = Float.parseFloat(tokens[0]);
+      _disk = Float.parseFloat(tokens[1]);
+      _temperature = Float.parseFloat(tokens[2]);
     }
   }
 
@@ -41,9 +50,20 @@ public class Device
     return _cpu;
   }
 
-  public int getDisk()
+  public float getDisk()
   {
     return _disk;
+  }
+
+  private void parse(final String data_)
+  {
+    final String[] tokens = data_.split("/");
+    if (tokens.length == 3)
+    {
+      _cpu = Float.parseFloat(tokens[0]);
+      _disk = Float.parseFloat(tokens[1]);
+      _temperature = Float.parseFloat(tokens[2]);
+    }
   }
 
   public float getTemperature()
@@ -53,18 +73,15 @@ public class Device
 
   static
   {
+    InputStream deviceIn = null;
+    OutputStream deviceOut = null;
+
     try
     {
-      final InputStream cpuIn = Command.class.getResourceAsStream(CPU_STATUS);
-      final OutputStream cpuOut = new FileOutputStream(VAR_TMP + CPU_STATUS);
-      final InputStream diskIn = Command.class.getResourceAsStream(DISK_STATUS);
-      final OutputStream diskOut = new FileOutputStream(VAR_TMP + DISK_STATUS);
-      final InputStream temperatureIn = Command.class.getResourceAsStream(TEMPERATURE_STATUS);
-      final OutputStream temperatureOut = new FileOutputStream(VAR_TMP + TEMPERATURE_STATUS);
+      deviceIn = Command.class.getResourceAsStream(DEVICE_STATUS);
+      deviceOut = new FileOutputStream(VAR_TMP + DEVICE_STATUS);
 
-      IOUtils.copy(cpuIn, cpuOut);
-      IOUtils.copy(diskIn, diskOut);
-      IOUtils.copy(temperatureIn, temperatureOut);
+      IOUtils.copy(deviceIn, deviceOut);
 
       final Set<PosixFilePermission> perms = new HashSet<>();
       perms.add(PosixFilePermission.OWNER_EXECUTE);
@@ -74,14 +91,37 @@ public class Device
       perms.add(PosixFilePermission.OWNER_WRITE);
       perms.add(PosixFilePermission.GROUP_WRITE);
 
-      Files.setPosixFilePermissions(Paths.get(VAR_TMP + CPU_STATUS), perms);
-      Files.setPosixFilePermissions(Paths.get(VAR_TMP + DISK_STATUS), perms);
-      Files.setPosixFilePermissions(Paths.get(VAR_TMP + TEMPERATURE_STATUS), perms);
+      Files.setPosixFilePermissions(Paths.get(VAR_TMP + DEVICE_STATUS), perms);
     }
     catch (final IOException ex_)
     {
       System.err.println(ex_.getMessage());
       ex_.printStackTrace();
+    }
+    finally
+    {
+      if (deviceIn != null)
+      {
+        try
+        {
+          deviceIn.close();
+        }
+        catch (final IOException ex_)
+        {
+          ex_.printStackTrace();
+        }
+      }
+      if (deviceOut != null)
+      {
+        try
+        {
+          deviceOut.close();
+        }
+        catch (final IOException ex_)
+        {
+          ex_.printStackTrace();
+        }
+      }
     }
   }
 }
