@@ -33,9 +33,9 @@ import static javafx.application.Platform.exit;
 
 public class Main extends Application
 {
-  public static final String FX_STROKE_BLACK = "-fx-stroke: black;";
-  public static final String FX_STROKE_GREEN = "-fx-stroke: green;";
-  public static final String FX_STROKE_RED = "-fx-stroke: red;";
+  public static final String FX_FILL_BLACK = "-fx-fill: black;";
+  public static final String FX_FILL_GREEN = "-fx-fill: green;";
+  public static final String FX_FILL_RED = "-fx-fill: red;";
   private static final int MAX_DATA_POINTS = 320;
   private Text _altitude;
   private boolean _batteryAlert = false;
@@ -106,16 +106,16 @@ public class Main extends Application
       if (Power.BATTERY.equals(power.getSource()) && !_batteryAlert)
       {
         _batteryAlert = true;
-        _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
-        _batteryPower.setStyle(FX_STROKE_RED);
-        _batteryCapacity.setStyle(FX_STROKE_RED);
+        _mainVoltageSeries.nodeProperty().get().setStyle(FX_FILL_RED);
+        _batteryPower.setStyle(FX_FILL_RED);
+        _batteryCapacity.setStyle(FX_FILL_RED);
       }
       else if (Power.PRIMARY.equals(power.getSource()) && _batteryAlert)
       {
         _batteryAlert = false;
-        _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
-        _batteryPower.setStyle(FX_STROKE_BLACK);
-        _batteryCapacity.setStyle(FX_STROKE_BLACK);
+        _mainVoltageSeries.nodeProperty().get().setStyle(FX_FILL_GREEN);
+        _batteryPower.setStyle(FX_FILL_BLACK);
+        _batteryCapacity.setStyle(FX_FILL_BLACK);
       }
 
       if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
@@ -136,36 +136,36 @@ public class Main extends Application
       if (cpu >= 90 && !_cpuAlert)
       {
         _cpuAlert = true;
-        _cpu.setStyle(FX_STROKE_RED);
+        _cpu.setStyle(FX_FILL_RED);
       }
       else if (cpu < 90 && _cpuAlert)
       {
         _cpuAlert = false;
-        _cpu.setStyle(FX_STROKE_BLACK);
+        _cpu.setStyle(FX_FILL_BLACK);
       }
 
       _disk.setText(String.format("[%.2f%% hd]", disk));
       if (disk >= 90 && !_diskAlert)
       {
         _diskAlert = true;
-        _disk.setStyle(FX_STROKE_RED);
+        _disk.setStyle(FX_FILL_RED);
       }
       else if (disk < 90 && _diskAlert)
       {
         _diskAlert = false;
-        _disk.setStyle(FX_STROKE_BLACK);
+        _disk.setStyle(FX_FILL_BLACK);
       }
 
       _temperature.setText(String.format("[%.2f C°]", temperature));
       if (temperature >= 75 && !_temperatureAlert)
       {
         _temperatureAlert = true;
-        _temperature.setStyle(FX_STROKE_RED);
+        _temperature.setStyle(FX_FILL_RED);
       }
       else if (temperature < 75 && _temperatureAlert)
       {
         _temperatureAlert = false;
-        _temperature.setStyle(FX_STROKE_BLACK);
+        _temperature.setStyle(FX_FILL_BLACK);
       }
     }
 
