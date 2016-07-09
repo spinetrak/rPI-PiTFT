@@ -130,8 +130,7 @@ public class Main extends Application
     border.setCenter(_powerLineChart);
 
     final Scene scene = new Scene(border, 320, 240);
-    scene.getStylesheets().add(getClass().
-      getResource("/style/myStyle.css").toExternalForm());
+    scene.getStylesheets().add("stylesheet.css");
     stage_.setScene(scene);
     stage_.setFullScreen(true);
   }
