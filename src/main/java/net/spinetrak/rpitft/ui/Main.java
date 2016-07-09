@@ -11,6 +11,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -188,8 +190,10 @@ public class Main extends Application
     bottom.setSpacing(5);
     bottom.setAlignment(Pos.CENTER_RIGHT);
 
+    final Image exitImg = new Image(getClass().getResourceAsStream("/exit.png"));
+    final Button exit = new Button();
+    exit.setGraphic(new ImageView(exitImg));
 
-    final Button exit = new Button("Exit");
     exit.setOnKeyPressed(new EventHandler<KeyEvent>()
     {
       @Override
@@ -206,8 +210,9 @@ public class Main extends Application
     });
 
     bottom.getChildren().add(exit);
-
-    final Button restart = new Button("Restart");
+    final Image restartImg = new Image(getClass().getResourceAsStream("/restart.png"));
+    final Button restart = new Button();
+    restart.setGraphic(new ImageView(restartImg));
     restart.setOnKeyPressed(new EventHandler<KeyEvent>()
     {
       @Override
@@ -229,8 +234,9 @@ public class Main extends Application
       }
     });
     bottom.getChildren().add(restart);
-
-    final Button shutdown = new Button("Shutdown");
+    final Image shutdownImg = new Image(getClass().getResourceAsStream("/shutdown.png"));
+    final Button shutdown = new Button();
+    shutdown.setGraphic(new ImageView(shutdownImg));
     shutdown.setOnKeyPressed(new EventHandler<KeyEvent>()
     {
       @Override
