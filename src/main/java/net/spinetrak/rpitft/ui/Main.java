@@ -156,7 +156,7 @@ public class Main extends Application
         _disk.setStyle(FX_STROKE_BLACK);
       }
 
-      _temperature.setText(String.format("[%.2f% C°]", temperature));
+      _temperature.setText(String.format("[%.2f C°]", temperature));
       if (temperature >= 75 && !_temperatureAlert)
       {
         _temperatureAlert = true;
