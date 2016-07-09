@@ -8,13 +8,14 @@ import java.io.ByteArrayOutputStream;
 
 public class Command
 {
-  public static String execute(String command_) throws Exception {
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    CommandLine commandline = CommandLine.parse(command_);
-    DefaultExecutor exec = new DefaultExecutor();
-    PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+  public static String execute(final String command_) throws Exception
+  {
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    final CommandLine commandline = CommandLine.parse(command_);
+    final DefaultExecutor exec = new DefaultExecutor();
+    final PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
     exec.setStreamHandler(streamHandler);
     exec.execute(commandline);
-    return(outputStream.toString());
+    return (outputStream.toString());
   }
 }

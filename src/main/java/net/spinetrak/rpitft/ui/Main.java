@@ -129,7 +129,7 @@ public class Main extends Application
     {
       final Device device = _deviceQueue.remove();
       final float cpu = device.getCpu();
-      final float disk = device.getDisk();
+      final int disk = device.getDisk();
       final float temperature = device.getTemperature();
 
       _cpu.setText(String.format("[%.2f%% cpu]", cpu));
@@ -267,6 +267,7 @@ public class Main extends Application
 
   private void initPowerLinechart()
   {
+    _deviceQueue = new ConcurrentLinkedQueue<>();
     _powerQueue = new ConcurrentLinkedQueue<>();
     _mainVoltageSeries = new XYChart.Series<>();
     _upperVoltageSeries = new XYChart.Series<>();
