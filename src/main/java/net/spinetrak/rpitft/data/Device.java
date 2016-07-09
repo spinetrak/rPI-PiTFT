@@ -5,7 +5,7 @@ import net.spinetrak.rpitft.command.Command;
 public class Device
 {
   private final static String CPU_STATUS = "cat <(grep 'cpu ' /proc/stat) | awk -v RS=\"\" '{print ($13-$2+$15-$4)*100/($13-$2+$15-$4+$16-$5)}'";
-  private final static String DISK_STATUS = "df -lh | awk '{if ($6 == \"/\") { print $5 }}' | head -1 | cut -d'%' -f1";
+  private final static String DISK_STATUS = "/bin/df -lh | awk '{if ($6 == \"/\") { print $5 }}' | head -1 | cut -d'%' -f1";
   private final static String TEMPERATURE_STATUS = "/opt/vc/bin/vcgencmd measure_temp | awk -F \"=\" '{print $2}' | awk -F \"'\" '{print $1}'";
   private float _cpu;
   private int _disk;
@@ -21,7 +21,7 @@ public class Device
     }
     catch (final Exception ex_)
     {
-      ex_.printStackTrace();
+      //ex_.printStackTrace();
     }
   }
 
