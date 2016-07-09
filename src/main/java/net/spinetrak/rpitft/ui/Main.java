@@ -98,12 +98,12 @@ public class Main extends Application
       if (Power.BATTERY.equals(power.getSource()))
       {
         _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
-        _batteryPower.lookup(".text").setStyle(FX_STROKE_RED);
+        _batteryPower.lookup("text").setStyle(FX_STROKE_RED);
       }
       else if (Power.PRIMARY.equals(power.getSource()))
       {
         _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
-        _batteryPower.lookup(".text").setStyle(FX_STROKE_BLACK);
+        _batteryPower.lookup("text").setStyle(FX_STROKE_BLACK);
       }
 
       if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
