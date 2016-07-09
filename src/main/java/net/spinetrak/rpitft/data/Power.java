@@ -6,11 +6,11 @@ public class Power
 {
   public final static String BATTERY = "B";
   public final static String PRIMARY = "P";
-  private static final String POWER_STATUS = "/usr/share/i3blocks/battery_raspi";
-  double _capacity;
-  double _power;
+  private final static String POWER_STATUS = "/usr/share/i3blocks/battery_raspi";
+  float _capacity;
+  float _power;
   String _source;
-  double _voltage;
+  float _voltage;
 
   public Power()
   {
@@ -26,12 +26,12 @@ public class Power
     parse(result);
   }
 
-  public double getCapacity()
+  public float getCapacity()
   {
     return _capacity;
   }
 
-  public double getPower()
+  public float getPower()
   {
     return _power;
   }
@@ -41,7 +41,7 @@ public class Power
     return _source;
   }
 
-  public double getVoltage()
+  public float getVoltage()
   {
     return _voltage;
   }

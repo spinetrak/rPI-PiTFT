@@ -20,6 +20,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.Power;
 
 import java.io.IOException;
@@ -37,10 +38,14 @@ public class Main extends Application
   public static final String FX_STROKE_RED = "-fx-stroke: red;";
   private static final int MAX_DATA_POINTS = 320;
   private Text _altitude;
+  private boolean _batteryAlert = false;
   private Text _batteryCapacity;
   private Text _batteryPower;
   private Text _cpu;
+  private boolean _cpuAlert = false;
+  private ConcurrentLinkedQueue<Device> _deviceQueue;
   private Text _disk;
+  private boolean _diskAlert = false;
   private ExecutorService _executor;
   private Text _latitude;
   private Text _longitude;
@@ -50,8 +55,8 @@ public class Main extends Application
   private LineChart<Number, Number> _powerLineChart;
   private ConcurrentLinkedQueue<Power> _powerQueue;
   private Text _temperature;
+  private boolean _temperatureAlert = false;
   private Text _time;
-  private FlowPane _top;
   private Text _trackPoints;
   private XYChart.Series<Number, Number> _upperVoltageSeries;
   private NumberAxis _xPowerAxis;
@@ -98,14 +103,16 @@ public class Main extends Application
       _middleVoltageSeries.getData().add(new XYChart.Data<Number, Number>(_xSeriesData, 5.00));
       _lowerVoltageSeries.getData().add(new XYChart.Data<Number, Number>(_xSeriesData, 4.75));
 
-      if (Power.BATTERY.equals(power.getSource()))
+      if (Power.BATTERY.equals(power.getSource()) && !_batteryAlert)
       {
+        _batteryAlert = true;
         _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
         _batteryPower.setStyle(FX_STROKE_RED);
         _batteryCapacity.setStyle(FX_STROKE_RED);
       }
-      else if (Power.PRIMARY.equals(power.getSource()))
+      else if (Power.PRIMARY.equals(power.getSource()) && _batteryAlert)
       {
+        _batteryAlert = false;
         _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
         _batteryPower.setStyle(FX_STROKE_BLACK);
         _batteryCapacity.setStyle(FX_STROKE_BLACK);
@@ -118,11 +125,129 @@ public class Main extends Application
       _xPowerAxis.setLowerBound(_xSeriesData - MAX_DATA_POINTS);
       _xPowerAxis.setUpperBound(_xSeriesData - 1);
     }
+    while (!_deviceQueue.isEmpty())
+    {
+      final Device device = _deviceQueue.remove();
+      final float cpu = device.getCpu();
+      final float disk = device.getDisk();
+      final float temperature = device.getTemperature();
+
+      _cpu.setText(String.format("[%.2f%% cpu]", cpu));
+      if (cpu >= 90 && !_cpuAlert)
+      {
+        _cpuAlert = true;
+        _cpu.setStyle(FX_STROKE_RED);
+      }
+      else if (cpu < 90 && _cpuAlert)
+      {
+        _cpuAlert = false;
+        _cpu.setStyle(FX_STROKE_BLACK);
+      }
+
+      _disk.setText(String.format("[%d hd]", disk));
+      if (disk >= 90 && !_diskAlert)
+      {
+        _diskAlert = true;
+        _disk.setStyle(FX_STROKE_RED);
+      }
+      else if (disk < 90 && _diskAlert)
+      {
+        _diskAlert = false;
+        _disk.setStyle(FX_STROKE_BLACK);
+      }
+
+      _temperature.setText(String.format("[%.2f% C°]", temperature));
+      if (temperature >= 75 && !_temperatureAlert)
+      {
+        _temperatureAlert = true;
+        _temperature.setStyle(FX_STROKE_RED);
+      }
+      else if (temperature < 75 && _temperatureAlert)
+      {
+        _temperatureAlert = false;
+        _temperature.setStyle(FX_STROKE_BLACK);
+      }
+    }
+
   }
 
-  private Power getPower()
+  private Button getExitButton()
   {
-    return new Power();
+    final Image exitImg = new Image(getClass().getResourceAsStream("/exit.png"));
+    final Button exit = new Button();
+    exit.setGraphic(new ImageView(exitImg));
+
+    exit.setOnKeyPressed(new EventHandler<KeyEvent>()
+    {
+      @Override
+      public void handle(final KeyEvent event_)
+      {
+        if (event_.getCode().equals(KeyCode.ENTER))
+        {
+          exit.setText("exiting...");
+          exit();
+          exit.setText("done...");
+          System.exit(0);
+        }
+      }
+    });
+    return exit;
+  }
+
+  private Button getRestartButton()
+  {
+    final Image restartImg = new Image(getClass().getResourceAsStream("/restart.png"));
+    final Button restart = new Button();
+    restart.setGraphic(new ImageView(restartImg));
+    restart.setOnKeyPressed(new EventHandler<KeyEvent>()
+    {
+      @Override
+      public void handle(final KeyEvent event_)
+      {
+        if (event_.getCode().equals(KeyCode.ENTER))
+        {
+          final Runtime runtime = Runtime.getRuntime();
+          try
+          {
+            final Process proc = runtime.exec("sudo shutdown -r now");
+          }
+          catch (final IOException ex_)
+          {
+            ex_.printStackTrace();
+          }
+          System.exit(0);
+        }
+      }
+    });
+    return restart;
+  }
+
+  private Button getShutdownButton()
+  {
+    final Image shutdownImg = new Image(getClass().getResourceAsStream("/shutdown.png"));
+    final Button shutdown = new Button();
+    shutdown.setGraphic(new ImageView(shutdownImg));
+    shutdown.setOnKeyPressed(new EventHandler<KeyEvent>()
+    {
+      @Override
+      public void handle(final KeyEvent event_)
+      {
+        if (event_.getCode().equals(KeyCode.ENTER))
+        {
+          final Runtime runtime = Runtime.getRuntime();
+          try
+          {
+            final Process proc = runtime.exec("sudo shutdown now");
+          }
+          catch (final IOException ex_)
+          {
+            ex_.printStackTrace();
+          }
+          System.exit(0);
+        }
+      }
+    });
+    return shutdown;
   }
 
   private void init(final Stage stage_)
@@ -130,8 +255,7 @@ public class Main extends Application
     initPowerLinechart();
 
     final BorderPane border = new BorderPane();
-    _top = setTop();
-    border.setTop(_top);
+    border.setTop(setTop());
     border.setBottom(setBottom());
     border.setCenter(_powerLineChart);
 
@@ -156,9 +280,9 @@ public class Main extends Application
     _xPowerAxis.setAutoRanging(false);
 
     _yPowerAxis = new NumberAxis();
-    _yPowerAxis.setLowerBound(4.25);
-    _yPowerAxis.setUpperBound(5.75);
-    _yPowerAxis.setTickUnit(0.25);
+    _yPowerAxis.setLowerBound(4.6);
+    _yPowerAxis.setUpperBound(5.4);
+    _yPowerAxis.setTickUnit(0.05);
     _yPowerAxis.setForceZeroInRange(false);
     _yPowerAxis.setAutoRanging(false);
 
@@ -190,73 +314,12 @@ public class Main extends Application
     bottom.setSpacing(5);
     bottom.setAlignment(Pos.CENTER_RIGHT);
 
-    final Image exitImg = new Image(getClass().getResourceAsStream("/exit.png"));
-    final Button exit = new Button();
-    exit.setGraphic(new ImageView(exitImg));
-
-    exit.setOnKeyPressed(new EventHandler<KeyEvent>()
-    {
-      @Override
-      public void handle(final KeyEvent event_)
-      {
-        if (event_.getCode().equals(KeyCode.ENTER))
-        {
-          exit.setText("exiting...");
-          exit();
-          exit.setText("done...");
-          System.exit(0);
-        }
-      }
-    });
-
+    final Button exit = getExitButton();
     bottom.getChildren().add(exit);
-    final Image restartImg = new Image(getClass().getResourceAsStream("/restart.png"));
-    final Button restart = new Button();
-    restart.setGraphic(new ImageView(restartImg));
-    restart.setOnKeyPressed(new EventHandler<KeyEvent>()
-    {
-      @Override
-      public void handle(final KeyEvent event_)
-      {
-        if (event_.getCode().equals(KeyCode.ENTER))
-        {
-          final Runtime runtime = Runtime.getRuntime();
-          try
-          {
-            final Process proc = runtime.exec("sudo shutdown -r now");
-          }
-          catch (final IOException ex_)
-          {
-            ex_.printStackTrace();
-          }
-          System.exit(0);
-        }
-      }
-    });
+    final Button restart = getRestartButton();
     bottom.getChildren().add(restart);
-    final Image shutdownImg = new Image(getClass().getResourceAsStream("/shutdown.png"));
-    final Button shutdown = new Button();
-    shutdown.setGraphic(new ImageView(shutdownImg));
-    shutdown.setOnKeyPressed(new EventHandler<KeyEvent>()
-    {
-      @Override
-      public void handle(final KeyEvent event_)
-      {
-        if (event_.getCode().equals(KeyCode.ENTER))
-        {
-          final Runtime runtime = Runtime.getRuntime();
-          try
-          {
-            final Process proc = runtime.exec("sudo shutdown now");
-          }
-          catch (final IOException ex_)
-          {
-            ex_.printStackTrace();
-          }
-          System.exit(0);
-        }
-      }
-    });
+
+    final Button shutdown = getShutdownButton();
     bottom.getChildren().add(shutdown);
     return bottom;
   }
@@ -284,7 +347,7 @@ public class Main extends Application
     _temperature = new Text("[xx.x C°]");
     top.getChildren().add(_temperature);
 
-    _cpu = new Text("[xx% cpu]");
+    _cpu = new Text("[xx.x% cpu]");
     top.getChildren().add(_cpu);
 
     _disk = new Text("[xx% hd]");
@@ -304,7 +367,8 @@ public class Main extends Application
     {
       try
       {
-        _powerQueue.add(getPower());
+        _powerQueue.add(new Power());
+        _deviceQueue.add(new Device());
         Thread.sleep(100);
         _executor.execute(this);
       }
