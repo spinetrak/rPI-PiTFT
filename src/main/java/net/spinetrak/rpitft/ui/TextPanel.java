@@ -1,3 +1,28 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016 spinetrak
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
 package net.spinetrak.rpitft.ui;
 
 import javafx.geometry.Insets;
@@ -8,7 +33,7 @@ import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.Power;
 import net.spinetrak.rpitft.data.Threshold;
 
-public class TextPanel
+class TextPanel
 {
   private final Text _altitude;
   private final Text _batteryCapacity;
@@ -30,7 +55,7 @@ public class TextPanel
   private boolean _diskAlert = false;
   private boolean _temperatureAlert = false;
 
-  public TextPanel()
+  TextPanel()
   {
     _top = new FlowPane(Orientation.HORIZONTAL);
     _top.setPadding(new Insets(5));
@@ -71,7 +96,7 @@ public class TextPanel
     _batteryPowerThreshold = new Threshold(_batteryPower, 400, 500);
   }
 
-  public void addData(final Power power_)
+  void addData(final Power power_)
   {
     final float capacity = power_.getCapacity();
     final float power = power_.getPower();
@@ -81,7 +106,7 @@ public class TextPanel
     _batteryPowerThreshold.setColor(power);
   }
 
-  public void addData(final Device device_)
+  void addData(final Device device_)
   {
     final float cpu = device_.getCpu();
     final float disk = device_.getDisk();
@@ -98,7 +123,7 @@ public class TextPanel
   }
 
 
-  public FlowPane getTop()
+  FlowPane getTop()
   {
     return _top;
   }

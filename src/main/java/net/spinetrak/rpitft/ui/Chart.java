@@ -1,3 +1,28 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016 spinetrak
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
 package net.spinetrak.rpitft.ui;
 
 import javafx.scene.chart.LineChart;
@@ -5,10 +30,10 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import net.spinetrak.rpitft.data.Power;
 
-public class Chart
+class Chart
 {
-  public static final String FX_STROKE_GREEN = "-fx-stroke: green;";
-  public static final String FX_STROKE_RED = "-fx-stroke: red;";
+  private static final String FX_STROKE_GREEN = "-fx-stroke: green;";
+  private static final String FX_STROKE_RED = "-fx-stroke: red;";
   private static final int MAX_DATA_POINTS = 320;
   private final XYChart.Series<Number, Number> _lowerVoltageSeries;
   private final Main _main;
@@ -21,7 +46,7 @@ public class Chart
   private boolean _batteryAlert = false;
   private int _xSeriesData = 0;
 
-  public Chart(final Main main_)
+  Chart(final Main main_)
   {
     _main = main_;
     _mainVoltageSeries = new XYChart.Series<>();
@@ -47,11 +72,12 @@ public class Chart
     _powerLineChart.setLegendVisible(false);
     _powerLineChart.setAnimated(false);
     _powerLineChart.setHorizontalGridLinesVisible(true);
+    //noinspection unchecked
     _powerLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
                                      _lowerVoltageSeries);
   }
 
-  public void addData(final Power power_)
+  void addData(final Power power_)
   {
     _mainVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData++, power_.getVoltage()));
     _upperVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData, 5.25));
@@ -77,7 +103,7 @@ public class Chart
     _xPowerAxis.setUpperBound(_xSeriesData - 1);
   }
 
-  public LineChart<Number, Number> getPowerLineChart()
+  LineChart<Number, Number> getPowerLineChart()
   {
     return _powerLineChart;
   }
