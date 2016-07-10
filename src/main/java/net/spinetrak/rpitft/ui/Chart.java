@@ -62,14 +62,11 @@ public class Chart
     {
       _batteryAlert = true;
       _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
-      _main.getTextPanel().setPowerAlarm(true);
-
     }
     else if (Power.PRIMARY.equals(power_.getSource()) && _batteryAlert)
     {
       _batteryAlert = false;
       _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
-      _main.getTextPanel().setPowerAlarm(false);
     }
 
     if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
