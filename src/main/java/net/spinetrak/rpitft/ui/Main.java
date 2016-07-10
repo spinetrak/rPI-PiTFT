@@ -3,7 +3,6 @@ package net.spinetrak.rpitft.ui;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,9 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.Power;
@@ -27,25 +24,8 @@ import static javafx.application.Platform.exit;
 
 public class Main extends Application
 {
-  private static final String FX_FILL_BLACK = "-fx-fill: black;";
-  private static final String FX_FILL_RED = "-fx-fill: red;";
-
-  private Text _altitude;
-
-  private Text _batteryCapacity;
-  private Text _batteryPower;
   private Chart _chart;
-  private Text _cpu;
-  private boolean _cpuAlert = false;
-  private Text _disk;
-  private boolean _diskAlert = false;
-  private Text _latitude;
-  private Text _longitude;
-  private Text _temperature;
-  private boolean _temperatureAlert = false;
-  private Text _time;
-  private Text _trackPoints;
-
+  private TextPanel _textPanel;
 
   public static void main(String[] args_)
   {
@@ -58,70 +38,21 @@ public class Main extends Application
     while (!powerQueue_.isEmpty())
     {
       final Power power = powerQueue_.remove();
-
-      _batteryCapacity.setText(String.format("[%.2f%% bat]", power.getCapacity()));
-      _batteryPower.setText(String.format("[%.2f mA]", power.getPower()));
+      _textPanel.addData(power);
       _chart.addData(power);
 
     }
     while (!deviceQueue_.isEmpty())
     {
       final Device device = deviceQueue_.remove();
-      final float cpu = device.getCpu();
-      final float disk = device.getDisk();
-      final float temperature = device.getTemperature();
 
-      _cpu.setText(String.format("[%.2f%% cpu]", cpu));
-      if (cpu >= 90 && !_cpuAlert)
-      {
-        _cpuAlert = true;
-        _cpu.setStyle(FX_FILL_RED);
-      }
-      else if (cpu < 90 && _cpuAlert)
-      {
-        _cpuAlert = false;
-        _cpu.setStyle(FX_FILL_BLACK);
-      }
-
-      _disk.setText(String.format("[%.2f%% hd]", disk));
-      if (disk >= 90 && !_diskAlert)
-      {
-        _diskAlert = true;
-        _disk.setStyle(FX_FILL_RED);
-      }
-      else if (disk < 90 && _diskAlert)
-      {
-        _diskAlert = false;
-        _disk.setStyle(FX_FILL_BLACK);
-      }
-
-      _temperature.setText(String.format("[%.2f C°]", temperature));
-      if (temperature >= 75 && !_temperatureAlert)
-      {
-        _temperatureAlert = true;
-        _temperature.setStyle(FX_FILL_RED);
-      }
-      else if (temperature < 75 && _temperatureAlert)
-      {
-        _temperatureAlert = false;
-        _temperature.setStyle(FX_FILL_BLACK);
-      }
+      _textPanel.addData(device);
     }
-
   }
 
-  public void setPowerAlarm(final boolean on_)
+  public TextPanel getTextPanel()
   {
-    if (on_)
-    {
-      _batteryPower.setStyle(FX_FILL_RED);
-      _batteryCapacity.setStyle(FX_FILL_RED);
-    }
-    else
-    {
-      _batteryPower.setStyle(FX_FILL_BLACK);
-      _batteryCapacity.setStyle(FX_FILL_BLACK);
-    }
+    return _textPanel;
   }
 
   @Override
@@ -216,9 +147,11 @@ public class Main extends Application
   private void init(final Stage stage_)
   {
     _chart = new Chart(this);
+    _textPanel = new TextPanel();
 
     final BorderPane border = new BorderPane();
-    border.setTop(setTop());
+    border.setTop(_textPanel.getTop());
+
     border.setBottom(setBottom());
     border.setCenter(_chart.getPowerLineChart());
 
@@ -244,42 +177,5 @@ public class Main extends Application
     final Button shutdown = getShutdownButton();
     bottom.getChildren().add(shutdown);
     return bottom;
-  }
-
-  private FlowPane setTop()
-  {
-    final FlowPane top = new FlowPane(Orientation.HORIZONTAL);
-    top.setPadding(new Insets(5));
-
-    _time = new Text("[hh:mm:ss]");
-    top.getChildren().add(_time);
-
-    _latitude = new Text("[xxxx.xxx N]");
-    top.getChildren().add(_latitude);
-
-    _longitude = new Text("[xxxx.xxx E]");
-    top.getChildren().add(_longitude);
-
-    _altitude = new Text("[xxxx.x M]");
-    top.getChildren().add(_altitude);
-
-    _trackPoints = new Text("[xxxxxxx]");
-    top.getChildren().add(_trackPoints);
-
-    _temperature = new Text("[xx.x C°]");
-    top.getChildren().add(_temperature);
-
-    _cpu = new Text("[xx.x% cpu]");
-    top.getChildren().add(_cpu);
-
-    _disk = new Text("[xx% hd]");
-    top.getChildren().add(_disk);
-
-    _batteryCapacity = new Text("[xxx.xx% bat]");
-    top.getChildren().add(_batteryCapacity);
-
-    _batteryPower = new Text("[xxx.xxx mA]");
-    top.getChildren().add(_batteryPower);
-    return top;
   }
 }

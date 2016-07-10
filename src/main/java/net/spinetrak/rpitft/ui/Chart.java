@@ -10,16 +10,16 @@ public class Chart
   public static final String FX_STROKE_GREEN = "-fx-stroke: green;";
   public static final String FX_STROKE_RED = "-fx-stroke: red;";
   private static final int MAX_DATA_POINTS = 320;
+  private final XYChart.Series<Number, Number> _lowerVoltageSeries;
   private final Main _main;
+  private final XYChart.Series<Number, Number> _mainVoltageSeries;
+  private final XYChart.Series<Number, Number> _middleVoltageSeries;
+  private final LineChart<Number, Number> _powerLineChart;
+  private final XYChart.Series<Number, Number> _upperVoltageSeries;
+  private final NumberAxis _xPowerAxis;
+  private final NumberAxis _yPowerAxis;
   private boolean _batteryAlert = false;
-  private XYChart.Series<Number, Number> _lowerVoltageSeries;
-  private XYChart.Series<Number, Number> _mainVoltageSeries;
-  private XYChart.Series<Number, Number> _middleVoltageSeries;
-  private LineChart<Number, Number> _powerLineChart;
-  private XYChart.Series<Number, Number> _upperVoltageSeries;
-  private NumberAxis _xPowerAxis;
   private int _xSeriesData = 0;
-  private NumberAxis _yPowerAxis;
 
   public Chart(final Main main_)
   {
@@ -62,14 +62,14 @@ public class Chart
     {
       _batteryAlert = true;
       _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
-      _main.setPowerAlarm(true);
+      _main.getTextPanel().setPowerAlarm(true);
 
     }
     else if (Power.PRIMARY.equals(power_.getSource()) && _batteryAlert)
     {
       _batteryAlert = false;
       _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
-      _main.setPowerAlarm(false);
+      _main.getTextPanel().setPowerAlarm(false);
     }
 
     if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
