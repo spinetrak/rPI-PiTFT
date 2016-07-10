@@ -6,7 +6,8 @@ public class Power
 {
   public final static String BATTERY = "B";
   public final static String PRIMARY = "P";
-  private final static String POWER_STATUS = "/usr/share/i3blocks/battery_raspi";
+  private final static String POWER_STATUS = "/battery.sh";
+  private final static String SCRIPT = Command.init(POWER_STATUS);
   float _capacity;
   float _power;
   String _source;
@@ -17,7 +18,7 @@ public class Power
     String result = "";
     try
     {
-      result = Command.execute(POWER_STATUS);
+      result = Command.execute(SCRIPT);
     }
     catch (final Exception ex_)
     {
