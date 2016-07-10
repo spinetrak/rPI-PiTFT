@@ -1,6 +1,5 @@
 package net.spinetrak.rpitft.ui;
 
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -22,12 +21,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.Power;
+import net.spinetrak.rpitft.data.Queue;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import static javafx.application.Platform.exit;
 
@@ -44,17 +41,15 @@ public class Main extends Application
   private Text _batteryPower;
   private Text _cpu;
   private boolean _cpuAlert = false;
-  private ConcurrentLinkedQueue<Device> _deviceQueue;
   private Text _disk;
   private boolean _diskAlert = false;
-  private ExecutorService _executor;
   private Text _latitude;
   private Text _longitude;
   private XYChart.Series<Number, Number> _lowerVoltageSeries;
   private XYChart.Series<Number, Number> _mainVoltageSeries;
   private XYChart.Series<Number, Number> _middleVoltageSeries;
   private LineChart<Number, Number> _powerLineChart;
-  private ConcurrentLinkedQueue<Power> _powerQueue;
+  private Queue _queue;
   private Text _temperature;
   private boolean _temperatureAlert = false;
   private Text _time;
@@ -69,33 +64,12 @@ public class Main extends Application
     launch(args_);
   }
 
-  @Override
-  public void start(final Stage stage_)
+  public void addDataToSeries(final ConcurrentLinkedQueue<Power> powerQueue_,
+                              final ConcurrentLinkedQueue<Device> deviceQueue_)
   {
-    init(stage_);
-    stage_.show();
-
-    _executor = Executors.newCachedThreadPool(new ThreadFactory()
+    while (!powerQueue_.isEmpty())
     {
-      @Override
-      public Thread newThread(final Runnable runnable_)
-      {
-        final Thread thread = new Thread(runnable_);
-        thread.setDaemon(true);
-        return thread;
-      }
-    });
-
-    final AddToQueue addToQueue = new AddToQueue();
-    _executor.execute(addToQueue);
-    prepareTimeline();
-  }
-
-  private void addDataToSeries()
-  {
-    while (!_powerQueue.isEmpty())
-    {
-      final Power power = _powerQueue.remove();
+      final Power power = powerQueue_.remove();
 
       _batteryCapacity.setText(String.format("[%.2f%% bat]", power.getCapacity()));
       _batteryPower.setText(String.format("[%.2f mA]", power.getPower()));
@@ -126,9 +100,9 @@ public class Main extends Application
       _xPowerAxis.setLowerBound(_xSeriesData - MAX_DATA_POINTS);
       _xPowerAxis.setUpperBound(_xSeriesData - 1);
     }
-    while (!_deviceQueue.isEmpty())
+    while (!deviceQueue_.isEmpty())
     {
-      final Device device = _deviceQueue.remove();
+      final Device device = deviceQueue_.remove();
       final float cpu = device.getCpu();
       final float disk = device.getDisk();
       final float temperature = device.getTemperature();
@@ -170,6 +144,15 @@ public class Main extends Application
       }
     }
 
+  }
+
+  @Override
+  public void start(final Stage stage_)
+  {
+    init(stage_);
+    stage_.show();
+
+    _queue = new Queue(this);
   }
 
   private Button getExitButton()
@@ -268,8 +251,6 @@ public class Main extends Application
 
   private void initPowerLinechart()
   {
-    _deviceQueue = new ConcurrentLinkedQueue<>();
-    _powerQueue = new ConcurrentLinkedQueue<>();
     _mainVoltageSeries = new XYChart.Series<>();
     _upperVoltageSeries = new XYChart.Series<>();
     _middleVoltageSeries = new XYChart.Series<>();
@@ -295,18 +276,6 @@ public class Main extends Application
     _powerLineChart.setHorizontalGridLinesVisible(true);
     _powerLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
                                      _lowerVoltageSeries);
-  }
-
-  private void prepareTimeline()
-  {
-    new AnimationTimer()
-    {
-      @Override
-      public void handle(final long now_)
-      {
-        addDataToSeries();
-      }
-    }.start();
   }
 
   private HBox setBottom()
@@ -361,23 +330,5 @@ public class Main extends Application
     _batteryPower = new Text("[xxx.xxx mA]");
     top.getChildren().add(_batteryPower);
     return top;
-  }
-
-  private class AddToQueue implements Runnable
-  {
-    public void run()
-    {
-      try
-      {
-        _powerQueue.add(new Power());
-        _deviceQueue.add(new Device());
-        Thread.sleep(100);
-        _executor.execute(this);
-      }
-      catch (final InterruptedException ex_)
-      {
-        ex_.printStackTrace();
-      }
-    }
   }
 }
