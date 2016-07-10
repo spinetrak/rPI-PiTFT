@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Main extends Application
 {
-  private ButtonPanel _buttonPanel;
   private Chart _chart;
   private TextPanel _textPanel;
 
@@ -87,9 +86,9 @@ public class Main extends Application
     final BorderPane border = new BorderPane();
     border.setTop(_textPanel.getTop());
 
-    _buttonPanel = new ButtonPanel();
+    final ButtonPanel buttonPanel = new ButtonPanel();
 
-    border.setBottom(_buttonPanel.getBottom());
+    border.setBottom(buttonPanel.getBottom());
     border.setCenter(_chart.getPowerLineChart());
 
     final Scene scene = new Scene(border, 320, 240);
