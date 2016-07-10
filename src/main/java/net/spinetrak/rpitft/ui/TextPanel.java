@@ -64,11 +64,11 @@ public class TextPanel
 
     _batteryCapacity = new Text("[xxx.xx% bat]");
     _top.getChildren().add(_batteryCapacity);
-    _batteryCapacityThreshold = new Threshold(_batteryCapacity, 20, 50);
+    _batteryCapacityThreshold = new Threshold(_batteryCapacity, 25, 50);
 
     _batteryPower = new Text("[xxx.xxx mA]");
     _top.getChildren().add(_batteryPower);
-    _batteryPowerThreshold = new Threshold(_batteryPower, 300, 400);
+    _batteryPowerThreshold = new Threshold(_batteryPower, 400, 500);
   }
 
   public void addData(final Power power_)
