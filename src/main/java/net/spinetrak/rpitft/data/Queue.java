@@ -10,15 +10,13 @@ import java.util.concurrent.ThreadFactory;
 
 public class Queue
 {
-  private final Main _main;
   private ConcurrentLinkedQueue<Device> _deviceQueue;
   private ExecutorService _executor;
   private ConcurrentLinkedQueue<Power> _powerQueue;
 
 
-  public Queue(final Main main_)
+  public Queue()
   {
-    _main = main_;
     _deviceQueue = new ConcurrentLinkedQueue<>();
     _powerQueue = new ConcurrentLinkedQueue<>();
     _executor = Executors.newCachedThreadPool(new ThreadFactory()
@@ -34,17 +32,16 @@ public class Queue
 
     final AddToQueue addToQueue = new AddToQueue();
     _executor.execute(addToQueue);
-    prepareTimeline();
   }
 
-  private void prepareTimeline()
+  public void start(final Main main_)
   {
     new AnimationTimer()
     {
       @Override
       public void handle(final long now_)
       {
-        _main.addDataToSeries(_powerQueue, _deviceQueue);
+        main_.addDataToSeries(_powerQueue, _deviceQueue);
       }
     }.start();
   }

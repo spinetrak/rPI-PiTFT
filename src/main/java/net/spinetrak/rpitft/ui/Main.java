@@ -6,9 +6,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,34 +27,25 @@ import static javafx.application.Platform.exit;
 
 public class Main extends Application
 {
-  public static final String FX_FILL_BLACK = "-fx-fill: black;";
-  public static final String FX_FILL_RED = "-fx-fill: red;";
-  public static final String FX_STROKE_GREEN = "-fx-stroke: green;";
-  public static final String FX_STROKE_RED = "-fx-stroke: red;";
-  private static final int MAX_DATA_POINTS = 320;
+  private static final String FX_FILL_BLACK = "-fx-fill: black;";
+  private static final String FX_FILL_RED = "-fx-fill: red;";
+
   private Text _altitude;
-  private boolean _batteryAlert = false;
+
   private Text _batteryCapacity;
   private Text _batteryPower;
+  private Chart _chart;
   private Text _cpu;
   private boolean _cpuAlert = false;
   private Text _disk;
   private boolean _diskAlert = false;
   private Text _latitude;
   private Text _longitude;
-  private XYChart.Series<Number, Number> _lowerVoltageSeries;
-  private XYChart.Series<Number, Number> _mainVoltageSeries;
-  private XYChart.Series<Number, Number> _middleVoltageSeries;
-  private LineChart<Number, Number> _powerLineChart;
-  private Queue _queue;
   private Text _temperature;
   private boolean _temperatureAlert = false;
   private Text _time;
   private Text _trackPoints;
-  private XYChart.Series<Number, Number> _upperVoltageSeries;
-  private NumberAxis _xPowerAxis;
-  private int _xSeriesData = 0;
-  private NumberAxis _yPowerAxis;
+
 
   public static void main(String[] args_)
   {
@@ -73,32 +61,8 @@ public class Main extends Application
 
       _batteryCapacity.setText(String.format("[%.2f%% bat]", power.getCapacity()));
       _batteryPower.setText(String.format("[%.2f mA]", power.getPower()));
-      _mainVoltageSeries.getData().add(new XYChart.Data<Number, Number>(_xSeriesData++, power.getVoltage()));
-      _upperVoltageSeries.getData().add(new XYChart.Data<Number, Number>(_xSeriesData, 5.25));
-      _middleVoltageSeries.getData().add(new XYChart.Data<Number, Number>(_xSeriesData, 5.00));
-      _lowerVoltageSeries.getData().add(new XYChart.Data<Number, Number>(_xSeriesData, 4.75));
+      _chart.addData(power);
 
-      if (Power.BATTERY.equals(power.getSource()) && !_batteryAlert)
-      {
-        _batteryAlert = true;
-        _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
-        _batteryPower.setStyle(FX_FILL_RED);
-        _batteryCapacity.setStyle(FX_FILL_RED);
-      }
-      else if (Power.PRIMARY.equals(power.getSource()) && _batteryAlert)
-      {
-        _batteryAlert = false;
-        _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
-        _batteryPower.setStyle(FX_FILL_BLACK);
-        _batteryCapacity.setStyle(FX_FILL_BLACK);
-      }
-
-      if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
-      {
-        _mainVoltageSeries.getData().remove(0, _mainVoltageSeries.getData().size() - MAX_DATA_POINTS);
-      }
-      _xPowerAxis.setLowerBound(_xSeriesData - MAX_DATA_POINTS);
-      _xPowerAxis.setUpperBound(_xSeriesData - 1);
     }
     while (!deviceQueue_.isEmpty())
     {
@@ -146,13 +110,28 @@ public class Main extends Application
 
   }
 
+  public void setPowerAlarm(final boolean on_)
+  {
+    if (on_)
+    {
+      _batteryPower.setStyle(FX_FILL_RED);
+      _batteryCapacity.setStyle(FX_FILL_RED);
+    }
+    else
+    {
+      _batteryPower.setStyle(FX_FILL_BLACK);
+      _batteryCapacity.setStyle(FX_FILL_BLACK);
+    }
+  }
+
   @Override
   public void start(final Stage stage_)
   {
     init(stage_);
     stage_.show();
 
-    _queue = new Queue(this);
+    final Queue queue = new Queue();
+    queue.start(this);
   }
 
   private Button getExitButton()
@@ -236,12 +215,12 @@ public class Main extends Application
 
   private void init(final Stage stage_)
   {
-    initPowerLinechart();
+    _chart = new Chart(this);
 
     final BorderPane border = new BorderPane();
     border.setTop(setTop());
     border.setBottom(setBottom());
-    border.setCenter(_powerLineChart);
+    border.setCenter(_chart.getPowerLineChart());
 
     final Scene scene = new Scene(border, 320, 240);
     scene.getStylesheets().add("stylesheet.css");
@@ -249,34 +228,6 @@ public class Main extends Application
     stage_.setFullScreen(true);
   }
 
-  private void initPowerLinechart()
-  {
-    _mainVoltageSeries = new XYChart.Series<>();
-    _upperVoltageSeries = new XYChart.Series<>();
-    _middleVoltageSeries = new XYChart.Series<>();
-    _lowerVoltageSeries = new XYChart.Series<>();
-
-    _xPowerAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
-    _xPowerAxis.setTickLabelsVisible(false);
-    _xPowerAxis.setTickUnit(10);
-    _xPowerAxis.setForceZeroInRange(false);
-    _xPowerAxis.setAutoRanging(false);
-
-    _yPowerAxis = new NumberAxis();
-    _yPowerAxis.setLowerBound(4.6);
-    _yPowerAxis.setUpperBound(5.4);
-    _yPowerAxis.setTickUnit(0.05);
-    _yPowerAxis.setForceZeroInRange(false);
-    _yPowerAxis.setAutoRanging(false);
-
-    _powerLineChart = new LineChart<>(_xPowerAxis, _yPowerAxis);
-    _powerLineChart.setCreateSymbols(false);
-    _powerLineChart.setLegendVisible(false);
-    _powerLineChart.setAnimated(false);
-    _powerLineChart.setHorizontalGridLinesVisible(true);
-    _powerLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
-                                     _lowerVoltageSeries);
-  }
 
   private HBox setBottom()
   {
