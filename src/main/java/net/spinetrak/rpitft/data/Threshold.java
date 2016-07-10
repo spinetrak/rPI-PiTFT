@@ -11,14 +11,13 @@ public class Threshold
   private final float _red;
   private final Text _text;
   private boolean _inverse;
-  private State _state;
+  private State _state = null;
 
   public Threshold(final Text text_, final float red_, final float amber_)
   {
     _text = text_;
     _red = red_;
     _amber = amber_;
-    _state = State.GREEN;
     _inverse = red_ < amber_;
   }
 
@@ -36,7 +35,7 @@ public class Threshold
         _state = State.AMBER;
         _text.setStyle(FX_FILL_AMBER);
       }
-      else if (data_ > _amber && _state != State.GREEN)
+      else if (data_ < _amber && _state != State.GREEN)
       {
         _state = State.GREEN;
         _text.setStyle(FX_FILL_GREEN);
@@ -54,7 +53,7 @@ public class Threshold
         _state = State.AMBER;
         _text.setStyle(FX_FILL_AMBER);
       }
-      else if (data_ < _amber && _state != State.GREEN)
+      else if (data_ > _amber && _state != State.GREEN)
       {
         _state = State.GREEN;
         _text.setStyle(FX_FILL_GREEN);
