@@ -1,6 +1,6 @@
 # rPI-PiTFT
 
-A simple read-only user interface for using a RPi3 as a GPS data logger (in NMEA format) in the car.
+A simple read-only user interface for using an RPi3 as a GPS data logger (in NMEA format) in the car.
 
 Components:
 - Raspberry Pi 3
