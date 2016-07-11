@@ -94,7 +94,7 @@ public class GPS
   private void parse(final String data_)
   {
     final String tokens[] = data_.split("/");
-    if (tokens.length == 4)
+    if (tokens.length == 5)
     {
       parseTime(tokens[0]);
 
@@ -103,6 +103,15 @@ public class GPS
       _longitude = parseCoordinates(tokens[2]);
 
       parseTrackpoints(tokens[3]);
+      parseAltitude(tokens[4]);
+    }
+  }
+
+  private void parseAltitude(final String token_)
+  {
+    if ((null != token_) && !token_.isEmpty())
+    {
+      _altitude = token_ + "m";
     }
   }
 
@@ -122,5 +131,4 @@ public class GPS
       _trackpoints = Integer.parseInt(token_.replaceAll("[\\D]", ""));
     }
   }
-
 }
