@@ -12,6 +12,7 @@ Components:
 
 What does it do?
 - monitors S.USV backup battery status in a JavaFX linechart
+- monitors RPi3 cpu / disk / temperature
 - monitors GPS tracking status (not yet fully implemented)
 - future plans:
   - create GPX files from the GPS data
