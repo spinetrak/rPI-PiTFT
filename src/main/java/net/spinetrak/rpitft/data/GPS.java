@@ -111,7 +111,7 @@ public class GPS
   {
     if ((null != token_) && !token_.isEmpty())
     {
-      _altitude = token_ + "m";
+      _altitude = token_.trim() + " m";
     }
   }
 
