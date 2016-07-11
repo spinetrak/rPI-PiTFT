@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package net.spinetrak.rpitft.ui;
@@ -30,6 +29,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
 import net.spinetrak.rpitft.data.Device;
+import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.Power;
 import net.spinetrak.rpitft.data.Threshold;
 
@@ -51,9 +51,7 @@ class TextPanel
   private final Text _time;
   private final FlowPane _top;
   private final Text _trackPoints;
-  private boolean _cpuAlert = false;
-  private boolean _diskAlert = false;
-  private boolean _temperatureAlert = false;
+  private final Threshold _trackpointsThreshold;
 
   TextPanel()
   {
@@ -74,6 +72,7 @@ class TextPanel
 
     _trackPoints = new Text("[xxxxxxx]");
     _top.getChildren().add(_trackPoints);
+    _trackpointsThreshold = new Threshold(_trackPoints, 15000, 20000);
 
     _temperature = new Text("[xx.x C°]");
     _top.getChildren().add(_temperature);
@@ -100,8 +99,10 @@ class TextPanel
   {
     final float capacity = power_.getCapacity();
     final float power = power_.getPower();
+
     _batteryCapacity.setText(String.format("[%.2f%% bat]", capacity));
     _batteryCapacityThreshold.setColor(capacity);
+
     _batteryPower.setText(String.format("[%.2f mA]", power));
     _batteryPowerThreshold.setColor(power);
   }
@@ -120,6 +121,22 @@ class TextPanel
 
     _temperature.setText(String.format("[%.2f C°]", temperature));
     _temperatureThreshold.setColor(temperature);
+  }
+
+  void addData(final GPS gps_)
+  {
+    final String time = gps_.getTime();
+    final String latitude = gps_.getLatitude();
+    final String longitude = gps_.getLongitude();
+    final String altitude = gps_.getAltitude();
+    final int trackpoints = gps_.getTrackpoints();
+
+    _time.setText(String.format("[%s]", time));
+    _latitude.setText(String.format("[%s]", latitude));
+    _longitude.setText(String.format("[%s]", longitude));
+    _altitude.setText(String.format("[%s]", altitude));
+    _trackPoints.setText(String.format("[%d]", trackpoints));
+    _trackpointsThreshold.setColor(trackpoints);
   }
 
 

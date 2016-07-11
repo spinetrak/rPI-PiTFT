@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package net.spinetrak.rpitft.ui;
@@ -30,6 +29,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.spinetrak.rpitft.data.Device;
+import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.Power;
 import net.spinetrak.rpitft.data.Queue;
 
@@ -46,7 +46,8 @@ public class Main extends Application
   }
 
   public void addDataToSeries(final ConcurrentLinkedQueue<Power> powerQueue_,
-                              final ConcurrentLinkedQueue<Device> deviceQueue_)
+                              final ConcurrentLinkedQueue<Device> deviceQueue_,
+                              final ConcurrentLinkedQueue<GPS> gpsQueue_)
   {
     while (!powerQueue_.isEmpty())
     {
@@ -60,6 +61,12 @@ public class Main extends Application
       final Device device = deviceQueue_.remove();
 
       _textPanel.addData(device);
+    }
+    while (!gpsQueue_.isEmpty())
+    {
+      final GPS gps = gpsQueue_.remove();
+
+      _textPanel.addData(gps);
     }
   }
 

@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package net.spinetrak.rpitft.data;
@@ -36,6 +35,7 @@ public class Queue
 {
   private ConcurrentLinkedQueue<Device> _deviceQueue;
   private ExecutorService _executor;
+  private ConcurrentLinkedQueue<GPS> _gpsQueue;
   private ConcurrentLinkedQueue<Power> _powerQueue;
 
 
@@ -43,6 +43,7 @@ public class Queue
   {
     _deviceQueue = new ConcurrentLinkedQueue<>();
     _powerQueue = new ConcurrentLinkedQueue<>();
+    _gpsQueue = new ConcurrentLinkedQueue<>();
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
       thread.setDaemon(true);
@@ -60,7 +61,7 @@ public class Queue
       @Override
       public void handle(final long now_)
       {
-        main_.addDataToSeries(_powerQueue, _deviceQueue);
+        main_.addDataToSeries(_powerQueue, _deviceQueue, _gpsQueue);
       }
     }.start();
   }
@@ -73,7 +74,8 @@ public class Queue
       {
         _powerQueue.add(new Power());
         _deviceQueue.add(new Device());
-        Thread.sleep(100);
+        _gpsQueue.add(new GPS());
+        Thread.sleep(200);
         _executor.execute(this);
       }
       catch (final InterruptedException ex_)

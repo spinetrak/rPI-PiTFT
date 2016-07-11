@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package net.spinetrak.rpitft.data;
@@ -31,7 +30,7 @@ public class Power
 {
   public final static String BATTERY = "B";
   public final static String PRIMARY = "P";
-  private final static String POWER_STATUS = "/battery.sh";
+  private final static String POWER_STATUS = "/power.sh";
   private final static String SCRIPT = Command.init(POWER_STATUS);
   private float _capacity;
   private float _power;
