@@ -5,3 +5,4 @@
 - javafx
 - S.USV
 - GPS
+- rpi-fbcp
