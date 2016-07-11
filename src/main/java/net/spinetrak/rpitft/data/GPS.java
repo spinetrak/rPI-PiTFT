@@ -102,7 +102,7 @@ public class GPS
 
       _longitude = parseCoordinates(tokens[2]);
 
-      _trackpoints = Integer.parseInt(tokens[3]);
+      parseTrackpoints(tokens[3]);
     }
   }
 
@@ -114,4 +114,13 @@ public class GPS
       _time = tokens[0] + ":" + tokens[1] + ":" + tokens[2];
     }
   }
+
+  private void parseTrackpoints(final String token_)
+  {
+    if ((null != token_) && !token_.isEmpty())
+    {
+      _trackpoints = Integer.parseInt(token_.replaceAll("[\\D]", ""));
+    }
+  }
+
 }
