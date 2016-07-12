@@ -146,7 +146,10 @@ class TextPanel
     final float altitude = gps_.getAltitude();
     final int trackpoints = gps_.getTrackpoints();
 
-    _time.setText(String.format("[%s]", time.toString(GPS.DTF)));
+    if (time != null)
+    {
+      _time.setText(String.format("[%s]", time.toString(GPS.DTF)));
+    }
     _timeThreshold.setColor(getTimeDifferenceInSeconds(time));
     _latitude.setText(formatLatitude(latitude));
     _longitude.setText(formatLongitude(longitude));
@@ -172,6 +175,10 @@ class TextPanel
 
   private int getTimeDifferenceInSeconds(final DateTime time_)
   {
+    if (time_ == null)
+    {
+      return 0;
+    }
     final int nowSeconds = (int) ((new Date().getTime() % (24 * 60 * 60 * 1000L)) / 1000);
     final int timeSeconds = (int) ((time_.getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
     if (nowSeconds > timeSeconds)
