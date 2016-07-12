@@ -62,7 +62,7 @@ class Chart
     _yPowerAxis = new NumberAxis();
     _yPowerAxis.setLowerBound(4.6);
     _yPowerAxis.setUpperBound(5.4);
-    _yPowerAxis.setTickUnit(0.10);
+    _yPowerAxis.setTickUnit(0.25);
     _yPowerAxis.setForceZeroInRange(false);
     _yPowerAxis.setAutoRanging(false);
 
