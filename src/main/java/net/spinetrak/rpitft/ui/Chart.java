@@ -56,14 +56,14 @@ class Chart
 
     _xPowerAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
     _xPowerAxis.setTickLabelsVisible(false);
-    _xPowerAxis.setTickUnit(10);
+    //_xPowerAxis.setTickUnit(10);
     _xPowerAxis.setForceZeroInRange(false);
     _xPowerAxis.setAutoRanging(false);
 
     _yPowerAxis = new NumberAxis();
     _yPowerAxis.setLowerBound(4.7);
     _yPowerAxis.setUpperBound(5.3);
-    _yPowerAxis.setTickUnit(0.25);
+    _yPowerAxis.setTickUnit(0.3);
     _yPowerAxis.setForceZeroInRange(false);
     _yPowerAxis.setAutoRanging(false);
 
@@ -83,6 +83,13 @@ class Chart
 
     final NumberAxis lonGPSAxis = new NumberAxis();
     final NumberAxis latGPSAxis = new NumberAxis();
+    lonGPSAxis.setForceZeroInRange(false);
+    latGPSAxis.setForceZeroInRange(false);
+    lonGPSAxis.setTickLabelsVisible(false);
+    latGPSAxis.setTickLabelsVisible(false);
+    lonGPSAxis.setAutoRanging(true);
+    latGPSAxis.setAutoRanging(true);
+
     final XYChart.Series<Number, Number> gpsSeries = new XYChart.Series<>();
     gpsSeries.getData().add(new XYChart.Data<>(10.0, 53.0));
     gpsSeries.getData().add(new XYChart.Data<>(11.0, 54.0));

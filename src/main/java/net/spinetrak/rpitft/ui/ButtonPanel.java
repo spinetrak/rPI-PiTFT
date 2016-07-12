@@ -47,7 +47,7 @@ class ButtonPanel
     _bottom.setSpacing(1);
     _bottom.setAlignment(Pos.CENTER_RIGHT);
     _bottom.setPrefSize(320, 20);
-    _bottom.setMinHeight(20);
+    _bottom.setMinHeight(40);
 
     final Button exit = getExitButton();
     _bottom.getChildren().add(exit);

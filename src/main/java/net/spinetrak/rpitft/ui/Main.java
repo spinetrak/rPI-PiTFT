@@ -90,24 +90,30 @@ public class Main extends Application
 
     final BorderPane border = new BorderPane();
     border.setPadding(new Insets(1));
+    border.setPrefSize(320, 240);
+    border.setMaxHeight(240);
+    border.setMinHeight(240);
+    border.setMaxWidth(320);
+    border.setMinWidth(320);
+
+    final VBox center = new VBox();
+    center.setSpacing(1);
+    center.setPadding(new Insets(1));
+    center.getChildren().add(_chart.getPowerLineChart());
+    center.getChildren().add(_chart.getGPSLineChart());
+    center.setFillWidth(true);
+    center.setPrefSize(320, 160);
+    center.setMaxHeight(160);
+    border.setCenter(center);
+
     border.setTop(_textPanel.getTop());
 
     final ButtonPanel buttonPanel = new ButtonPanel();
-
     border.setBottom(buttonPanel.getBottom());
-    final VBox vBox = new VBox();
-    vBox.setSpacing(1);
-    vBox.setPadding(new Insets(1));
-    vBox.getChildren().add(_chart.getPowerLineChart());
-    vBox.getChildren().add(_chart.getGPSLineChart());
-    vBox.setFillWidth(true);
-    vBox.setPrefSize(320, 160);
-    vBox.setMaxHeight(160);
-    border.setCenter(vBox);
 
     final Scene scene = new Scene(border, 320, 240);
     scene.getStylesheets().add("stylesheet.css");
     stage_.setScene(scene);
-    stage_.setFullScreen(true);
+    //stage_.setFullScreen(true);
   }
 }

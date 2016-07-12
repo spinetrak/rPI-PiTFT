@@ -62,7 +62,7 @@ class TextPanel
   TextPanel()
   {
     _top = new FlowPane(Orientation.HORIZONTAL);
-    _top.setMaxHeight(30);
+    _top.setMinHeight(40);
     _top.setPadding(new Insets(1));
 
     _time = new Text("[hh:mm:ss]");
