@@ -42,6 +42,7 @@ public class GPS
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private final static String GPS_STATUS = "/gps.sh";
   private final static String SCRIPT = Command.init(GPS_STATUS);
+  private static int count = 0;
   private float _altitude;
   private float _latitude;
   private float _longitude;
@@ -96,10 +97,12 @@ public class GPS
     final String nmeaFile = "/home/pi/tracks/nmea.txt";
     final List<GPS> list = new ArrayList<>();
 
+
     try (final Stream<String> stream = Files.lines(Paths.get(nmeaFile)))
     {
+      final int count = 0;
       stream.forEach(line_ -> {
-        if (line_.contains("GGA"))
+        if (line_.contains("GGA") && hasMore())
         {
           list.add(new GPS(line_));
         }
@@ -110,6 +113,11 @@ public class GPS
       ex_.printStackTrace();
     }
     return list;
+  }
+
+  private static boolean hasMore()
+  {
+    return ++count <= 50;
   }
 
   public float getAltitude()

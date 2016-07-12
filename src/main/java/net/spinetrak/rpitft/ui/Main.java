@@ -76,11 +76,17 @@ public class Main extends Application
     if (gpsQueue_.isEmpty() && !_added)
     {
       _added = true;
+      int count = 0;
       final List<GPS> data = GPS.getHistoricalData();
       for (final GPS gps : data)
       {
+        count++;
         _textPanel.addData(gps);
         _chart.addData(gps);
+        if (count >= 50)
+        {
+          break;
+        }
       }
     }
   }
