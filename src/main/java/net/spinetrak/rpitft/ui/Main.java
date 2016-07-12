@@ -25,6 +25,7 @@
 package net.spinetrak.rpitft.ui;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -95,6 +96,7 @@ public class Main extends Application
     border.setBottom(buttonPanel.getBottom());
     final VBox vBox = new VBox();
     vBox.setSpacing(1);
+    vBox.setPadding(new Insets(1));
     vBox.getChildren().add(_chart.getPowerLineChart());
     vBox.getChildren().add(_chart.getGPSLineChart());
     vBox.setFillWidth(true);
