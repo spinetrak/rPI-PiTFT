@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -111,11 +110,14 @@ public class GPS
     {
       stream.forEach(line_ -> {
         final int size = list.size();
+        System.out.println("List: " + size);
         if (line_.contains("GGA") && (size <= MAX_POINTS) && (size % steps == 0))
         {
           final GPS gps = new GPS(line_);
+          System.out.println("GPS: " + gps);
           if (!list.contains(gps))
           {
+            System.out.println("Adding gps");
             list.add(gps);
           }
         }
@@ -188,6 +190,18 @@ public class GPS
     return result;
   }
 
+  @Override
+  public String toString()
+  {
+    return "GPS{" +
+      "_altitude=" + _altitude +
+      ", _latitude=" + _latitude +
+      ", _longitude=" + _longitude +
+      ", _time=" + _time +
+      ", _trackpoints=" + _trackpoints +
+      '}';
+  }
+
   private void parse(final String data_)
   {
     final String tokens[] = data_.split("/");
@@ -214,19 +228,7 @@ public class GPS
 
   private void parseNmea(final String line_)
   {
-    /**
-     * time=$(echo $GGA | awk -F',' '{ print $2 }' | awk -F'.' '{ print $1 }')
-     latitude=$(echo $GGA | awk -F',' '{ print $3 }')
-     northsouth=$(echo $GGA | awk -F',' '{ print $4 }')
-     longitude=$(echo $GGA | awk -F',' '{ print $5 }')
-     eastwest=$(echo $GGA | awk -F',' '{ print $6 }')
-     altitude=$(echo $GGA | awk -F',' '{ print $10 }')
-     */
-
-    System.out.println(line_);
     final String[] tokens = line_.split(",");
-    System.out.println(Arrays.toString(tokens));
-    System.out.println(tokens[1]);
     final String[] time = tokens[1].split("\\.");
     parseTime(time[0]);
     _latitude = parseCoordinates(tokens[2] + "N");
