@@ -77,7 +77,7 @@ class TextPanel
 
     _trackPoints = new Text("[xxxxxxx]");
     _top.getChildren().add(_trackPoints);
-    _trackpointsThreshold = new Threshold(_trackPoints, 15000, 20000);
+    _trackpointsThreshold = new Threshold(_trackPoints, 15, 30);
 
     _temperature = new Text("[xx.x C°]");
     _top.getChildren().add(_temperature);
@@ -137,12 +137,23 @@ class TextPanel
     final int trackpoints = gps_.getTrackpoints();
 
     _time.setText(String.format("[%s]", time.toString(GPS.DTF)));
-    _timeThreshold.setColor(new Date().getTime() - time.getMillis());
+    _timeThreshold.setColor(getTimeDifferenceInSeconds(time));
     _latitude.setText(formatLatitude(latitude));
     _longitude.setText(formatLongitude(longitude));
     _altitude.setText(String.format("[%.1f m]", altitude));
     _trackPoints.setText(String.format("[%d]", trackpoints));
     _trackpointsThreshold.setColor(trackpoints);
+  }
+  
+  private int getTimeDifferenceInSeconds(final DateTime time_)
+  {
+    final int nowSeconds = (int) ((new Date().getTime() % (24*60*60*1000L)) / 1000);
+    final int timeSeconds = (int) ((time_.getMillis().getTime() % (24*60*60*1000L)) / 1000);
+    if(nowSeconds > timeSeconds)
+    {
+      return 60;
+    }
+    return nowSeconds - timeSeconds;
   }
 
   FlowPane getTop()
