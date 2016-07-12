@@ -173,7 +173,8 @@ public class GPS
 
     System.out.println(line_);
     final String[] tokens = line_.split(",");
-    parseTime(tokens[1].split(".")[0]);
+    final String[] time = tokens[1].split(".");
+    parseTime(time[0]);
     _latitude = parseCoordinates(tokens[2] + "N");
     _longitude = parseCoordinates(tokens[4] + "E");
     parseAltitude(tokens[9]);
