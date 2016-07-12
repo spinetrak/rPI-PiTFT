@@ -98,6 +98,7 @@ public class Main extends Application
     vBox.getChildren().add(_chart.getGPSLineChart());
     vBox.setFillWidth(true);
     vBox.setPrefSize(320, 160);
+    vBox.setMaxHeight(160);
     border.setCenter(vBox);
 
     final Scene scene = new Scene(border, 320, 240);
