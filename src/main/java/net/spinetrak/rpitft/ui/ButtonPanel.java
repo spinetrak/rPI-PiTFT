@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package net.spinetrak.rpitft.ui;
@@ -44,9 +43,11 @@ class ButtonPanel
   ButtonPanel()
   {
     _bottom = new HBox();
-    _bottom.setPadding(new Insets(5));
-    _bottom.setSpacing(5);
+    _bottom.setPadding(new Insets(1));
+    _bottom.setSpacing(1);
     _bottom.setAlignment(Pos.CENTER_RIGHT);
+    _bottom.setPrefSize(320, 20);
+    _bottom.setMinHeight(20);
 
     final Button exit = getExitButton();
     _bottom.getChildren().add(exit);
