@@ -29,12 +29,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class GPS
 {
@@ -106,22 +105,29 @@ public class GPS
     {
       return list;
     }
-    try (final Stream<String> stream = Files.lines(Paths.get(NMEA_FILE)))
+
+
+    try (final BufferedReader reader = new BufferedReader(new FileReader(NMEA_FILE)))
     {
-      stream.forEach(line_ -> {
-        final int size = list.size();
-        System.out.println("List: " + size + "; steps: " + steps + "size%steps" + (size % steps));
-        if (line_.contains("GGA") && (size <= MAX_POINTS) && (size % steps == 0))
+      int count = 0;
+      String line;
+      while ((line = reader.readLine()) != null)
+      {
+        if (line.contains("GGA"))
         {
-          final GPS gps = new GPS(line_);
-          System.out.println("GPS: " + gps);
-          if (!list.contains(gps))
+          if ((count % steps) == 0 && list.size() <= MAX_POINTS)
           {
-            System.out.println("Adding gps");
-            list.add(gps);
+            final GPS gps = new GPS(line);
+            System.out.println("GPS: " + gps);
+            if (!list.contains(gps))
+            {
+              System.out.println("Adding gps");
+              list.add(gps);
+            }
           }
+          count++;
         }
-      });
+      }
     }
     catch (final IOException ex_)
     {
