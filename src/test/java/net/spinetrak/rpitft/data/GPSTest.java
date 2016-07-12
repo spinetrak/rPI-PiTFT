@@ -32,7 +32,7 @@ public class GPSTest
   @org.junit.Test
   public void parse() throws Exception
   {
-    final GPS gps = new GPS();
+    final GPS gps = new GPS(true);
 
     final float north = gps.parseCoordinates("3333.5825N");
     assertEquals(String.format("%.4f", 33.5597), String.format("%.4f", north));

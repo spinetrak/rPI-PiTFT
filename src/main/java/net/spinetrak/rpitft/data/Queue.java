@@ -74,7 +74,7 @@ public class Queue
       {
         _powerQueue.add(new Power());
         _deviceQueue.add(new Device());
-        _gpsQueue.add(new GPS());
+        _gpsQueue.add(new GPS(true));
         Thread.sleep(200);
         _executor.execute(this);
       }
