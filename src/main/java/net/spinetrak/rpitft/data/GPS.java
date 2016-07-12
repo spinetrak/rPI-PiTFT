@@ -110,7 +110,7 @@ public class GPS
     {
       stream.forEach(line_ -> {
         final int size = list.size();
-        System.out.println("List: " + size);
+        System.out.println("List: " + size + "; steps: " + steps + "size%steps" + (size % steps));
         if (line_.contains("GGA") && (size <= MAX_POINTS) && (size % steps == 0))
         {
           final GPS gps = new GPS(line_);
@@ -153,7 +153,6 @@ public class GPS
       return false;
     }
     return Float.compare(gps._longitude, _longitude) == 0;
-
   }
 
   public float getAltitude()
