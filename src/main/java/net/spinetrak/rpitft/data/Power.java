@@ -58,7 +58,7 @@ public class Power
 
   public float getPower()
   {
-    return _power;
+    return (float) (_power == 0 ? _power + 0.001 : _power);
   }
 
   public String getSource()
