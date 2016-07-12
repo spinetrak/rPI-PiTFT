@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.ui;
 
+import javafx.geometry.Insets;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -60,8 +61,8 @@ class Chart
     _xPowerAxis.setAutoRanging(false);
 
     _yPowerAxis = new NumberAxis();
-    _yPowerAxis.setLowerBound(4.6);
-    _yPowerAxis.setUpperBound(5.4);
+    _yPowerAxis.setLowerBound(4.7);
+    _yPowerAxis.setUpperBound(5.3);
     _yPowerAxis.setTickUnit(0.25);
     _yPowerAxis.setForceZeroInRange(false);
     _yPowerAxis.setAutoRanging(false);
@@ -74,6 +75,7 @@ class Chart
     _powerLineChart.setMinWidth(320);
     _powerLineChart.setPrefSize(320, 80);
     _powerLineChart.setMaxHeight(80);
+    _powerLineChart.setPadding(new Insets(0));
     //noinspection unchecked
     _powerLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
                                      _lowerVoltageSeries);
@@ -87,6 +89,7 @@ class Chart
     _gpsLineChart.setMinWidth(320);
     _gpsLineChart.setPrefSize(320, 80);
     _gpsLineChart.setMaxHeight(80);
+    _gpsLineChart.setPadding(new Insets(0));
     //noinspection unchecked
     _gpsLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
                                    _lowerVoltageSeries);

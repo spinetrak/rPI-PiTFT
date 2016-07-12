@@ -89,6 +89,7 @@ public class Main extends Application
     _textPanel = new TextPanel();
 
     final BorderPane border = new BorderPane();
+    border.setPadding(new Insets(1));
     border.setTop(_textPanel.getTop());
 
     final ButtonPanel buttonPanel = new ButtonPanel();
