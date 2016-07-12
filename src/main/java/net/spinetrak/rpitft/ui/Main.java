@@ -114,6 +114,6 @@ public class Main extends Application
     final Scene scene = new Scene(border, 320, 240);
     scene.getStylesheets().add("stylesheet.css");
     stage_.setScene(scene);
-    //stage_.setFullScreen(true);
+    stage_.setFullScreen(true);
   }
 }
