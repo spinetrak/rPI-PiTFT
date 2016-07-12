@@ -56,7 +56,6 @@ class Chart
 
     _xPowerAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
     _xPowerAxis.setTickLabelsVisible(false);
-    //_xPowerAxis.setTickUnit(10);
     _xPowerAxis.setForceZeroInRange(false);
     _xPowerAxis.setAutoRanging(false);
 
@@ -95,6 +94,9 @@ class Chart
     gpsSeries.getData().add(new XYChart.Data<>(11.0, 54.0));
     gpsSeries.getData().add(new XYChart.Data<>(12.0, 55.0));
     gpsSeries.getData().add(new XYChart.Data<>(11.0, 51.0));
+    gpsSeries.getData().add(new XYChart.Data<>(-11.0, 51.0));
+    gpsSeries.getData().add(new XYChart.Data<>(11.0, -51.0));
+    gpsSeries.getData().add(new XYChart.Data<>(-11.0, -52.0));
     _gpsLineChart = new LineChart<>(lonGPSAxis, latGPSAxis);
     _gpsLineChart.setCreateSymbols(false);
     _gpsLineChart.setLegendVisible(false);
