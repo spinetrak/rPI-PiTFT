@@ -171,6 +171,7 @@ public class GPS
      altitude=$(echo $GGA | awk -F',' '{ print $10 }')
      */
 
+    System.out.println(line_);
     final String[] tokens = line_.split(",");
     parseTime(tokens[1].split(".")[0]);
     _latitude = parseCoordinates(tokens[2] + "N");
