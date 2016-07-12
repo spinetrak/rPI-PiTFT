@@ -47,14 +47,22 @@ class ButtonPanel
     _bottom.setSpacing(1);
     _bottom.setAlignment(Pos.CENTER_RIGHT);
     _bottom.setPrefSize(320, 20);
-    _bottom.setMinHeight(40);
+    _bottom.setMinHeight(20);
+
 
     final Button exit = getExitButton();
+    exit.setPrefSize(15, 15);
+    exit.setMaxHeight(15);
     _bottom.getChildren().add(exit);
+
     final Button restart = getRestartButton();
+    restart.setPrefSize(15, 15);
+    restart.setMaxHeight(15);
     _bottom.getChildren().add(restart);
 
     final Button shutdown = getShutdownButton();
+    shutdown.setPrefSize(15, 15);
+    shutdown.setMaxHeight(15);
     _bottom.getChildren().add(shutdown);
   }
 
