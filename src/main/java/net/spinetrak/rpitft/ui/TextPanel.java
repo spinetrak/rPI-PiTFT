@@ -32,6 +32,7 @@ import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.Power;
 import net.spinetrak.rpitft.data.Threshold;
+import org.joda.time.DateTime;
 
 class TextPanel
 {
@@ -125,24 +126,33 @@ class TextPanel
 
   void addData(final GPS gps_)
   {
-    final String time = gps_.getTime();
-    final String latitude = gps_.getLatitude();
-    final String longitude = gps_.getLongitude();
-    final String altitude = gps_.getAltitude();
+    final DateTime time = gps_.getTime();
+    final float latitude = gps_.getLatitude();
+    final float longitude = gps_.getLongitude();
+    final float altitude = gps_.getAltitude();
     final int trackpoints = gps_.getTrackpoints();
 
-    _time.setText(String.format("[%s]", time));
-    _latitude.setText(String.format("[%s]", latitude));
-    _longitude.setText(String.format("[%s]", longitude));
-    _altitude.setText(String.format("[%s]", altitude));
+    _time.setText(String.format("[%s]", time.toString(GPS.DTF)));
+    _latitude.setText(formatLatitude(latitude));
+    _longitude.setText(formatLongitude(longitude));
+    _altitude.setText(String.format("[%.1f m]", altitude));
     _trackPoints.setText(String.format("[%d]", trackpoints));
     _trackpointsThreshold.setColor(trackpoints);
   }
 
-
   FlowPane getTop()
   {
     return _top;
+  }
+
+  private String formatLatitude(final float latitude_)
+  {
+    return String.format("[%.4f %s]", latitude_, latitude_ > 0 ? "N" : "S");
+  }
+
+  private String formatLongitude(final float longitude_)
+  {
+    return String.format("[%.4f %s]", longitude_, longitude_ > 0 ? "E" : "W");
   }
 
 }

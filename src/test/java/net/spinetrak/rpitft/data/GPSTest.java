@@ -24,7 +24,8 @@
 
 package net.spinetrak.rpitft.data;
 
-import static org.junit.Assert.assertEquals;
+
+import static junit.framework.TestCase.assertEquals;
 
 public class GPSTest
 {
@@ -32,12 +33,12 @@ public class GPSTest
   public void parse() throws Exception
   {
     final GPS gps = new GPS();
-    final String north = gps.parseCoordinates("3333.5825N");
+    final float north = gps.parseCoordinates("3333.5825N");
 
-    assertEquals("33.5597 N", north);
+    assertEquals(String.format("%.4f", 33.5597), String.format("%.4f", north));
 
-    final String east = gps.parseCoordinates("00758.2052E");
-    assertEquals("7.9701 E", east);
+    final float east = gps.parseCoordinates("00758.2052E");
+    assertEquals(String.format("%.4f", 7.9701), String.format("%.4f", east));
   }
 
 }

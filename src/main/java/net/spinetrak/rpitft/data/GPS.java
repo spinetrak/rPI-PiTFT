@@ -25,15 +25,19 @@
 package net.spinetrak.rpitft.data;
 
 import net.spinetrak.rpitft.command.Command;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class GPS
 {
+  public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private final static String GPS_STATUS = "/gps.sh";
   private final static String SCRIPT = Command.init(GPS_STATUS);
-  private String _altitude;
-  private String _latitude;
-  private String _longitude;
-  private String _time;
+  private float _altitude;
+  private float _latitude;
+  private float _longitude;
+  private DateTime _time;
   private int _trackpoints;
 
   GPS()
@@ -50,7 +54,7 @@ public class GPS
     parse(result);
   }
 
-  String parseCoordinates(final String token_)
+  float parseCoordinates(final String token_)
   {
     if ((null != token_) && !token_.isEmpty() && (token_.length() == 10 || token_.length() == 11) && token_.contains(
       "."))
@@ -61,27 +65,27 @@ public class GPS
 
       final int degrees = Integer.parseInt(nmeaParts.substring(0, decimal - 2));
       final float minutes = Float.parseFloat(nmeaParts.substring(decimal - 2)) / 60;
-      return String.format("%.4f " + eastwestnorthsouth, (degrees + minutes));
+      return degrees + minutes;
     }
-    return "00.0000 X";
+    return 0;
   }
 
-  public String getAltitude()
+  public float getAltitude()
   {
     return _altitude;
   }
 
-  public String getLatitude()
+  public float getLatitude()
   {
     return _latitude;
   }
 
-  public String getLongitude()
+  public float getLongitude()
   {
     return _longitude;
   }
 
-  public String getTime()
+  public DateTime getTime()
   {
     return _time;
   }
@@ -111,7 +115,7 @@ public class GPS
   {
     if ((null != token_) && !token_.isEmpty())
     {
-      _altitude = token_.trim() + " m";
+      _altitude = Float.parseFloat(token_.trim());
     }
   }
 
@@ -120,7 +124,7 @@ public class GPS
     if ((null != token_) && !token_.isEmpty() && (token_.length() == 6))
     {
       final String[] tokens = token_.split("(?<=\\G..)");
-      _time = tokens[0] + ":" + tokens[1] + ":" + tokens[2];
+      _time = DTF.parseDateTime(tokens[0] + ":" + tokens[1] + ":" + tokens[2]);
     }
   }
 
