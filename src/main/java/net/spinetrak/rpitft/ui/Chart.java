@@ -134,6 +134,10 @@ class Chart
   void addData(final GPS gps_)
   {
     _gpsSeries.getData().add(new XYChart.Data<>(gps_.getLongitude(), gps_.getLatitude()));
+    if (_gpsSeries.getData().size() > MAX_DATA_POINTS)
+    {
+      _gpsSeries.getData().remove(0, _gpsSeries.getData().size() - MAX_DATA_POINTS);
+    }
   }
 
   LineChart<Number, Number> getGPSLineChart()

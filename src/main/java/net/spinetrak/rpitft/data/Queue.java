@@ -33,10 +33,11 @@ import java.util.concurrent.Executors;
 
 public class Queue
 {
-  private ConcurrentLinkedQueue<Device> _deviceQueue;
-  private ExecutorService _executor;
-  private ConcurrentLinkedQueue<GPS> _gpsQueue;
-  private ConcurrentLinkedQueue<Power> _powerQueue;
+  private final ConcurrentLinkedQueue<Device> _deviceQueue;
+  private final ExecutorService _executor;
+  private final ExecutorService _gpsExecutor;
+  private final ConcurrentLinkedQueue<GPS> _gpsQueue;
+  private final ConcurrentLinkedQueue<Power> _powerQueue;
 
 
   public Queue()
@@ -49,9 +50,17 @@ public class Queue
       thread.setDaemon(true);
       return thread;
     });
-
     final AddToQueue addToQueue = new AddToQueue();
     _executor.execute(addToQueue);
+
+    _gpsExecutor = Executors.newCachedThreadPool(runnable_ -> {
+      final Thread thread = new Thread(runnable_);
+      thread.setDaemon(true);
+      return thread;
+    });
+    final AddToGPSQueue addToGPSQueue = new AddToGPSQueue();
+    _executor.execute(addToGPSQueue);
+
   }
 
   public void start(final Main main_)
@@ -74,9 +83,25 @@ public class Queue
       {
         _powerQueue.add(new Power());
         _deviceQueue.add(new Device());
-        _gpsQueue.add(new GPS(true));
         Thread.sleep(200);
         _executor.execute(this);
+      }
+      catch (final InterruptedException ex_)
+      {
+        ex_.printStackTrace();
+      }
+    }
+  }
+
+  private class AddToGPSQueue implements Runnable
+  {
+    public void run()
+    {
+      try
+      {
+        _gpsQueue.add(new GPS(true));
+        Thread.sleep(60000);
+        _gpsExecutor.execute(this);
       }
       catch (final InterruptedException ex_)
       {
