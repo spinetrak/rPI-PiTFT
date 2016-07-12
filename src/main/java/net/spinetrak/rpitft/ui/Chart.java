@@ -81,7 +81,14 @@ class Chart
                                      _lowerVoltageSeries);
 
 
-    _gpsLineChart = new LineChart<>(_xPowerAxis, _yPowerAxis);
+    final NumberAxis lonGPSAxis = new NumberAxis();
+    final NumberAxis latGPSAxis = new NumberAxis();
+    final XYChart.Series<Number, Number> gpsSeries = new XYChart.Series<>();
+    gpsSeries.getData().add(new XYChart.Data<>(10.0, 53.0));
+    gpsSeries.getData().add(new XYChart.Data<>(11.0, 54.0));
+    gpsSeries.getData().add(new XYChart.Data<>(12.0, 55.0));
+    gpsSeries.getData().add(new XYChart.Data<>(11.0, 51.0));
+    _gpsLineChart = new LineChart<>(lonGPSAxis, latGPSAxis);
     _gpsLineChart.setCreateSymbols(false);
     _gpsLineChart.setLegendVisible(false);
     _gpsLineChart.setAnimated(false);
@@ -91,8 +98,7 @@ class Chart
     _gpsLineChart.setMaxHeight(80);
     _gpsLineChart.setPadding(new Insets(0));
     //noinspection unchecked
-    _gpsLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
-                                   _lowerVoltageSeries);
+    _gpsLineChart.getData().addAll(gpsSeries);
   }
 
   void addData(final Power power_)
