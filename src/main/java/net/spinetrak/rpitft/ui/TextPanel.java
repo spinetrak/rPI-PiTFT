@@ -137,7 +137,7 @@ class TextPanel
     final int trackpoints = gps_.getTrackpoints();
 
     _time.setText(String.format("[%s]", time.toString(GPS.DTF)));
-    _trackpointsThreshold.setColor(new Date().getTime() - time.getMillis());
+    _timeThreshold.setColor(new Date().getTime() - time.getMillis());
     _latitude.setText(formatLatitude(latitude));
     _longitude.setText(formatLongitude(longitude));
     _altitude.setText(String.format("[%.1f m]", altitude));
