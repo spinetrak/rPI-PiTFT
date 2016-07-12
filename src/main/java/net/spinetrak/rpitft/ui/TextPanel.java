@@ -49,6 +49,8 @@ class TextPanel
   private final Threshold _diskThreshold;
   private final Text _latitude;
   private final Text _longitude;
+  private final Text _memory;
+  private final Threshold _memoryThreshold;
   private final Text _temperature;
   private final Threshold _temperatureThreshold;
   private final Text _time;
@@ -83,13 +85,17 @@ class TextPanel
     _top.getChildren().add(_temperature);
     _temperatureThreshold = new Threshold(_temperature, 80, 75);
 
-    _cpu = new Text("[xx.x% cpu]");
+    _cpu = new Text("[xx.xx% cpu]");
     _top.getChildren().add(_cpu);
     _cpuThreshold = new Threshold(_cpu, 90, 80);
 
-    _disk = new Text("[xx% hd]");
+    _disk = new Text("[xx.xx% hd]");
     _top.getChildren().add(_disk);
     _diskThreshold = new Threshold(_disk, 90, 80);
+
+    _memory = new Text("[xx.xx% mem]");
+    _top.getChildren().add(_memory);
+    _memoryThreshold = new Threshold(_memory, 90, 80);
 
     _batteryCapacity = new Text("[xxx.xx% bat]");
     _top.getChildren().add(_batteryCapacity);
@@ -117,12 +123,16 @@ class TextPanel
     final float cpu = device_.getCpu();
     final float disk = device_.getDisk();
     final float temperature = device_.getTemperature();
+    final float memory = device_.getMemory();
 
     _cpu.setText(String.format("[%.2f%% cpu]", cpu));
     _cpuThreshold.setColor(cpu);
 
     _disk.setText(String.format("[%.2f%% hd]", disk));
     _diskThreshold.setColor(disk);
+
+    _memory.setText(String.format("[%.2f%% mem]", memory));
+    _memoryThreshold.setColor(memory);
 
     _temperature.setText(String.format("[%.2f C°]", temperature));
     _temperatureThreshold.setColor(temperature);
