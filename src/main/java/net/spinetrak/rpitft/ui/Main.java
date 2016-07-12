@@ -94,6 +94,7 @@ public class Main extends Application
 
     border.setBottom(buttonPanel.getBottom());
     final VBox vBox = new VBox();
+    vBox.setSpacing(1);
     vBox.getChildren().add(_chart.getPowerLineChart());
     vBox.getChildren().add(_chart.getGPSLineChart());
     vBox.setFillWidth(true);

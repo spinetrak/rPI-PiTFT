@@ -73,6 +73,7 @@ class Chart
     _powerLineChart.setHorizontalGridLinesVisible(true);
     _powerLineChart.setMinWidth(320);
     _powerLineChart.setPrefSize(320, 80);
+    _powerLineChart.setMaxHeight(80);
     //noinspection unchecked
     _powerLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
                                      _lowerVoltageSeries);
@@ -85,6 +86,7 @@ class Chart
     _gpsLineChart.setHorizontalGridLinesVisible(true);
     _gpsLineChart.setMinWidth(320);
     _gpsLineChart.setPrefSize(320, 80);
+    _gpsLineChart.setMaxHeight(80);
     //noinspection unchecked
     _gpsLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
                                    _lowerVoltageSeries);
