@@ -42,7 +42,6 @@ public class GPS
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private final static String GPS_STATUS = "/gps.sh";
   private final static String SCRIPT = Command.init(GPS_STATUS);
-  private static int count = 0;
   private float _altitude;
   private float _latitude;
   private float _longitude;
@@ -119,6 +118,26 @@ public class GPS
     return list;
   }
 
+  @Override
+  public boolean equals(final Object obj_)
+  {
+    if (this == obj_)
+    {
+      return true;
+    }
+    if (!(obj_ instanceof GPS))
+    {
+      return false;
+    }
+
+    final GPS gps = (GPS) obj_;
+
+    return Float.compare(gps._altitude, _altitude) == 0 && Float.compare(gps._latitude,
+                                                                         _latitude) == 0 && Float.compare(
+      gps._longitude, _longitude) == 0;
+
+  }
+
   public float getAltitude()
   {
     return _altitude;
@@ -142,6 +161,15 @@ public class GPS
   public int getTrackpoints()
   {
     return _trackpoints;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int result = (_altitude != +0.0f ? Float.floatToIntBits(_altitude) : 0);
+    result = 31 * result + (_latitude != +0.0f ? Float.floatToIntBits(_latitude) : 0);
+    result = 31 * result + (_longitude != +0.0f ? Float.floatToIntBits(_longitude) : 0);
+    return result;
   }
 
   private void parse(final String data_)
