@@ -20,13 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package net.spinetrak.rpitft.command;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.IOUtils;
 
@@ -44,6 +44,8 @@ public class Command
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     final CommandLine commandline = CommandLine.parse(command_);
     final DefaultExecutor exec = new DefaultExecutor();
+    final ExecuteWatchdog watchdog = new ExecuteWatchdog(500);
+    exec.setWatchdog(watchdog);
     final PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
     exec.setStreamHandler(streamHandler);
     try
