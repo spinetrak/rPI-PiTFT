@@ -118,10 +118,8 @@ public class GPS
           if ((count % steps) == 0 && list.size() <= MAX_POINTS)
           {
             final GPS gps = new GPS(line);
-            System.out.println("GPS: " + gps);
             if (!list.contains(gps))
             {
-              System.out.println("Adding gps");
               list.add(gps);
             }
           }
