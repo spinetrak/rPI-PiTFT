@@ -176,7 +176,7 @@ public class GPS
     final String[] tokens = line_.split(",");
     System.out.println(Arrays.toString(tokens));
     System.out.println(tokens[1]);
-    final String[] time = tokens[1].split(".");
+    final String[] time = tokens[1].split("\\.");
     parseTime(time[0]);
     _latitude = parseCoordinates(tokens[2] + "N");
     _longitude = parseCoordinates(tokens[4] + "E");
