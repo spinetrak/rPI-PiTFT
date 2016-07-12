@@ -99,7 +99,9 @@ public class Queue
     {
       try
       {
-        _gpsQueue.add(new GPS(true));
+        final GPS gps = new GPS();
+        gps.parseCommand();
+        _gpsQueue.add(gps);
         Thread.sleep(60000);
         _gpsExecutor.execute(this);
       }

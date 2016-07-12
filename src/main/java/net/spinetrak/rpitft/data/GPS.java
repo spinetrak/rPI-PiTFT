@@ -41,6 +41,8 @@ public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private final static String GPS_STATUS = "/gps.sh";
+  private static final int MAX_POINTS = 320;
+  private final static String NMEA_FILE = "/home/pi/tracks/nmea.txt";
   private final static String SCRIPT = Command.init(GPS_STATUS);
   private float _altitude;
   private float _latitude;
@@ -48,26 +50,28 @@ public class GPS
   private DateTime _time;
   private int _trackpoints;
 
-  GPS(final boolean parse_)
+  GPS()
   {
-    if (parse_)
-    {
-      String result = "";
-      try
-      {
-        result = Command.execute(SCRIPT);
-      }
-      catch (final Exception ex_)
-      {
-        ex_.printStackTrace();
-      }
-      parse(result);
-    }
+
   }
 
   private GPS(final String line_)
   {
     parseNmea(line_);
+  }
+
+  void parseCommand()
+  {
+    String result = "";
+    try
+    {
+      result = Command.execute(SCRIPT);
+    }
+    catch (final Exception ex_)
+    {
+      ex_.printStackTrace();
+    }
+    parse(result);
   }
 
   float parseCoordinates(final String token_)
@@ -93,20 +97,26 @@ public class GPS
 
   public static List<GPS> getHistoricalData()
   {
-    final String nmeaFile = "/home/pi/tracks/nmea.txt";
     final List<GPS> list = new ArrayList<>();
 
-
-    try (final Stream<String> stream = Files.lines(Paths.get(nmeaFile)))
+    final GPS nmea = new GPS();
+    nmea.parseCommand();
+    final int points = nmea.getTrackpoints();
+    final int steps = points / MAX_POINTS;
+    if (points == 0 || steps == 0)
     {
-      final int count = 0;
+      return list;
+    }
+    try (final Stream<String> stream = Files.lines(Paths.get(NMEA_FILE)))
+    {
       stream.forEach(line_ -> {
-        if (line_.contains("GGA") && list.size() <= 320)
+        final int size = list.size();
+        if (line_.contains("GGA") && (size <= MAX_POINTS) && (size % steps == 0))
         {
           final GPS gps = new GPS(line_);
           if (!list.contains(gps))
           {
-            list.add(new GPS(line_));
+            list.add(gps);
           }
         }
       });
@@ -132,9 +142,15 @@ public class GPS
 
     final GPS gps = (GPS) obj_;
 
-    return Float.compare(gps._altitude, _altitude) == 0 && Float.compare(gps._latitude,
-                                                                         _latitude) == 0 && Float.compare(
-      gps._longitude, _longitude) == 0;
+    if (Float.compare(gps._altitude, _altitude) != 0)
+    {
+      return false;
+    }
+    if (Float.compare(gps._latitude, _latitude) != 0)
+    {
+      return false;
+    }
+    return Float.compare(gps._longitude, _longitude) == 0;
 
   }
 
