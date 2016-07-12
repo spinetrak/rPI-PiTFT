@@ -69,6 +69,7 @@ public class Main extends Application
       final GPS gps = gpsQueue_.remove();
 
       _textPanel.addData(gps);
+      _chart.addData(gps);
     }
   }
 
@@ -85,7 +86,7 @@ public class Main extends Application
 
   private void init(final Stage stage_)
   {
-    _chart = new Chart(this);
+    _chart = new Chart();
     _textPanel = new TextPanel();
 
     final BorderPane border = new BorderPane();

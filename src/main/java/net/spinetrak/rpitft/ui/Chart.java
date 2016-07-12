@@ -28,6 +28,7 @@ import javafx.geometry.Insets;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.Power;
 
 class Chart
@@ -36,8 +37,8 @@ class Chart
   private static final String FX_STROKE_RED = "-fx-stroke: red;";
   private static final int MAX_DATA_POINTS = 320;
   private final LineChart<Number, Number> _gpsLineChart;
+  private final XYChart.Series<Number, Number> _gpsSeries;
   private final XYChart.Series<Number, Number> _lowerVoltageSeries;
-  private final Main _main;
   private final XYChart.Series<Number, Number> _mainVoltageSeries;
   private final XYChart.Series<Number, Number> _middleVoltageSeries;
   private final LineChart<Number, Number> _powerLineChart;
@@ -46,9 +47,9 @@ class Chart
   private final NumberAxis _yPowerAxis;
   private boolean _batteryAlert = false;
   private int _xSeriesData = 0;
-  Chart(final Main main_)
+
+  Chart()
   {
-    _main = main_;
     _mainVoltageSeries = new XYChart.Series<>();
     _upperVoltageSeries = new XYChart.Series<>();
     _middleVoltageSeries = new XYChart.Series<>();
@@ -80,34 +81,28 @@ class Chart
                                      _lowerVoltageSeries);
 
 
+    _gpsSeries = new XYChart.Series<>();
+
     final NumberAxis lonGPSAxis = new NumberAxis();
     final NumberAxis latGPSAxis = new NumberAxis();
     lonGPSAxis.setForceZeroInRange(false);
     latGPSAxis.setForceZeroInRange(false);
-    lonGPSAxis.setTickLabelsVisible(false);
-    latGPSAxis.setTickLabelsVisible(false);
     lonGPSAxis.setAutoRanging(true);
     latGPSAxis.setAutoRanging(true);
 
-    final XYChart.Series<Number, Number> gpsSeries = new XYChart.Series<>();
-    gpsSeries.getData().add(new XYChart.Data<>(10.0, 53.0));
-    gpsSeries.getData().add(new XYChart.Data<>(11.0, 54.0));
-    gpsSeries.getData().add(new XYChart.Data<>(12.0, 55.0));
-    gpsSeries.getData().add(new XYChart.Data<>(11.0, 51.0));
-    gpsSeries.getData().add(new XYChart.Data<>(-11.0, 51.0));
-    gpsSeries.getData().add(new XYChart.Data<>(11.0, -51.0));
-    gpsSeries.getData().add(new XYChart.Data<>(-11.0, -52.0));
+
     _gpsLineChart = new LineChart<>(lonGPSAxis, latGPSAxis);
     _gpsLineChart.setCreateSymbols(false);
     _gpsLineChart.setLegendVisible(false);
     _gpsLineChart.setAnimated(false);
+    _gpsLineChart.setVerticalGridLinesVisible(true);
     _gpsLineChart.setHorizontalGridLinesVisible(true);
     _gpsLineChart.setMinWidth(320);
     _gpsLineChart.setPrefSize(320, 80);
     _gpsLineChart.setMaxHeight(80);
     _gpsLineChart.setPadding(new Insets(0));
     //noinspection unchecked
-    _gpsLineChart.getData().addAll(gpsSeries);
+    _gpsLineChart.getData().addAll(_gpsSeries);
   }
 
   void addData(final Power power_)
@@ -134,6 +129,11 @@ class Chart
     }
     _xPowerAxis.setLowerBound(_xSeriesData - MAX_DATA_POINTS);
     _xPowerAxis.setUpperBound(_xSeriesData - 1);
+  }
+
+  void addData(final GPS gps_)
+  {
+    _gpsSeries.getData().add(new XYChart.Data<>(gps_.getLongitude(), gps_.getLatitude()));
   }
 
   LineChart<Number, Number> getGPSLineChart()
