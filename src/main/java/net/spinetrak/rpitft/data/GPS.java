@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -173,6 +174,8 @@ public class GPS
 
     System.out.println(line_);
     final String[] tokens = line_.split(",");
+    System.out.println(Arrays.toString(tokens));
+    System.out.println(tokens[1]);
     final String[] time = tokens[1].split(".");
     parseTime(time[0]);
     _latitude = parseCoordinates(tokens[2] + "N");
