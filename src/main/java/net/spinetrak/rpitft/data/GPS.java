@@ -102,9 +102,13 @@ public class GPS
     {
       final int count = 0;
       stream.forEach(line_ -> {
-        if (line_.contains("GGA") && hasMore())
+        if (line_.contains("GGA") && list.size() <= 320)
         {
-          list.add(new GPS(line_));
+          final GPS gps = new GPS(line_);
+          if (!list.contains(gps))
+          {
+            list.add(new GPS(line_));
+          }
         }
       });
     }
@@ -113,11 +117,6 @@ public class GPS
       ex_.printStackTrace();
     }
     return list;
-  }
-
-  private static boolean hasMore()
-  {
-    return ++count <= 50;
   }
 
   public float getAltitude()
