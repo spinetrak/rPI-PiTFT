@@ -29,6 +29,13 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
 public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
@@ -40,18 +47,26 @@ public class GPS
   private DateTime _time;
   private int _trackpoints;
 
-  GPS()
+  GPS(final boolean parse_)
   {
-    String result = "";
-    try
+    if (parse_)
     {
-      result = Command.execute(SCRIPT);
+      String result = "";
+      try
+      {
+        result = Command.execute(SCRIPT);
+      }
+      catch (final Exception ex_)
+      {
+        ex_.printStackTrace();
+      }
+      parse(result);
     }
-    catch (final Exception ex_)
-    {
-      ex_.printStackTrace();
-    }
-    parse(result);
+  }
+
+  private GPS(final String line_)
+  {
+    parseNmea(line_);
   }
 
   float parseCoordinates(final String token_)
@@ -65,7 +80,7 @@ public class GPS
 
       final int degrees = Integer.parseInt(nmeaParts.substring(0, decimal - 2));
       final float minutes = Float.parseFloat(nmeaParts.substring(decimal - 2)) / 60;
-      final float result= degrees + minutes;
+      final float result = degrees + minutes;
       if ("S".equals(eastwestnorthsouth) || "W".equals(eastwestnorthsouth))
       {
         return result * -1;
@@ -73,6 +88,27 @@ public class GPS
       return result;
     }
     return 0;
+  }
+
+  public static List<GPS> getHistoricalData()
+  {
+    final String nmeaFile = "/home/pi/tracks/nmea.txt";
+    final List<GPS> list = new ArrayList<>();
+
+    try (final Stream<String> stream = Files.lines(Paths.get(nmeaFile)))
+    {
+      stream.forEach(line_ -> {
+        if (line_.contains("GGA"))
+        {
+          list.add(new GPS(line_));
+        }
+      });
+    }
+    catch (final IOException ex_)
+    {
+      ex_.printStackTrace();
+    }
+    return list;
   }
 
   public float getAltitude()
@@ -122,6 +158,25 @@ public class GPS
     {
       _altitude = Float.parseFloat(token_.trim());
     }
+  }
+
+  private void parseNmea(final String line_)
+  {
+    /**
+     * time=$(echo $GGA | awk -F',' '{ print $2 }' | awk -F'.' '{ print $1 }')
+     latitude=$(echo $GGA | awk -F',' '{ print $3 }')
+     northsouth=$(echo $GGA | awk -F',' '{ print $4 }')
+     longitude=$(echo $GGA | awk -F',' '{ print $5 }')
+     eastwest=$(echo $GGA | awk -F',' '{ print $6 }')
+     altitude=$(echo $GGA | awk -F',' '{ print $10 }')
+     */
+
+    final String[] tokens = line_.split(",");
+    parseTime(tokens[1].split(".")[0]);
+    _latitude = parseCoordinates(tokens[2] + "N");
+    _longitude = parseCoordinates(tokens[4] + "E");
+    parseAltitude(tokens[9]);
+
   }
 
   private void parseTime(final String token_)

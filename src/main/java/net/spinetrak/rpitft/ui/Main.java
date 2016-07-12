@@ -35,10 +35,12 @@ import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.Power;
 import net.spinetrak.rpitft.data.Queue;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Main extends Application
 {
+  private boolean _added = false;
   private Chart _chart;
   private TextPanel _textPanel;
 
@@ -70,6 +72,16 @@ public class Main extends Application
 
       _textPanel.addData(gps);
       _chart.addData(gps);
+    }
+    if (gpsQueue_.isEmpty() && !_added)
+    {
+      _added = true;
+      final List<GPS> data = GPS.getHistoricalData();
+      for (final GPS gps : data)
+      {
+        _textPanel.addData(gps);
+        _chart.addData(gps);
+      }
     }
   }
 
