@@ -66,7 +66,7 @@ public class GPS
       final int degrees = Integer.parseInt(nmeaParts.substring(0, decimal - 2));
       final float minutes = Float.parseFloat(nmeaParts.substring(decimal - 2)) / 60;
       final float result= degrees + minutes;
-      if("S".equals(eastwestnorthsouth) || "E".equals(eastwestnorthsouth)
+      if ("S".equals(eastwestnorthsouth) || "W".equals(eastwestnorthsouth))
       {
         return result * -1;
       }

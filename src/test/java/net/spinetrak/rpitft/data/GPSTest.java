@@ -33,12 +33,18 @@ public class GPSTest
   public void parse() throws Exception
   {
     final GPS gps = new GPS();
-    final float north = gps.parseCoordinates("3333.5825N");
 
+    final float north = gps.parseCoordinates("3333.5825N");
     assertEquals(String.format("%.4f", 33.5597), String.format("%.4f", north));
 
     final float east = gps.parseCoordinates("00758.2052E");
     assertEquals(String.format("%.4f", 7.9701), String.format("%.4f", east));
+
+    final float south = gps.parseCoordinates("3333.5825S");
+    assertEquals(String.format("%.4f", -33.5597), String.format("%.4f", south));
+
+    final float west = gps.parseCoordinates("00758.2052W");
+    assertEquals(String.format("%.4f", -7.9701), String.format("%.4f", west));
   }
 
 }
