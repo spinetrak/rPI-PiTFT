@@ -34,6 +34,8 @@ import net.spinetrak.rpitft.data.Power;
 import net.spinetrak.rpitft.data.Threshold;
 import org.joda.time.DateTime;
 
+import java.util.Date;
+
 class TextPanel
 {
   private final Text _altitude;
@@ -50,6 +52,7 @@ class TextPanel
   private final Text _temperature;
   private final Threshold _temperatureThreshold;
   private final Text _time;
+  private final Threshold _timeThreshold;
   private final FlowPane _top;
   private final Text _trackPoints;
   private final Threshold _trackpointsThreshold;
@@ -61,6 +64,7 @@ class TextPanel
 
     _time = new Text("[hh:mm:ss]");
     _top.getChildren().add(_time);
+    _timeThreshold = new Threshold(_time, 10000, 30000);
 
     _latitude = new Text("[xxxx.xxx N]");
     _top.getChildren().add(_latitude);
@@ -133,6 +137,7 @@ class TextPanel
     final int trackpoints = gps_.getTrackpoints();
 
     _time.setText(String.format("[%s]", time.toString(GPS.DTF)));
+    _trackpointsThreshold.setColor(new Date().getTime() - time.getMillis());
     _latitude.setText(formatLatitude(latitude));
     _longitude.setText(formatLongitude(longitude));
     _altitude.setText(String.format("[%.1f m]", altitude));
