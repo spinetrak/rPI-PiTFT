@@ -27,6 +27,7 @@ package net.spinetrak.rpitft.ui;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.GPS;
@@ -70,10 +71,6 @@ public class Main extends Application
     }
   }
 
-  public TextPanel getTextPanel()
-  {
-    return _textPanel;
-  }
 
   @Override
   public void start(final Stage stage_)
@@ -96,7 +93,12 @@ public class Main extends Application
     final ButtonPanel buttonPanel = new ButtonPanel();
 
     border.setBottom(buttonPanel.getBottom());
-    border.setCenter(_chart.getPowerLineChart());
+    final VBox vBox = new VBox();
+    vBox.getChildren().add(_chart.getPowerLineChart());
+    vBox.getChildren().add(_chart.getGPSLineChart());
+    vBox.setFillWidth(true);
+    vBox.setPrefSize(320, 240);
+    border.setCenter(vBox);
 
     final Scene scene = new Scene(border, 320, 240);
     scene.getStylesheets().add("stylesheet.css");

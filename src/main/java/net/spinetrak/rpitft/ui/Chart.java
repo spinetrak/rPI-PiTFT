@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package net.spinetrak.rpitft.ui;
@@ -35,6 +34,7 @@ class Chart
   private static final String FX_STROKE_GREEN = "-fx-stroke: green;";
   private static final String FX_STROKE_RED = "-fx-stroke: red;";
   private static final int MAX_DATA_POINTS = 320;
+  private final LineChart<Number, Number> _gpsLineChart;
   private final XYChart.Series<Number, Number> _lowerVoltageSeries;
   private final Main _main;
   private final XYChart.Series<Number, Number> _mainVoltageSeries;
@@ -45,7 +45,6 @@ class Chart
   private final NumberAxis _yPowerAxis;
   private boolean _batteryAlert = false;
   private int _xSeriesData = 0;
-
   Chart(final Main main_)
   {
     _main = main_;
@@ -72,9 +71,23 @@ class Chart
     _powerLineChart.setLegendVisible(false);
     _powerLineChart.setAnimated(false);
     _powerLineChart.setHorizontalGridLinesVisible(true);
+    _powerLineChart.setMinWidth(320);
+    _powerLineChart.setPrefSize(320, 120);
     //noinspection unchecked
     _powerLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
                                      _lowerVoltageSeries);
+
+
+    _gpsLineChart = new LineChart<>(_xPowerAxis, _yPowerAxis);
+    _gpsLineChart.setCreateSymbols(false);
+    _gpsLineChart.setLegendVisible(false);
+    _gpsLineChart.setAnimated(false);
+    _gpsLineChart.setHorizontalGridLinesVisible(true);
+    _gpsLineChart.setMinWidth(320);
+    _gpsLineChart.setPrefSize(320, 120);
+    //noinspection unchecked
+    _gpsLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
+                                   _lowerVoltageSeries);
   }
 
   void addData(final Power power_)
@@ -101,6 +114,11 @@ class Chart
     }
     _xPowerAxis.setLowerBound(_xSeriesData - MAX_DATA_POINTS);
     _xPowerAxis.setUpperBound(_xSeriesData - 1);
+  }
+
+  LineChart<Number, Number> getGPSLineChart()
+  {
+    return _gpsLineChart;
   }
 
   LineChart<Number, Number> getPowerLineChart()
