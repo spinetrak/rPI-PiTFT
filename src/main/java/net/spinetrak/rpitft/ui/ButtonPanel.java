@@ -80,9 +80,7 @@ class ButtonPanel
     exit.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        exit.setText("exiting...");
         exit();
-        exit.setText("done...");
         System.exit(0);
       }
     });
