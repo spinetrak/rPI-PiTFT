@@ -35,7 +35,7 @@ class Chart
 {
   private static final String FX_STROKE_GREEN = "-fx-stroke: green;";
   private static final String FX_STROKE_RED = "-fx-stroke: red;";
-  private static final int MAX_DATA_POINTS = 320;
+  private static final int MAX_DATA_POINTS = 480;
   private boolean _batteryAlert = false;
   private LineChart<Number, Number> _gpsLineChart;
   private XYChart.Series<Number, Number> _gpsSeries;
@@ -124,8 +124,8 @@ class Chart
     _gpsLineChart.setLegendVisible(false);
     _gpsLineChart.setAnimated(false);
     _gpsLineChart.setHorizontalGridLinesVisible(true);
-    _gpsLineChart.setMinWidth(320);
-    _gpsLineChart.setPrefSize(320, 80);
+    _gpsLineChart.setMinWidth(480);
+    _gpsLineChart.setPrefSize(480, 80);
     _gpsLineChart.setMaxHeight(80);
     _gpsLineChart.setPadding(new Insets(0));
     //noinspection unchecked
@@ -156,8 +156,8 @@ class Chart
     _powerLineChart.setLegendVisible(false);
     _powerLineChart.setAnimated(false);
     _powerLineChart.setHorizontalGridLinesVisible(true);
-    _powerLineChart.setMinWidth(320);
-    _powerLineChart.setPrefSize(320, 80);
+    _powerLineChart.setMinWidth(480);
+    _powerLineChart.setPrefSize(480, 80);
     _powerLineChart.setMaxHeight(80);
     _powerLineChart.setPadding(new Insets(0));
     //noinspection unchecked

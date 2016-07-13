@@ -37,7 +37,7 @@ import java.util.List;
 public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
-  public static final int MAX_POINTS = 320;
+  public static final int MAX_POINTS = 480;
   private final static String GPS_STATUS = "/gps.sh";
   private final static String GPS_SCRIPT = Command.init(GPS_STATUS);
   private final static String NMEA_STATUS = "/nmea.sh";

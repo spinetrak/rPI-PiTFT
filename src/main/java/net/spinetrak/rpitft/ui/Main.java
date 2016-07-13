@@ -81,7 +81,7 @@ public class Main extends Application
         count++;
         _textPanel.addData(gps);
         _chart.addData(gps);
-        if (count >= 320)
+        if (count >= 480)
         {
           break;
         }
@@ -107,11 +107,11 @@ public class Main extends Application
 
     final BorderPane border = new BorderPane();
     border.setPadding(new Insets(1));
-    border.setPrefSize(320, 240);
-    border.setMaxHeight(240);
-    border.setMinHeight(240);
-    border.setMaxWidth(320);
-    border.setMinWidth(320);
+    border.setPrefSize(480, 320);
+    border.setMaxHeight(320);
+    border.setMinHeight(320);
+    border.setMaxWidth(480);
+    border.setMinWidth(480);
 
     final VBox center = new VBox();
     center.setSpacing(1);
@@ -119,8 +119,8 @@ public class Main extends Application
     center.getChildren().add(_chart.getPowerLineChart());
     center.getChildren().add(_chart.getGPSLineChart());
     center.setFillWidth(true);
-    center.setPrefSize(320, 160);
-    center.setMaxHeight(160);
+    center.setPrefSize(480, 200);
+    center.setMaxHeight(200);
     border.setCenter(center);
 
     border.setTop(_textPanel.getTop());
@@ -128,7 +128,7 @@ public class Main extends Application
     final ButtonPanel buttonPanel = new ButtonPanel();
     border.setBottom(buttonPanel.getBottom());
 
-    final Scene scene = new Scene(border, 320, 240);
+    final Scene scene = new Scene(border, 480, 320);
     scene.getStylesheets().add("stylesheet.css");
     stage_.setScene(scene);
     stage_.setFullScreen(true);

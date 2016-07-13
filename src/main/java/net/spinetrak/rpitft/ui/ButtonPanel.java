@@ -46,7 +46,7 @@ class ButtonPanel
     _bottom.setPadding(new Insets(1));
     _bottom.setSpacing(1);
     _bottom.setAlignment(Pos.CENTER_RIGHT);
-    _bottom.setPrefSize(320, 20);
+    _bottom.setPrefSize(480, 20);
     _bottom.setMinHeight(20);
 
 
