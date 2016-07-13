@@ -39,16 +39,14 @@ public class Power
 
   Power()
   {
-    String result = "";
     try
     {
-      result = Command.execute(SCRIPT);
+      parse(new Command(new ByteArrayOutputStream()).execute(SCRIPT).resultAsString());
     }
     catch (final Exception ex_)
     {
       ex_.printStackTrace();
     }
-    parse(result);
   }
 
   public float getCapacity()
