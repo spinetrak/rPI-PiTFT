@@ -33,33 +33,33 @@ import java.util.concurrent.Executors;
 
 public class Queue
 {
-  private final ConcurrentLinkedQueue<Device> _deviceQueue;
   private final ExecutorService _executor;
-  private final ExecutorService _gpsExecutor;
-  private final ConcurrentLinkedQueue<GPS> _gpsQueue;
+  private final ConcurrentLinkedQueue<Device> _deviceQueue;
   private final ConcurrentLinkedQueue<Power> _powerQueue;
+  private final ConcurrentLinkedQueue<GPS> _gpsQueue;
 
 
   public Queue()
   {
     _deviceQueue = new ConcurrentLinkedQueue<>();
-    _powerQueue = new ConcurrentLinkedQueue<>();
     _gpsQueue = new ConcurrentLinkedQueue<>();
+    _powerQueue = new ConcurrentLinkedQueue<>();
+    
+    
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
       thread.setDaemon(true);
       return thread;
     });
-    final AddToQueue addToQueue = new AddToQueue();
-    _executor.execute(addToQueue);
+    
+    final AddToDeviceQueue addToDeviceQueue = new AddToDeviceQueue();
+    _executor.execute(addToDeviceQueue);
 
-    _gpsExecutor = Executors.newCachedThreadPool(runnable_ -> {
-      final Thread thread = new Thread(runnable_);
-      thread.setDaemon(true);
-      return thread;
-    });
     final AddToGPSQueue addToGPSQueue = new AddToGPSQueue();
     _executor.execute(addToGPSQueue);
+    
+    final AddToPowerQueue addToGPSQueue = new AddToPowerQueue();
+    _executor.execute(addToPowerQueue);
 
   }
 
@@ -75,13 +75,12 @@ public class Queue
     }.start();
   }
 
-  private class AddToQueue implements Runnable
+  private class AddToDeviceQueue implements Runnable
   {
     public void run()
     {
       try
       {
-        _powerQueue.add(new Power());
         _deviceQueue.add(new Device());
         Thread.sleep(200);
         _executor.execute(this);
@@ -103,7 +102,24 @@ public class Queue
         gps.parseCommand();
         _gpsQueue.add(gps);
         Thread.sleep(60000);
-        _gpsExecutor.execute(this);
+        _executor.execute(this);
+      }
+      catch (final InterruptedException ex_)
+      {
+        ex_.printStackTrace();
+      }
+    }
+  }
+  
+  private class AddToPowerQueue implements Runnable
+  {
+    public void run()
+    {
+      try
+      {
+        _powerQueue.add(new Power());
+        Thread.sleep(200);
+        _executor.execute(this);
       }
       catch (final InterruptedException ex_)
       {
