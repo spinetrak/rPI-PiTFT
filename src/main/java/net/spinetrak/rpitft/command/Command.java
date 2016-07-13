@@ -39,25 +39,15 @@ import java.util.Set;
 
 public class Command
 {
-  public static String execute(final String command_)
+  public static int execute(final String command_, final OutputStream outputStream_)
   {
-    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     final CommandLine commandline = CommandLine.parse(command_);
     final DefaultExecutor exec = new DefaultExecutor();
     final ExecuteWatchdog watchdog = new ExecuteWatchdog(500);
     exec.setWatchdog(watchdog);
-    final PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+    final PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream_);
     exec.setStreamHandler(streamHandler);
-    try
-    {
-      exec.execute(commandline);
-    }
-    catch (final IOException ex_)
-    {
-      ex_.printStackTrace();
-      System.err.println("Command failed: [" + command_ + "]");
-    }
-    return (outputStream.toString());
+    return exec.execute(commandline);
   }
 
   public static String init(final String script_)
