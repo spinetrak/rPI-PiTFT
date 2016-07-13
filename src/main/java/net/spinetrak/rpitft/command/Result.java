@@ -22,62 +22,26 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data;
+package net.spinetrak.rpitft.command;
 
-import net.spinetrak.rpitft.command.Command;
-import net.spinetrak.rpitft.data.streams.SingleLineStream;
+import java.util.List;
 
-public class Device
+public class Result
 {
-  private final static String DEVICE_STATUS = "/device.sh";
-  private final static String SCRIPT = Command.init(DEVICE_STATUS);
-  private float _cpu;
-  private float _disk;
-  private float _memory;
-  private float _temperature;
+  private final Command _command;
 
-  Device()
+  Result(final Command command_)
   {
-    try
-    {
-      parse(new Command(new SingleLineStream()).execute(SCRIPT).resultAsString());
-    }
-    catch (final Exception ex_)
-    {
-      ex_.printStackTrace();
-    }
+    _command = command_;
   }
 
-  public float getCpu()
+  public List resultAsList()
   {
-    return _cpu;
+    return _command.getStream().toList();
   }
 
-  public float getDisk()
+  public String resultAsString()
   {
-    return _disk;
+    return _command.getStream().toString();
   }
-
-  public float getMemory()
-  {
-    return _memory;
-  }
-
-  public float getTemperature()
-  {
-    return _temperature;
-  }
-
-  private void parse(final String data_)
-  {
-    final String[] tokens = data_.split("/");
-    if (tokens.length == 4)
-    {
-      _cpu = Float.parseFloat(tokens[0]);
-      _disk = Float.parseFloat(tokens[1]);
-      _memory = Float.parseFloat(tokens[2]);
-      _temperature = Float.parseFloat(tokens[3]);
-    }
-  }
-
 }

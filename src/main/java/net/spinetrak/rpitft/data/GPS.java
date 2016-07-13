@@ -25,36 +25,40 @@
 package net.spinetrak.rpitft.data;
 
 import net.spinetrak.rpitft.command.Command;
+import net.spinetrak.rpitft.data.streams.NMEAStream;
+import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
+  public static final int MAX_POINTS = 320;
   private final static String GPS_STATUS = "/gps.sh";
-  private static final int MAX_POINTS = 320;
-  private final static String NMEA_FILE = "/home/pi/tracks/nmea.txt";
-  private final static String SCRIPT = Command.init(GPS_STATUS);
+  private final static String GPS_SCRIPT = Command.init(GPS_STATUS);
+  private final static String NMEA_STATUS = "/nmea.sh";
+  private final static String NMEA_SCRIPT = Command.init(NMEA_STATUS);
   private float _altitude;
   private float _latitude;
   private float _longitude;
   private DateTime _time;
   private int _trackpoints;
 
+  private GPS()
+  {
+
+  }
   static GPS fromCommand()
   {
     GPS gps = null;
     try
     {
       gps = new GPS();
-      gps.parse(new Command(new ByteArrayOutputStream()).execute(SCRIPT).resultAsString());
+      gps.parse(new Command(new SingleLineStream()).execute(GPS_SCRIPT).resultAsString());
     }
     catch (final Exception ex_)
     {
@@ -63,19 +67,6 @@ public class GPS
     return gps;
   }
   
-  static GPS fromNMEA(final String nmea_)
-  {
-    final GPS gps = new GPS();
-    gps.parseNmea(line_);
-    return gps;
-  }
-
-  private GPS(final String line_)
-  {
-    parseNmea(line_);
-  }
-
-
   float parseCoordinates(final String token_)
   {
     if ((null != token_) && !token_.isEmpty() && (token_.length() == 10 || token_.length() == 11) && token_.contains(
@@ -97,20 +88,14 @@ public class GPS
     return 0;
   }
 
-  class OutputCollectingStream extends LogOutputStream 
+  public static GPS fromNMEA(final String nmea_)
   {
-    private final List<GPS> _gps = new LinkedList<GPS>();
-  
-    @Override protected void processLine(String line_, int level_) 
-    {
-      _gps.add(GPS.fromNMEA(line_));
-    }   
-    public List<GPS> getGPS() 
-    {
-      return _gps;
-    }
-  
-  public static List<GPS> getHistoricalData()
+    final GPS gps = new GPS();
+    gps.parseNmea(nmea_);
+    return gps;
+  }
+
+  public static List<GPS> getNMEAData()
   {
     final List<GPS> list = new ArrayList<>();
 
@@ -124,43 +109,15 @@ public class GPS
 
     try
     {
-      final List<GPS> results = new Command(new OutputCollectingStream()).execute(SCRIPT).resultAsList();
-      for(final String line : lines)
-      {
-        list.addAll(results);
-      }
+      @SuppressWarnings("unchecked") final List<GPS> results = new Command(new NMEAStream(steps)).execute(
+        NMEA_SCRIPT).resultAsList();
+      list.addAll(results);
     }
     catch (final Exception ex_)
     {
       ex_.printStackTrace();
     }
 
-/*
-    try (final BufferedReader reader = new BufferedReader(new FileReader(NMEA_FILE)))
-    {
-      int count = 0;
-      String line;
-      while ((line = reader.readLine()) != null)
-      {
-        if (line.contains("GGA"))
-        {
-          if ((count % steps) == 0 && list.size() <= MAX_POINTS)
-          {
-            final GPS gps = new GPS(line);
-            if (!list.contains(gps))
-            {
-              list.add(gps);
-            }
-          }
-          count++;
-        }
-      }
-    }
-    catch (final IOException ex_)
-    {
-      ex_.printStackTrace();
-    }
-    */
     return list;
   }
 

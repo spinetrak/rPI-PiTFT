@@ -25,6 +25,7 @@
 package net.spinetrak.rpitft.data;
 
 import net.spinetrak.rpitft.command.Command;
+import net.spinetrak.rpitft.data.streams.SingleLineStream;
 
 public class Power
 {
@@ -41,7 +42,7 @@ public class Power
   {
     try
     {
-      parse(new Command(new ByteArrayOutputStream()).execute(SCRIPT).resultAsString());
+      parse(new Command(new SingleLineStream()).execute(SCRIPT).resultAsString());
     }
     catch (final Exception ex_)
     {

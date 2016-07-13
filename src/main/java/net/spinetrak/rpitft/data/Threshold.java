@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 package net.spinetrak.rpitft.data;
@@ -33,9 +32,9 @@ public class Threshold
   private static final String FX_FILL_GREEN = "-fx-fill: green;";
   private static final String FX_FILL_RED = "-fx-fill: red;";
   private final float _amber;
+  private final boolean _inverse;
   private final float _red;
   private final Text _text;
-  private boolean _inverse;
   private State _state = null;
 
   public Threshold(final Text text_, final float red_, final float amber_)

@@ -24,13 +24,17 @@
 
 package net.spinetrak.rpitft.command;
 
+import net.spinetrak.rpitft.data.streams.Stream;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
@@ -39,39 +43,11 @@ import java.util.Set;
 
 public class Command
 {
-  final OutputStream _outputStream;
-  
-  public Command(final OutputStream outputStream_)
+  private final Stream _stream;
+
+  public Command(final Stream stream_)
   {
-    _outputStream = outputStream_;
-  }
-  public static Result execute(final String command_)
-  {
-    final CommandLine commandline = CommandLine.parse(command_);
-    final DefaultExecutor exec = new DefaultExecutor();
-    final ExecuteWatchdog watchdog = new ExecuteWatchdog(500);
-    exec.setWatchdog(watchdog);
-    final PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream_);
-    exec.setStreamHandler(streamHandler);
-    return new Result(exec.execute(commandline));
-  }
-  
-  class Result
-  {
-    Result(final int result_)
-    {
-      _result = result_;
-    }
-    
-    public String resultsAsString()
-    {
-      return _outputStream.toString();
-    }
-    
-    public List<String> resultAsList()
-    {
-      return (OutputCollectingStream )_outputStream.getLines();
-    }
+    _stream = stream_;
   }
 
   public static String init(final String script_)
@@ -128,5 +104,22 @@ public class Command
       }
     }
     return script;
+  }
+
+  public Result execute(final String command_) throws IOException
+  {
+    final CommandLine commandline = CommandLine.parse(command_);
+    final DefaultExecutor exec = new DefaultExecutor();
+    final ExecuteWatchdog watchdog = new ExecuteWatchdog(500);
+    exec.setWatchdog(watchdog);
+    final PumpStreamHandler streamHandler = new PumpStreamHandler(_stream.getStream());
+    exec.setStreamHandler(streamHandler);
+    exec.execute(commandline);
+    return new Result(this);
+  }
+
+  public Stream getStream()
+  {
+    return _stream;
   }
 }

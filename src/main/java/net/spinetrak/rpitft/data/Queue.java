@@ -33,10 +33,10 @@ import java.util.concurrent.Executors;
 
 public class Queue
 {
-  private final ExecutorService _executor;
   private final ConcurrentLinkedQueue<Device> _deviceQueue;
-  private final ConcurrentLinkedQueue<Power> _powerQueue;
+  private final ExecutorService _executor;
   private final ConcurrentLinkedQueue<GPS> _gpsQueue;
+  private final ConcurrentLinkedQueue<Power> _powerQueue;
 
 
   public Queue()
@@ -57,8 +57,8 @@ public class Queue
 
     final AddToGPSQueue addToGPSQueue = new AddToGPSQueue();
     _executor.execute(addToGPSQueue);
-    
-    final AddToPowerQueue addToGPSQueue = new AddToPowerQueue();
+
+    final AddToPowerQueue addToPowerQueue = new AddToPowerQueue();
     _executor.execute(addToPowerQueue);
 
   }
@@ -98,8 +98,7 @@ public class Queue
     {
       try
       {
-        final GPS gps = new GPS();
-        gps.parseCommand();
+        final GPS gps = GPS.fromCommand();
         _gpsQueue.add(gps);
         Thread.sleep(60000);
         _executor.execute(this);

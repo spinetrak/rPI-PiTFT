@@ -75,7 +75,7 @@ public class Main extends Application
     {
       _added = true;
       int count = 0;
-      final List<GPS> data = GPS.getHistoricalData();
+      final List<GPS> data = GPS.getNMEAData();
       for (final GPS gps : data)
       {
         count++;

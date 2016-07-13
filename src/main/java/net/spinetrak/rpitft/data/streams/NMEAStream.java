@@ -22,62 +22,51 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data;
+package net.spinetrak.rpitft.data.streams;
 
-import net.spinetrak.rpitft.command.Command;
-import net.spinetrak.rpitft.data.streams.SingleLineStream;
+import net.spinetrak.rpitft.data.GPS;
+import org.apache.commons.exec.LogOutputStream;
 
-public class Device
+import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
+
+public class NMEAStream extends LogOutputStream implements Stream
 {
-  private final static String DEVICE_STATUS = "/device.sh";
-  private final static String SCRIPT = Command.init(DEVICE_STATUS);
-  private float _cpu;
-  private float _disk;
-  private float _memory;
-  private float _temperature;
+  private final List<GPS> _nmea = new LinkedList<>();
+  private final int _steps;
+  private int _count;
 
-  Device()
+  public NMEAStream(final int steps_)
   {
-    try
+    super();
+    _steps = steps_;
+  }
+
+  @Override
+  public OutputStream getStream()
+  {
+    return this;
+  }
+
+  @Override
+  public List toList()
+  {
+    return _nmea;
+  }
+
+  @Override
+  protected void processLine(final String line_, int level_)
+  {
+    if ((_count % _steps) == 0 && _nmea.size() <= GPS.MAX_POINTS)
     {
-      parse(new Command(new SingleLineStream()).execute(SCRIPT).resultAsString());
+      final GPS gps = GPS.fromNMEA(line_);
+      if (!_nmea.contains(gps))
+      {
+        _nmea.add(gps);
+      }
     }
-    catch (final Exception ex_)
-    {
-      ex_.printStackTrace();
-    }
+    _count++;
   }
-
-  public float getCpu()
-  {
-    return _cpu;
-  }
-
-  public float getDisk()
-  {
-    return _disk;
-  }
-
-  public float getMemory()
-  {
-    return _memory;
-  }
-
-  public float getTemperature()
-  {
-    return _temperature;
-  }
-
-  private void parse(final String data_)
-  {
-    final String[] tokens = data_.split("/");
-    if (tokens.length == 4)
-    {
-      _cpu = Float.parseFloat(tokens[0]);
-      _disk = Float.parseFloat(tokens[1]);
-      _memory = Float.parseFloat(tokens[2]);
-      _temperature = Float.parseFloat(tokens[3]);
-    }
-  }
-
 }
+

@@ -44,6 +44,7 @@ class Chart
   private final LineChart<Number, Number> _powerLineChart;
   private final XYChart.Series<Number, Number> _upperVoltageSeries;
   private final NumberAxis _xPowerAxis;
+  @SuppressWarnings("FieldCanBeLocal")
   private final NumberAxis _yPowerAxis;
   private boolean _batteryAlert = false;
   private int _xSeriesData = 0;
