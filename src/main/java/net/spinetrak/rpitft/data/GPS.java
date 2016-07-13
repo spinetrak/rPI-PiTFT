@@ -48,9 +48,26 @@ public class GPS
   private DateTime _time;
   private int _trackpoints;
 
-  GPS()
+  static GPS fromCommand()
   {
-
+    GPS gps = null;
+    try
+    {
+      gps = new GPS();
+      gps.parse(new Command(new ByteArrayOutputStream()).execute(SCRIPT).resultAsString());
+    }
+    catch (final Exception ex_)
+    {
+      ex_.printStackTrace();
+    }
+    return gps;
+  }
+  
+  static GPS fromNMEA(final String nmea_)
+  {
+    final GPS gps = new GPS();
+    gps.parseNmea(line_);
+    return gps;
   }
 
   private GPS(final String line_)
@@ -58,19 +75,6 @@ public class GPS
     parseNmea(line_);
   }
 
-  void parseCommand()
-  {
-    String result = "";
-    try
-    {
-      result = Command.execute(SCRIPT);
-    }
-    catch (final Exception ex_)
-    {
-      ex_.printStackTrace();
-    }
-    parse(result);
-  }
 
   float parseCoordinates(final String token_)
   {
@@ -93,20 +97,45 @@ public class GPS
     return 0;
   }
 
+  class OutputCollectingStream extends LogOutputStream 
+  {
+    private final List<GPS> _gps = new LinkedList<GPS>();
+  
+    @Override protected void processLine(String line_, int level_) 
+    {
+      _gps.add(GPS.fromNMEA(line_));
+    }   
+    public List<GPS> getGPS() 
+    {
+      return _gps;
+    }
+  
   public static List<GPS> getHistoricalData()
   {
     final List<GPS> list = new ArrayList<>();
 
-    final GPS nmea = new GPS();
-    nmea.parseCommand();
-    final int points = nmea.getTrackpoints();
+    final GPS gps = GPS.fromCommand();
+    final int points = gps.getTrackpoints();
     final int steps = points / MAX_POINTS;
     if (points == 0 || steps == 0)
     {
       return list;
     }
 
+    try
+    {
+      final List<GPS> results = new Command(new OutputCollectingStream()).execute(SCRIPT).resultAsList();
+      for(final String line : lines)
+      {
+        list.addAll(results);
+      }
+    }
+    catch (final Exception ex_)
+    {
+      ex_.printStackTrace();
+    }
 
+/*
     try (final BufferedReader reader = new BufferedReader(new FileReader(NMEA_FILE)))
     {
       int count = 0;
@@ -131,6 +160,7 @@ public class GPS
     {
       ex_.printStackTrace();
     }
+    */
     return list;
   }
 
