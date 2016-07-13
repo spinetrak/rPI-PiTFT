@@ -39,7 +39,13 @@ import java.util.Set;
 
 public class Command
 {
-  public static int execute(final String command_, final OutputStream outputStream_)
+  final OutputStream _outputStream;
+  
+  public Command(final OutputStream outputStream_)
+  {
+    _outputStream = outputStream_;
+  }
+  public static Result execute(final String command_)
   {
     final CommandLine commandline = CommandLine.parse(command_);
     final DefaultExecutor exec = new DefaultExecutor();
@@ -47,7 +53,25 @@ public class Command
     exec.setWatchdog(watchdog);
     final PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream_);
     exec.setStreamHandler(streamHandler);
-    return exec.execute(commandline);
+    return new Result(exec.execute(commandline));
+  }
+  
+  class Result
+  {
+    Result(final int result_)
+    {
+      _result = result_;
+    }
+    
+    public String resultsAsString()
+    {
+      return _outputStream.toString();
+    }
+    
+    public List<String> resultAsList()
+    {
+      return (OutputCollectingStream )_outputStream.getLines();
+    }
   }
 
   public static String init(final String script_)
