@@ -100,7 +100,7 @@ public class Queue
       {
         final GPS gps = GPS.fromCommand();
         _gpsQueue.add(gps);
-        Thread.sleep(60000);
+        Thread.sleep(200);
         _executor.execute(this);
       }
       catch (final InterruptedException ex_)

@@ -36,20 +36,103 @@ class Chart
   private static final String FX_STROKE_GREEN = "-fx-stroke: green;";
   private static final String FX_STROKE_RED = "-fx-stroke: red;";
   private static final int MAX_DATA_POINTS = 320;
-  private final LineChart<Number, Number> _gpsLineChart;
-  private final XYChart.Series<Number, Number> _gpsSeries;
-  private final XYChart.Series<Number, Number> _lowerVoltageSeries;
-  private final XYChart.Series<Number, Number> _mainVoltageSeries;
-  private final XYChart.Series<Number, Number> _middleVoltageSeries;
-  private final LineChart<Number, Number> _powerLineChart;
-  private final XYChart.Series<Number, Number> _upperVoltageSeries;
-  private final NumberAxis _xPowerAxis;
-  @SuppressWarnings("FieldCanBeLocal")
-  private final NumberAxis _yPowerAxis;
   private boolean _batteryAlert = false;
-  private int _xSeriesData = 0;
+  private LineChart<Number, Number> _gpsLineChart;
+  private XYChart.Series<Number, Number> _gpsSeries;
+  private XYChart.Series<Number, Number> _lowerVoltageSeries;
+  private XYChart.Series<Number, Number> _mainVoltageSeries;
+  private XYChart.Series<Number, Number> _middleVoltageSeries;
+  private LineChart<Number, Number> _powerLineChart;
+  private XYChart.Series<Number, Number> _upperVoltageSeries;
+  private NumberAxis _xGPSAxis;
+  private int _xGPSSeriesData = 0;
+  private NumberAxis _xPowerAxis;
+  private int _xPowerSeriesData = 0;
+  private NumberAxis _yGPSAxis;
+  private NumberAxis _yPowerAxis;
 
   Chart()
+  {
+    initPowerChart();
+
+    initGPSChart();
+  }
+
+  void addData(final Power power_)
+  {
+    _mainVoltageSeries.getData().add(new XYChart.Data<>(_xPowerSeriesData++, power_.getVoltage()));
+    _upperVoltageSeries.getData().add(new XYChart.Data<>(_xPowerSeriesData, 5.25));
+    _middleVoltageSeries.getData().add(new XYChart.Data<>(_xPowerSeriesData, 5.00));
+    _lowerVoltageSeries.getData().add(new XYChart.Data<>(_xPowerSeriesData, 4.75));
+
+    if (Power.BATTERY.equals(power_.getSource()) && !_batteryAlert)
+    {
+      _batteryAlert = true;
+      _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
+    }
+    else if (Power.PRIMARY.equals(power_.getSource()) && _batteryAlert)
+    {
+      _batteryAlert = false;
+      _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
+    }
+
+    if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
+    {
+      _mainVoltageSeries.getData().remove(0, _mainVoltageSeries.getData().size() - MAX_DATA_POINTS);
+    }
+    _xPowerAxis.setLowerBound(_xPowerSeriesData - MAX_DATA_POINTS);
+    _xPowerAxis.setUpperBound(_xPowerSeriesData - 1);
+  }
+
+  void addData(final GPS gps_)
+  {
+    _gpsSeries.getData().add(new XYChart.Data<>(_xGPSSeriesData++, gps_.getAltitude()));
+
+    if (_gpsSeries.getData().size() > MAX_DATA_POINTS)
+    {
+      _gpsSeries.getData().remove(0, _gpsSeries.getData().size() - MAX_DATA_POINTS);
+    }
+    _xGPSAxis.setLowerBound(_xGPSSeriesData - MAX_DATA_POINTS);
+    _xGPSAxis.setUpperBound(_xGPSSeriesData - 1);
+  }
+
+  LineChart<Number, Number> getGPSLineChart()
+  {
+    return _gpsLineChart;
+  }
+
+  LineChart<Number, Number> getPowerLineChart()
+  {
+    return _powerLineChart;
+  }
+
+  private void initGPSChart()
+  {
+    _gpsSeries = new XYChart.Series<>();
+
+    _xGPSAxis = new NumberAxis();
+    _xGPSAxis.setForceZeroInRange(false);
+    _xGPSAxis.setTickLabelsVisible(false);
+    _xGPSAxis.setAutoRanging(false);
+
+    _yGPSAxis = new NumberAxis();
+    _yGPSAxis.setForceZeroInRange(false);
+    _yGPSAxis.setAutoRanging(true);
+
+    _gpsLineChart = new LineChart<>(_xGPSAxis, _yGPSAxis);
+    _gpsLineChart.setCreateSymbols(false);
+    _gpsLineChart.setLegendVisible(false);
+    _gpsLineChart.setAnimated(false);
+    _gpsLineChart.setHorizontalGridLinesVisible(true);
+    _gpsLineChart.setMinWidth(320);
+    _gpsLineChart.setPrefSize(320, 80);
+    _gpsLineChart.setMaxHeight(80);
+    _gpsLineChart.setPadding(new Insets(0));
+    //noinspection unchecked
+    _gpsLineChart.getData().add(_gpsSeries);
+  }
+
+  private void initPowerChart()
   {
     _mainVoltageSeries = new XYChart.Series<>();
     _upperVoltageSeries = new XYChart.Series<>();
@@ -80,74 +163,5 @@ class Chart
     //noinspection unchecked
     _powerLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
                                      _lowerVoltageSeries);
-
-
-    _gpsSeries = new XYChart.Series<>();
-
-    final NumberAxis lonGPSAxis = new NumberAxis();
-    final NumberAxis latGPSAxis = new NumberAxis();
-    lonGPSAxis.setForceZeroInRange(false);
-    latGPSAxis.setForceZeroInRange(false);
-    lonGPSAxis.setAutoRanging(true);
-    latGPSAxis.setAutoRanging(true);
-
-
-    _gpsLineChart = new LineChart<>(lonGPSAxis, latGPSAxis);
-    _gpsLineChart.setCreateSymbols(false);
-    _gpsLineChart.setLegendVisible(false);
-    _gpsLineChart.setAnimated(false);
-    _gpsLineChart.setVerticalGridLinesVisible(true);
-    _gpsLineChart.setHorizontalGridLinesVisible(true);
-    _gpsLineChart.setMinWidth(320);
-    _gpsLineChart.setPrefSize(320, 80);
-    _gpsLineChart.setMaxHeight(80);
-    _gpsLineChart.setPadding(new Insets(0));
-    //noinspection unchecked
-    _gpsLineChart.getData().addAll(_gpsSeries);
-  }
-
-  void addData(final Power power_)
-  {
-    _mainVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData++, power_.getVoltage()));
-    _upperVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData, 5.25));
-    _middleVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData, 5.00));
-    _lowerVoltageSeries.getData().add(new XYChart.Data<>(_xSeriesData, 4.75));
-
-    if (Power.BATTERY.equals(power_.getSource()) && !_batteryAlert)
-    {
-      _batteryAlert = true;
-      _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
-    }
-    else if (Power.PRIMARY.equals(power_.getSource()) && _batteryAlert)
-    {
-      _batteryAlert = false;
-      _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
-    }
-
-    if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
-    {
-      _mainVoltageSeries.getData().remove(0, _mainVoltageSeries.getData().size() - MAX_DATA_POINTS);
-    }
-    _xPowerAxis.setLowerBound(_xSeriesData - MAX_DATA_POINTS);
-    _xPowerAxis.setUpperBound(_xSeriesData - 1);
-  }
-
-  void addData(final GPS gps_)
-  {
-    _gpsSeries.getData().add(new XYChart.Data<>(gps_.getLongitude(), gps_.getLatitude()));
-    if (_gpsSeries.getData().size() > MAX_DATA_POINTS)
-    {
-      _gpsSeries.getData().remove(0, _gpsSeries.getData().size() - MAX_DATA_POINTS);
-    }
-  }
-
-  LineChart<Number, Number> getGPSLineChart()
-  {
-    return _gpsLineChart;
-  }
-
-  LineChart<Number, Number> getPowerLineChart()
-  {
-    return _powerLineChart;
   }
 }
