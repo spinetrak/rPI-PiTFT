@@ -110,7 +110,7 @@ public class Command
   {
     final CommandLine commandline = CommandLine.parse(command_);
     final DefaultExecutor exec = new DefaultExecutor();
-    final ExecuteWatchdog watchdog = new ExecuteWatchdog(500);
+    final ExecuteWatchdog watchdog = new ExecuteWatchdog(50000);
     exec.setWatchdog(watchdog);
     final PumpStreamHandler streamHandler = new PumpStreamHandler(_stream.getStream());
     exec.setStreamHandler(streamHandler);
