@@ -63,13 +63,11 @@ public class Main extends Application
     while (!deviceQueue_.isEmpty())
     {
       final Device device = deviceQueue_.remove();
-
       _textPanel.addData(device);
     }
     while (!gpsQueue_.isEmpty())
     {
       final GPS gps = gpsQueue_.remove();
-
       _textPanel.addData(gps);
       _chart.addData(gps);
     }
@@ -83,7 +81,7 @@ public class Main extends Application
         count++;
         _textPanel.addData(gps);
         _chart.addData(gps);
-        if (count >= 50)
+        if (count >= 320)
         {
           break;
         }
