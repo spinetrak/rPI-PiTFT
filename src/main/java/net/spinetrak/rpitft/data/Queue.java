@@ -82,7 +82,7 @@ public class Queue
       try
       {
         _deviceQueue.add(new Device());
-        Thread.sleep(200);
+        Thread.sleep(500);
         _executor.execute(this);
       }
       catch (final InterruptedException ex_)
@@ -100,7 +100,7 @@ public class Queue
       {
         final GPS gps = GPS.fromCommand();
         _gpsQueue.add(gps);
-        Thread.sleep(200);
+        Thread.sleep(500);
         _executor.execute(this);
       }
       catch (final InterruptedException ex_)
@@ -117,7 +117,7 @@ public class Queue
       try
       {
         _powerQueue.add(new Power());
-        Thread.sleep(200);
+        Thread.sleep(500);
         _executor.execute(this);
       }
       catch (final InterruptedException ex_)

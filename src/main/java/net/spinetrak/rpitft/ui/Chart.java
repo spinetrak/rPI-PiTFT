@@ -110,7 +110,7 @@ class Chart
   {
     _gpsSeries = new XYChart.Series<>();
 
-    _xGPSAxis = new NumberAxis();
+    _xGPSAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
     _xGPSAxis.setForceZeroInRange(false);
     _xGPSAxis.setTickLabelsVisible(false);
     _xGPSAxis.setAutoRanging(false);
