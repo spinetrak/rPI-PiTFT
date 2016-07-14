@@ -28,7 +28,6 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.GPS;
@@ -41,7 +40,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Main extends Application
 {
   private boolean _added = false;
-  private Chart _chart;
+  private ChartsPanel _chartsPanel;
   private TextPanel _textPanel;
 
   public static void main(String[] args_)
@@ -57,7 +56,7 @@ public class Main extends Application
     {
       final Power power = powerQueue_.remove();
       _textPanel.addData(power);
-      _chart.addData(power);
+      _chartsPanel.addData(power);
 
     }
     while (!deviceQueue_.isEmpty())
@@ -69,7 +68,7 @@ public class Main extends Application
     {
       final GPS gps = gpsQueue_.remove();
       _textPanel.addData(gps);
-      _chart.addData(gps);
+      _chartsPanel.addData(gps);
     }
     if (gpsQueue_.isEmpty() && !_added)
     {
@@ -80,7 +79,7 @@ public class Main extends Application
       {
         count++;
         _textPanel.addData(gps);
-        _chart.addData(gps);
+        _chartsPanel.addData(gps);
         if (count >= 480)
         {
           break;
@@ -102,7 +101,7 @@ public class Main extends Application
 
   private void init(final Stage stage_)
   {
-    _chart = new Chart();
+    _chartsPanel = new ChartsPanel();
     _textPanel = new TextPanel();
 
     final BorderPane border = new BorderPane();
@@ -113,15 +112,7 @@ public class Main extends Application
     border.setMaxWidth(480);
     border.setMinWidth(480);
 
-    final VBox center = new VBox();
-    center.setSpacing(1);
-    center.setPadding(new Insets(1));
-    center.getChildren().add(_chart.getPowerLineChart());
-    center.getChildren().add(_chart.getGPSLineChart());
-    center.setFillWidth(true);
-    center.setPrefSize(480, 200);
-    center.setMaxHeight(200);
-    border.setCenter(center);
+    border.setCenter(_chartsPanel.getCenter());
 
     border.setTop(_textPanel.getTop());
 

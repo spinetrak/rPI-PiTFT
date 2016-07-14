@@ -42,6 +42,7 @@ import static javafx.application.Platform.exit;
 
 class ButtonPanel
 {
+  private static final String DEFAULT_TEXT = "";
   private final static String GPX_NEW = "/gpx.sh";
   private final static String GPX_SCRIPT = Command.init(GPX_NEW);
   private final HBox _bottom;
@@ -56,18 +57,18 @@ class ButtonPanel
     _bottom.setPrefSize(480, 20);
     _bottom.setMinHeight(20);
 
-    _error = new Text("----------------------------");
+    _error = new Text(DEFAULT_TEXT);
     _bottom.getChildren().add(_error);
-
-    final Button gpx = getGPXButton();
-    gpx.setPrefSize(15, 15);
-    gpx.setMaxHeight(15);
-    _bottom.getChildren().add(gpx);
 
     final Button exit = getExitButton();
     exit.setPrefSize(15, 15);
     exit.setMaxHeight(15);
     _bottom.getChildren().add(exit);
+
+    final Button gpx = getGPXButton();
+    gpx.setPrefSize(15, 15);
+    gpx.setMaxHeight(15);
+    _bottom.getChildren().add(gpx);
 
     final Button restart = getRestartButton();
     restart.setPrefSize(15, 15);
@@ -120,6 +121,15 @@ class ButtonPanel
         else
         {
           _error.setText("Error generating GPX file.");
+        }
+        try
+        {
+          Thread.sleep(5000);
+          _error.setText(DEFAULT_TEXT);
+        }
+        catch (final InterruptedException ex_)
+        {
+          ex_.printStackTrace();
         }
       }
     });

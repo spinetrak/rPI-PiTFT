@@ -28,14 +28,16 @@ import javafx.geometry.Insets;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.layout.VBox;
 import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.Power;
 
-class Chart
+class ChartsPanel
 {
   private static final String FX_STROKE_GREEN = "-fx-stroke: green;";
   private static final String FX_STROKE_RED = "-fx-stroke: red;";
   private static final int MAX_DATA_POINTS = 480;
+  private final VBox _center;
   private boolean _batteryAlert = false;
   private LineChart<Number, Number> _gpsLineChart;
   private XYChart.Series<Number, Number> _gpsSeries;
@@ -51,11 +53,21 @@ class Chart
   private NumberAxis _yGPSAxis;
   private NumberAxis _yPowerAxis;
 
-  Chart()
+  ChartsPanel()
   {
     initPowerChart();
 
     initGPSChart();
+
+    _center = new VBox();
+    _center.setSpacing(1);
+    _center.setPadding(new Insets(1));
+    _center.getChildren().add(_powerLineChart);
+    _center.getChildren().add(_gpsLineChart);
+    _center.setFillWidth(true);
+    _center.setPrefSize(480, 200);
+    _center.setMaxHeight(200);
+
   }
 
   void addData(final Power power_)
@@ -94,6 +106,11 @@ class Chart
     }
     _xGPSAxis.setLowerBound(_xGPSSeriesData - MAX_DATA_POINTS);
     _xGPSAxis.setUpperBound(_xGPSSeriesData - 1);
+  }
+
+  VBox getCenter()
+  {
+    return _center;
   }
 
   LineChart<Number, Number> getGPSLineChart()
