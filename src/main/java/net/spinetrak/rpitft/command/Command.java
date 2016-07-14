@@ -50,6 +50,11 @@ public class Command
     _stream = stream_;
   }
 
+  Stream getStream()
+  {
+    return _stream;
+  }
+
   public static String init(final String script_)
   {
     final String VAR_TMP = "/var/tmp";
@@ -106,7 +111,7 @@ public class Command
     return script;
   }
 
-  public Result execute(final String command_) throws IOException
+  public Result execute(final String command_)
   {
     final CommandLine commandline = CommandLine.parse(command_);
     final DefaultExecutor exec = new DefaultExecutor();
@@ -114,12 +119,15 @@ public class Command
     exec.setWatchdog(watchdog);
     final PumpStreamHandler streamHandler = new PumpStreamHandler(_stream.getStream());
     exec.setStreamHandler(streamHandler);
-    exec.execute(commandline);
-    return new Result(this);
-  }
-
-  public Stream getStream()
-  {
-    return _stream;
+    int result = -1;
+    try
+    {
+      result = exec.execute(commandline);
+    }
+    catch (final IOException ex_)
+    {
+      ex_.printStackTrace();
+    }
+    return new Result(this, result);
   }
 }

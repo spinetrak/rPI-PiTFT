@@ -29,10 +29,17 @@ import java.util.List;
 public class Result
 {
   private final Command _command;
+  private final int _result;
 
-  Result(final Command command_)
+  Result(final Command command_, final int result_)
   {
+    _result = result_;
     _command = command_;
+  }
+
+  public int getResult()
+  {
+    return _result;
   }
 
   public List resultAsList()

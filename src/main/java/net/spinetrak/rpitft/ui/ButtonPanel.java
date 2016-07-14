@@ -31,6 +31,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+import net.spinetrak.rpitft.command.Command;
+import net.spinetrak.rpitft.command.Result;
+import net.spinetrak.rpitft.data.streams.GPXStream;
 
 import java.io.IOException;
 
@@ -41,6 +45,7 @@ class ButtonPanel
   private final static String GPX_NEW = "/gpx.sh";
   private final static String GPX_SCRIPT = Command.init(GPX_NEW);
   private final HBox _bottom;
+  private final Text _error;
 
   ButtonPanel()
   {
@@ -50,6 +55,9 @@ class ButtonPanel
     _bottom.setAlignment(Pos.CENTER_RIGHT);
     _bottom.setPrefSize(480, 20);
     _bottom.setMinHeight(20);
+
+    _error = new Text("----------------------------");
+    _bottom.getChildren().add(_error);
 
     final Button gpx = getGPXButton();
     gpx.setPrefSize(15, 15);
@@ -77,21 +85,6 @@ class ButtonPanel
     return _bottom;
   }
 
-  private Button getGPXButton()
-  {
-    final Image gpxImg = new Image(getClass().getResourceAsStream("/gpx.png"));
-    final Button gpx = new Button();
-    gpx.setGraphic(new ImageView(gpxImg));
-
-    gpx.setOnKeyPressed(event_ -> {
-      if (event_.getCode().equals(KeyCode.ENTER))
-      {
-        final Result result = new Command(new GPXStream()).execute(GPX_SCRIPT);
-      }
-    });
-    return gpx;
-  }
-  
   private Button getExitButton()
   {
     final Image exitImg = new Image(getClass().getResourceAsStream("/exit.png"));
@@ -106,6 +99,31 @@ class ButtonPanel
       }
     });
     return exit;
+  }
+
+  private Button getGPXButton()
+  {
+    final Image gpxImg = new Image(getClass().getResourceAsStream("/gpx.png"));
+    final Button gpx = new Button();
+    gpx.setGraphic(new ImageView(gpxImg));
+
+    gpx.setOnKeyPressed(event_ -> {
+      if (event_.getCode().equals(KeyCode.ENTER))
+      {
+        _error.setText("Generating GPX file...");
+
+        final Result result = new Command(new GPXStream()).execute(GPX_SCRIPT);
+        if (0 == result.getResult())
+        {
+          _error.setText("GPX file generated.");
+        }
+        else
+        {
+          _error.setText("Error generating GPX file.");
+        }
+      }
+    });
+    return gpx;
   }
 
   private Button getRestartButton()

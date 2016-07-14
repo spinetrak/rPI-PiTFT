@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cat /home/pi/tracks/nmea.txt | grep -a GGA
+cat /Users/renzop/nmea.txt | grep -a GGA

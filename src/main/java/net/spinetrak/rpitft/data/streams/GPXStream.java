@@ -24,7 +24,6 @@
 
 package net.spinetrak.rpitft.data.streams;
 
-import net.spinetrak.rpitft.data.GPS;
 import org.apache.commons.exec.LogOutputStream;
 
 import java.io.OutputStream;
@@ -35,7 +34,7 @@ public class GPXStream extends LogOutputStream implements Stream
 {
   private final List<String> _gpx = new LinkedList<>();
 
-  public NMEAStream()
+  public GPXStream()
   {
     super();
   }
@@ -55,6 +54,6 @@ public class GPXStream extends LogOutputStream implements Stream
   @Override
   protected void processLine(final String line_, int level_)
   {
-    _nmea.add(line_);
+    _gpx.add(line_);
   }
 }

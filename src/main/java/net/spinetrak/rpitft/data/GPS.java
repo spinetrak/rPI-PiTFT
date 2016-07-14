@@ -192,6 +192,14 @@ public class GPS
       '}';
   }
 
+  private void parseAltitude(final String token_)
+  {
+    if ((null != token_) && !token_.isEmpty())
+    {
+      _altitude = Float.parseFloat(token_.trim());
+    }
+  }
+
   private void parseGPS(final String data_)
   {
     final String tokens[] = data_.split("/");
@@ -208,20 +216,12 @@ public class GPS
     }
   }
 
-  private void parseAltitude(final String token_)
-  {
-    if ((null != token_) && !token_.isEmpty())
-    {
-      _altitude = Float.parseFloat(token_.trim());
-    }
-  }
-
   private void parseNmea(final String line_)
   {
     if(null != line_ && !line_.isEmpty())
     {
       final String[] tokens = line_.split(",");
-      if(tokens.length() > 10)
+      if (tokens.length > 10)
       {
         final String[] time = tokens[1].split("\\.");
         parseTime(time[0]);
