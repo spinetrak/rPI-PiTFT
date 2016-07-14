@@ -38,6 +38,8 @@ import static javafx.application.Platform.exit;
 
 class ButtonPanel
 {
+  private final static String GPX_NEW = "/gpx.sh";
+  private final static String GPX_SCRIPT = Command.init(GPX_NEW);
   private final HBox _bottom;
 
   ButtonPanel()
@@ -49,6 +51,10 @@ class ButtonPanel
     _bottom.setPrefSize(480, 20);
     _bottom.setMinHeight(20);
 
+    final Button gpx = getGPXButton();
+    gpx.setPrefSize(15, 15);
+    gpx.setMaxHeight(15);
+    _bottom.getChildren().add(gpx);
 
     final Button exit = getExitButton();
     exit.setPrefSize(15, 15);
@@ -71,6 +77,21 @@ class ButtonPanel
     return _bottom;
   }
 
+  private Button getGPXButton()
+  {
+    final Image gpxImg = new Image(getClass().getResourceAsStream("/gpx.png"));
+    final Button gpx = new Button();
+    gpx.setGraphic(new ImageView(gpxImg));
+
+    gpx.setOnKeyPressed(event_ -> {
+      if (event_.getCode().equals(KeyCode.ENTER))
+      {
+        final Result result = new Command(new GPXStream()).execute(GPX_SCRIPT);
+      }
+    });
+    return gpx;
+  }
+  
   private Button getExitButton()
   {
     final Image exitImg = new Image(getClass().getResourceAsStream("/exit.png"));
