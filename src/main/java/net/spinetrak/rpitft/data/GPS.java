@@ -58,7 +58,7 @@ public class GPS
     try
     {
       gps = new GPS();
-      gps.parse(new Command(new SingleLineStream()).execute(GPS_SCRIPT).resultAsString());
+      gps.parseGPS(new Command(new SingleLineStream()).execute(GPS_SCRIPT).resultAsString());
     }
     catch (final Exception ex_)
     {
@@ -192,7 +192,7 @@ public class GPS
       '}';
   }
 
-  private void parse(final String data_)
+  private void parseGPS(final String data_)
   {
     final String tokens[] = data_.split("/");
     if (tokens.length == 5)
@@ -218,13 +218,18 @@ public class GPS
 
   private void parseNmea(final String line_)
   {
-    final String[] tokens = line_.split(",");
-    final String[] time = tokens[1].split("\\.");
-    parseTime(time[0]);
-    _latitude = parseCoordinates(tokens[2] + "N");
-    _longitude = parseCoordinates(tokens[4] + "E");
-    parseAltitude(tokens[9]);
-
+    if(null != line_ && !line_.isEmpty())
+    {
+      final String[] tokens = line_.split(",");
+      if(tokens.length() > 10)
+      {
+        final String[] time = tokens[1].split("\\.");
+        parseTime(time[0]);
+        _latitude = parseCoordinates(tokens[2] + tokens[3]);
+        _longitude = parseCoordinates(tokens[4] + tokens[5]);
+        parseAltitude(tokens[9]);
+      }
+    }
   }
 
   private void parseTime(final String token_)
