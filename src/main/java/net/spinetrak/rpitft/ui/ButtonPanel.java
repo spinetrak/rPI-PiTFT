@@ -45,7 +45,7 @@ class ButtonPanel
   private static final String DEFAULT_TEXT = "";
   private final static String GPX_NEW = "/gpx.sh";
   private final static String GPX_SCRIPT = Command.init(GPX_NEW);
-  private final static String NMEA_BACKUP = "/nmea.sh";
+  private final static String NMEA_BACKUP = "/nmea_backup.sh";
   private final static String NMEA_SCRIPT = Command.init(NMEA_BACKUP);
   private final HBox _bottom;
   private final Text _error;
