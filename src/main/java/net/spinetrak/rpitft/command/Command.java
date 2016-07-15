@@ -30,6 +30,8 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,6 +45,7 @@ import java.util.Set;
 
 class Command
 {
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.command.Command");
   private final String _script;
 
   Command(final String script_)
@@ -65,7 +68,7 @@ class Command
     }
     catch (final IOException ex_)
     {
-      ex_.printStackTrace();
+      LOGGER.error(ex_.getMessage());
     }
     return new Result(stream_, result);
   }
@@ -95,8 +98,7 @@ class Command
     }
     catch (final IOException ex_)
     {
-      System.err.println(ex_.getMessage());
-      ex_.printStackTrace();
+      LOGGER.error(ex_.getMessage());
     }
     finally
     {
@@ -108,7 +110,7 @@ class Command
         }
         catch (final IOException ex_)
         {
-          ex_.printStackTrace();
+          LOGGER.error(ex_.getMessage());
         }
       }
       if (scriptOut != null)
@@ -119,7 +121,7 @@ class Command
         }
         catch (final IOException ex_)
         {
-          ex_.printStackTrace();
+          LOGGER.error(ex_.getMessage());
         }
       }
     }

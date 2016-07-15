@@ -25,6 +25,8 @@
 package net.spinetrak.rpitft.data;
 
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static net.spinetrak.rpitft.command.Commands.POWER_STATUS;
 
@@ -32,6 +34,7 @@ public class Power
 {
   public final static String BATTERY = "B";
   public final static String PRIMARY = "P";
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Power");
   private float _capacity;
   private float _power;
   private String _source;
@@ -45,7 +48,7 @@ public class Power
     }
     catch (final Exception ex_)
     {
-      ex_.printStackTrace();
+      LOGGER.error(ex_.getMessage());
     }
   }
 

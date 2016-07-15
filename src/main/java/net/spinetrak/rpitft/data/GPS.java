@@ -29,6 +29,8 @@ import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,7 @@ public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   public static final int MAX_POINTS = 480;
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.GPS");
   private float _altitude;
   private float _latitude;
   private float _longitude;
@@ -60,7 +63,7 @@ public class GPS
     }
     catch (final Exception ex_)
     {
-      ex_.printStackTrace();
+      LOGGER.error(ex_.getMessage());
     }
     return gps;
   }
@@ -113,7 +116,7 @@ public class GPS
     }
     catch (final Exception ex_)
     {
-      ex_.printStackTrace();
+      LOGGER.error(ex_.getMessage());
     }
 
     return list;

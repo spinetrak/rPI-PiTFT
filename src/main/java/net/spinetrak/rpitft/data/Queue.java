@@ -26,6 +26,8 @@ package net.spinetrak.rpitft.data;
 
 import javafx.animation.AnimationTimer;
 import net.spinetrak.rpitft.ui.Main;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -33,6 +35,7 @@ import java.util.concurrent.Executors;
 
 public class Queue
 {
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Queue");
   private final ConcurrentLinkedQueue<Device> _deviceQueue;
   private final ExecutorService _executor;
   private final ConcurrentLinkedQueue<GPS> _gpsQueue;
@@ -87,7 +90,7 @@ public class Queue
       }
       catch (final InterruptedException ex_)
       {
-        ex_.printStackTrace();
+        LOGGER.error(ex_.getMessage());
       }
     }
   }
@@ -105,7 +108,7 @@ public class Queue
       }
       catch (final InterruptedException ex_)
       {
-        ex_.printStackTrace();
+        LOGGER.error(ex_.getMessage());
       }
     }
   }
@@ -122,7 +125,7 @@ public class Queue
       }
       catch (final InterruptedException ex_)
       {
-        ex_.printStackTrace();
+        LOGGER.error(ex_.getMessage());
       }
     }
   }

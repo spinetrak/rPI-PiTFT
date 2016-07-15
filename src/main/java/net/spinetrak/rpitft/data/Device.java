@@ -25,11 +25,14 @@
 package net.spinetrak.rpitft.data;
 
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static net.spinetrak.rpitft.command.Commands.DEVICE_STATUS;
 
 public class Device
 {
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Device");
   private float _cpu;
   private float _disk;
   private float _memory;
@@ -43,7 +46,7 @@ public class Device
     }
     catch (final Exception ex_)
     {
-      ex_.printStackTrace();
+      LOGGER.error(ex_.getMessage());
     }
   }
 

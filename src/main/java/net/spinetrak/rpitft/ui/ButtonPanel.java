@@ -35,6 +35,8 @@ import javafx.scene.text.Text;
 import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.streams.GPXStream;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
@@ -42,6 +44,7 @@ import static net.spinetrak.rpitft.command.Commands.*;
 class ButtonPanel
 {
   private final static String DEFAULT_TEXT = "";
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.ui.ButtonPanel");
   private final HBox _bottom;
   private final Text _error;
 
@@ -131,7 +134,7 @@ class ButtonPanel
         }
         catch (final InterruptedException ex_)
         {
-          ex_.printStackTrace();
+          LOGGER.error(ex_.getMessage());
         }
       }
     });
@@ -165,7 +168,7 @@ class ButtonPanel
         }
         catch (final InterruptedException ex_)
         {
-          ex_.printStackTrace();
+          LOGGER.error(ex_.getMessage());
         }
       }
     });
