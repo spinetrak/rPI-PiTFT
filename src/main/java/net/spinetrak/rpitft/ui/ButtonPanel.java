@@ -42,11 +42,6 @@ import static javafx.application.Platform.exit;
 
 class ButtonPanel
 {
-  private static final String DEFAULT_TEXT = "";
-  private final static String GPX_NEW = "/gpx.sh";
-  private final static String GPX_SCRIPT = Command.init(GPX_NEW);
-  private final static String NMEA_BACKUP = "/nmea_backup.sh";
-  private final static String NMEA_SCRIPT = Command.init(NMEA_BACKUP);
   private final HBox _bottom;
   private final Text _error;
 
@@ -120,7 +115,7 @@ class ButtonPanel
       {
         _error.setText("Generating GPX file...");
 
-        final Result result = new Command(new GPXStream()).execute(GPX_SCRIPT);
+        final Result result = Command.Commands.GPX_NEW.execute(new GPXStream());
         if (0 == result.getResult())
         {
           _error.setText("GPX file generated.");
@@ -154,7 +149,7 @@ class ButtonPanel
       {
         _error.setText("Backing up NMEA file...");
 
-        final Result result = new Command(new SingleLineStream()).execute(NMEA_SCRIPT);
+        final Result result = Command.Commands.NMEA_BACKUP.execute(new SingleLineStream());
         if (0 == result.getResult())
         {
           _error.setText("NMEA file backed up.");
