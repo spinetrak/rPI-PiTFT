@@ -31,8 +31,6 @@ public class Power
 {
   public final static String BATTERY = "B";
   public final static String PRIMARY = "P";
-  private final static String POWER_STATUS = "/power.sh";
-  private final static String SCRIPT = Command.init(POWER_STATUS);
   private float _capacity;
   private float _power;
   private String _source;
@@ -42,7 +40,7 @@ public class Power
   {
     try
     {
-      parse(new Command(new SingleLineStream()).execute(SCRIPT).resultAsString());
+      parse(Command.Commands.POWER_STATUS.execute(new SingleLineStream()).resultAsString());
     }
     catch (final Exception ex_)
     {
