@@ -45,6 +45,8 @@ class ButtonPanel
   private static final String DEFAULT_TEXT = "";
   private final static String GPX_NEW = "/gpx.sh";
   private final static String GPX_SCRIPT = Command.init(GPX_NEW);
+  private final static String NMEA_BACKUP = "/nmea.sh";
+  private final static String NMEA_SCRIPT = Command.init(NMEA_BACKUP);
   private final HBox _bottom;
   private final Text _error;
 
@@ -69,6 +71,11 @@ class ButtonPanel
     gpx.setPrefSize(15, 15);
     gpx.setMaxHeight(15);
     _bottom.getChildren().add(gpx);
+    
+    final Button nmea = getNMEAButton();
+    nmea.setPrefSize(15, 15);
+    nmea.setMaxHeight(15);
+    _bottom.getChildren().add(nmea);
 
     final Button restart = getRestartButton();
     restart.setPrefSize(15, 15);
@@ -135,6 +142,41 @@ class ButtonPanel
     });
     return gpx;
   }
+  
+  private Button getNMEAButton()
+  {
+    final Image nmeaImg = new Image(getClass().getResourceAsStream("/nmea.png"));
+    final Button nmea = new Button();
+    nmea.setGraphic(new ImageView(nmeaImg));
+
+    nmea.setOnKeyPressed(event_ -> {
+      if (event_.getCode().equals(KeyCode.ENTER))
+      {
+        _error.setText("Backing up NMEA file...");
+
+        final Result result = new Command(new SingleLineStream()).execute(NMEA_SCRIPT);
+        if (0 == result.getResult())
+        {
+          _error.setText("NMEA file backed up.");
+        }
+        else
+        {
+          _error.setText("Error backing up file.");
+        }
+        try
+        {
+          Thread.sleep(5000);
+          _error.setText(DEFAULT_TEXT);
+        }
+        catch (final InterruptedException ex_)
+        {
+          ex_.printStackTrace();
+        }
+      }
+    });
+    return nmea;
+  }
+
 
   private Button getRestartButton()
   {
