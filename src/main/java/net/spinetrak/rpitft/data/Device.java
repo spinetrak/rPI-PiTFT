@@ -24,8 +24,9 @@
 
 package net.spinetrak.rpitft.data;
 
-import net.spinetrak.rpitft.command.Command;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
+
+import static net.spinetrak.rpitft.command.Commands.DEVICE_STATUS;
 
 public class Device
 {
@@ -38,7 +39,7 @@ public class Device
   {
     try
     {
-      parse(Command.Commands.DEVICE_STATUS.execute(new SingleLineStream()).resultAsString());
+      parse(DEVICE_STATUS.execute(new SingleLineStream()).resultAsString());
     }
     catch (final Exception ex_)
     {

@@ -41,81 +41,36 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Command
+class Command
 {
-  private final static String DEVICE_STATUS = "/device.sh";
-  private final static String POWER_STATUS = "/power.sh";
-  private final static String GPS_STATUS = "/gps.sh";
-  private final static String NMEA_STATUS = "/nmea.sh";
-  private final static String GPX_NEW = "/gpx.sh";
-  private final static String NMEA_BACKUP = "/nmea_backup.sh";
-  
-  public enum Commands
-  {
-    DEVICE_STATUS() 
-    {
-      @Override
-      public Result execute(final Stream stream_) 
-      { 
-        return new Command(stream_).execute(Command.init(DEVICE_STATUS));
-      }
-    },
-    POWER_STATUS() 
-    {
-      @Override
-      public Result execute(final Stream stream_) 
-      { 
-        return new Command(stream_).execute(Command.init(POWER_STATUS));
-      }
-    },
-    GPS_STATUS() 
-    {
-      @Override
-      public Result execute(final Stream stream_) 
-      { 
-        return new Command(stream_).execute(Command.init(GPS_STATUS));
-      }
-    },
-    NMEA_STATUS() 
-    {
-      @Override
-      public Result execute(final Stream stream_) 
-      { 
-        return new Command(stream_).execute(Command.init(NMEA_STATUS));
-      }
-    },
-    GPX_NEW() 
-    {
-      @Override
-      public Result execute(final Stream stream_) 
-      { 
-        return new Command(stream_).execute(Command.init(GPX_NEW));
-      }
-    },
-    NMEA_BACKUP() 
-    {
-      @Override
-      public Result execute(final Stream stream_) 
-      { 
-        return new Command(stream_).execute(Command.init(NMEA_BACKUP));
-      }
-    },;
-     
-    public abstract Result execute(final Stream stream_);
-  }
-  private final Stream _stream;
+  private final String _script;
 
-  private Command(final Stream stream_)
+  Command(final String script_)
   {
-    _stream = stream_;
+    _script = init(script_);
   }
 
-  Stream getStream()
+  Result execute(final Stream stream_)
   {
-    return _stream;
+    final CommandLine commandline = CommandLine.parse(_script);
+    final DefaultExecutor exec = new DefaultExecutor();
+    final ExecuteWatchdog watchdog = new ExecuteWatchdog(500);
+    exec.setWatchdog(watchdog);
+    final PumpStreamHandler streamHandler = new PumpStreamHandler(stream_.getStream());
+    exec.setStreamHandler(streamHandler);
+    int result = -1;
+    try
+    {
+      result = exec.execute(commandline);
+    }
+    catch (final IOException ex_)
+    {
+      ex_.printStackTrace();
+    }
+    return new Result(stream_, result);
   }
 
-  private static String init(final String script_)
+  private String init(final String script_)
   {
     final String VAR_TMP = "/var/tmp";
     InputStream scriptIn = null;
@@ -169,25 +124,5 @@ public class Command
       }
     }
     return script;
-  }
-
-  private Result execute(final String command_)
-  {
-    final CommandLine commandline = CommandLine.parse(command_);
-    final DefaultExecutor exec = new DefaultExecutor();
-    final ExecuteWatchdog watchdog = new ExecuteWatchdog(500);
-    exec.setWatchdog(watchdog);
-    final PumpStreamHandler streamHandler = new PumpStreamHandler(_stream.getStream());
-    exec.setStreamHandler(streamHandler);
-    int result = -1;
-    try
-    {
-      result = exec.execute(commandline);
-    }
-    catch (final IOException ex_)
-    {
-      ex_.printStackTrace();
-    }
-    return new Result(this, result);
   }
 }

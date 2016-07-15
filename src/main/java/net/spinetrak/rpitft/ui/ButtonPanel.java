@@ -32,16 +32,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import net.spinetrak.rpitft.command.Command;
 import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.streams.GPXStream;
-
-import java.io.IOException;
+import net.spinetrak.rpitft.data.streams.SingleLineStream;
 
 import static javafx.application.Platform.exit;
+import static net.spinetrak.rpitft.command.Commands.*;
 
 class ButtonPanel
 {
+  private final static String DEFAULT_TEXT = "";
   private final HBox _bottom;
   private final Text _error;
 
@@ -115,7 +115,7 @@ class ButtonPanel
       {
         _error.setText("Generating GPX file...");
 
-        final Result result = Command.Commands.GPX_NEW.execute(new GPXStream());
+        final Result result = GPX_NEW.execute(new GPXStream());
         if (0 == result.getResult())
         {
           _error.setText("GPX file generated.");
@@ -149,7 +149,7 @@ class ButtonPanel
       {
         _error.setText("Backing up NMEA file...");
 
-        final Result result = Command.Commands.NMEA_BACKUP.execute(new SingleLineStream());
+        final Result result = NMEA_BACKUP.execute(new SingleLineStream());
         if (0 == result.getResult())
         {
           _error.setText("NMEA file backed up.");
@@ -181,15 +181,8 @@ class ButtonPanel
     restart.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        final Runtime runtime = Runtime.getRuntime();
-        try
-        {
-          final Process proc = runtime.exec("sudo shutdown -r now");
-        }
-        catch (final IOException ex_)
-        {
-          ex_.printStackTrace();
-        }
+        RESTART.execute(new SingleLineStream());
+
         System.exit(0);
       }
     });
@@ -204,15 +197,7 @@ class ButtonPanel
     shutdown.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        final Runtime runtime = Runtime.getRuntime();
-        try
-        {
-          final Process proc = runtime.exec("sudo shutdown now");
-        }
-        catch (final IOException ex_)
-        {
-          ex_.printStackTrace();
-        }
+        SHUTDOWN.execute(new SingleLineStream());
         System.exit(0);
       }
     });

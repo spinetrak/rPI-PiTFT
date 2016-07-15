@@ -24,7 +24,6 @@
 
 package net.spinetrak.rpitft.data;
 
-import net.spinetrak.rpitft.command.Command;
 import net.spinetrak.rpitft.data.streams.NMEAStream;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.joda.time.DateTime;
@@ -33,6 +32,9 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.spinetrak.rpitft.command.Commands.GPS_STATUS;
+import static net.spinetrak.rpitft.command.Commands.NMEA_STATUS;
 
 public class GPS
 {
@@ -54,7 +56,7 @@ public class GPS
     try
     {
       gps = new GPS();
-      gps.parseGPS(Command.COMMANDS.GPS_STATUS.execute(new SingleLineStream()).resultAsString());
+      gps.parseGPS(GPS_STATUS.execute(new SingleLineStream()).resultAsString());
     }
     catch (final Exception ex_)
     {
@@ -106,7 +108,7 @@ public class GPS
     try
     {
       @SuppressWarnings("unchecked")
-      final List<GPS> results = Command.Commands.NMEA_STATUS.execute(new NMEAStream(steps)).resultAsList();
+      final List<GPS> results = NMEA_STATUS.execute(new NMEAStream(steps)).resultAsList();
       list.addAll(results);
     }
     catch (final Exception ex_)
@@ -131,15 +133,9 @@ public class GPS
 
     final GPS gps = (GPS) obj_;
 
-    if (Float.compare(gps._altitude, _altitude) != 0)
-    {
-      return false;
-    }
-    if (Float.compare(gps._latitude, _latitude) != 0)
-    {
-      return false;
-    }
-    return Float.compare(gps._longitude, _longitude) == 0;
+    return !((Float.compare(gps._altitude, _altitude) != 0) || (Float.compare(gps._latitude,
+                                                                              _latitude) != 0) || Float.compare(
+      gps._longitude, _longitude) != 0);
   }
 
   public float getAltitude()

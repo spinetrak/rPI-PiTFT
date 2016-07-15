@@ -24,17 +24,19 @@
 
 package net.spinetrak.rpitft.command;
 
+import net.spinetrak.rpitft.data.streams.Stream;
+
 import java.util.List;
 
 public class Result
 {
-  private final Command _command;
   private final int _result;
+  private final Stream _stream;
 
-  Result(final Command command_, final int result_)
+  Result(final Stream stream_, final int result_)
   {
+    _stream = stream_;
     _result = result_;
-    _command = command_;
   }
 
   public int getResult()
@@ -44,11 +46,11 @@ public class Result
 
   public List resultAsList()
   {
-    return _command.getStream().toList();
+    return _stream.toList();
   }
 
   public String resultAsString()
   {
-    return _command.getStream().toString();
+    return _stream.toString();
   }
 }

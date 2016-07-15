@@ -24,8 +24,9 @@
 
 package net.spinetrak.rpitft.data;
 
-import net.spinetrak.rpitft.command.Command;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
+
+import static net.spinetrak.rpitft.command.Commands.POWER_STATUS;
 
 public class Power
 {
@@ -40,7 +41,7 @@ public class Power
   {
     try
     {
-      parse(Command.Commands.POWER_STATUS.execute(new SingleLineStream()).resultAsString());
+      parse(POWER_STATUS.execute(new SingleLineStream()).resultAsString());
     }
     catch (final Exception ex_)
     {
