@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.data;
 
+import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ public class Power
   public final static String PRIMARY = "P";
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Power");
   private float _capacity;
+  private boolean _error = false;
   private float _power;
   private String _source;
   private float _voltage;
@@ -44,7 +46,15 @@ public class Power
   {
     try
     {
-      parse(POWER_STATUS.execute(new SingleLineStream()).resultAsString());
+      final Result result = POWER_STATUS.execute(new SingleLineStream());
+      if (0 != result.getResult())
+      {
+        _error = true;
+      }
+      else
+      {
+        parse(result.resultAsString());
+      }
     }
     catch (final Exception ex_)
     {
@@ -70,6 +80,11 @@ public class Power
   public float getVoltage()
   {
     return _voltage;
+  }
+
+  public boolean isError()
+  {
+    return _error;
   }
 
   private void parse(final String data_)

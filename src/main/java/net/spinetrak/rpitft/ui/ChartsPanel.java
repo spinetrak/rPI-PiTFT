@@ -41,17 +41,18 @@ class ChartsPanel
   private boolean _batteryAlert = false;
   private LineChart<Number, Number> _gpsLineChart;
   private XYChart.Series<Number, Number> _gpsSeries;
-  private XYChart.Series<Number, Number> _lowerVoltageSeries;
-  private XYChart.Series<Number, Number> _mainVoltageSeries;
-  private XYChart.Series<Number, Number> _middleVoltageSeries;
-  private LineChart<Number, Number> _powerLineChart;
-  private XYChart.Series<Number, Number> _upperVoltageSeries;
+  private XYChart.Series<Number, Number> _lowerSeries;
+  private LineChart<Number, Number> _mainLineChart;
+  private XYChart.Series<Number, Number> _mainSeries;
+  private XYChart.Series<Number, Number> _middleSeries;
+  private boolean _powerError = false;
+  private XYChart.Series<Number, Number> _upperSeries;
   private NumberAxis _xGPSAxis;
   private int _xGPSSeriesData = 0;
-  private NumberAxis _xPowerAxis;
-  private int _xPowerSeriesData = 0;
+  private NumberAxis _xMainAxis;
+  private int _xMainSeriesData = 0;
   private NumberAxis _yGPSAxis;
-  private NumberAxis _yPowerAxis;
+  private NumberAxis _yMainAxis;
 
   ChartsPanel()
   {
@@ -62,7 +63,7 @@ class ChartsPanel
     _center = new VBox();
     _center.setSpacing(1);
     _center.setPadding(new Insets(1));
-    _center.getChildren().add(_powerLineChart);
+    _center.getChildren().add(_mainLineChart);
     _center.getChildren().add(_gpsLineChart);
     _center.setFillWidth(true);
     _center.setPrefSize(480, 200);
@@ -72,28 +73,36 @@ class ChartsPanel
 
   void addData(final Power power_)
   {
-    _mainVoltageSeries.getData().add(new XYChart.Data<>(_xPowerSeriesData++, power_.getVoltage()));
-    _upperVoltageSeries.getData().add(new XYChart.Data<>(_xPowerSeriesData, 5.25));
-    _middleVoltageSeries.getData().add(new XYChart.Data<>(_xPowerSeriesData, 5.00));
-    _lowerVoltageSeries.getData().add(new XYChart.Data<>(_xPowerSeriesData, 4.75));
+    if (power_.isError())
+    {
+      if (!_powerError)
+      {
+        _powerError = true;
+        clearPowerData();
+        prepYAxisForDevice();
+      }
+    }
+    else
+    {
+      if (_powerError)
+      {
+        _powerError = false;
+        clearPowerData();
+        prepYAxisForPower();
+      }
+      addMainData(power_.getVoltage(), 5.25, 5.00, 4.75);
 
-    if (Power.BATTERY.equals(power_.getSource()) && !_batteryAlert)
-    {
-      _batteryAlert = true;
-      _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
+      if (Power.BATTERY.equals(power_.getSource()) && !_batteryAlert)
+      {
+        _batteryAlert = true;
+        _mainSeries.nodeProperty().get().setStyle(FX_STROKE_RED);
+      }
+      else if (Power.PRIMARY.equals(power_.getSource()) && _batteryAlert)
+      {
+        _batteryAlert = false;
+        _mainSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
+      }
     }
-    else if (Power.PRIMARY.equals(power_.getSource()) && _batteryAlert)
-    {
-      _batteryAlert = false;
-      _mainVoltageSeries.nodeProperty().get().setStyle(FX_STROKE_GREEN);
-    }
-
-    if (_mainVoltageSeries.getData().size() > MAX_DATA_POINTS)
-    {
-      _mainVoltageSeries.getData().remove(0, _mainVoltageSeries.getData().size() - MAX_DATA_POINTS);
-    }
-    _xPowerAxis.setLowerBound(_xPowerSeriesData - MAX_DATA_POINTS);
-    _xPowerAxis.setUpperBound(_xPowerSeriesData - 1);
   }
 
   void addData(final GPS gps_)
@@ -106,6 +115,12 @@ class ChartsPanel
     }
     _xGPSAxis.setLowerBound(_xGPSSeriesData - MAX_DATA_POINTS);
     _xGPSAxis.setUpperBound(_xGPSSeriesData - 1);
+
+    if (_powerError)
+    {
+      final float lon = gps_.getLongitude();
+      addMainData(lon, lon * 1.1, lon, lon * 0.9);
+    }
   }
 
   VBox getCenter()
@@ -118,9 +133,33 @@ class ChartsPanel
     return _gpsLineChart;
   }
 
-  LineChart<Number, Number> getPowerLineChart()
+  LineChart<Number, Number> getMainLineChart()
   {
-    return _powerLineChart;
+    return _mainLineChart;
+  }
+
+  private void addMainData(final float data_, final double upper_, final double middle_, final double lower_)
+  {
+    _mainSeries.getData().add(new XYChart.Data<>(_xMainSeriesData++, data_));
+    _upperSeries.getData().add(new XYChart.Data<>(_xMainSeriesData, upper_));
+    _middleSeries.getData().add(new XYChart.Data<>(_xMainSeriesData, middle_));
+    _lowerSeries.getData().add(new XYChart.Data<>(_xMainSeriesData, lower_));
+
+    if (_mainSeries.getData().size() > MAX_DATA_POINTS)
+    {
+      _mainSeries.getData().remove(0, _mainSeries.getData().size() - MAX_DATA_POINTS);
+    }
+    _xMainAxis.setLowerBound(_xMainSeriesData - MAX_DATA_POINTS);
+    _xMainAxis.setUpperBound(_xMainSeriesData - 1);
+  }
+
+  private void clearPowerData()
+  {
+    _xMainSeriesData = 0;
+    _mainSeries.getData().remove(0, _mainSeries.getData().size() - 1);
+    _upperSeries.getData().remove(0, _upperSeries.getData().size() - 1);
+    _middleSeries.getData().remove(0, _middleSeries.getData().size() - 1);
+    _lowerSeries.getData().remove(0, _lowerSeries.getData().size() - 1);
   }
 
   private void initGPSChart()
@@ -151,34 +190,45 @@ class ChartsPanel
 
   private void initPowerChart()
   {
-    _mainVoltageSeries = new XYChart.Series<>();
-    _upperVoltageSeries = new XYChart.Series<>();
-    _middleVoltageSeries = new XYChart.Series<>();
-    _lowerVoltageSeries = new XYChart.Series<>();
+    _mainSeries = new XYChart.Series<>();
+    _upperSeries = new XYChart.Series<>();
+    _middleSeries = new XYChart.Series<>();
+    _lowerSeries = new XYChart.Series<>();
 
-    _xPowerAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
-    _xPowerAxis.setTickLabelsVisible(false);
-    _xPowerAxis.setForceZeroInRange(false);
-    _xPowerAxis.setAutoRanging(false);
+    _xMainAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
+    _xMainAxis.setTickLabelsVisible(false);
+    _xMainAxis.setForceZeroInRange(false);
+    _xMainAxis.setAutoRanging(false);
 
-    _yPowerAxis = new NumberAxis();
-    _yPowerAxis.setLowerBound(4.7);
-    _yPowerAxis.setUpperBound(5.3);
-    _yPowerAxis.setTickUnit(0.3);
-    _yPowerAxis.setForceZeroInRange(false);
-    _yPowerAxis.setAutoRanging(false);
+    _yMainAxis = new NumberAxis();
+    prepYAxisForPower();
 
-    _powerLineChart = new LineChart<>(_xPowerAxis, _yPowerAxis);
-    _powerLineChart.setCreateSymbols(false);
-    _powerLineChart.setLegendVisible(false);
-    _powerLineChart.setAnimated(false);
-    _powerLineChart.setHorizontalGridLinesVisible(true);
-    _powerLineChart.setMinWidth(480);
-    _powerLineChart.setPrefSize(480, 80);
-    _powerLineChart.setMaxHeight(80);
-    _powerLineChart.setPadding(new Insets(0));
+    _mainLineChart = new LineChart<>(_xMainAxis, _yMainAxis);
+    _mainLineChart.setCreateSymbols(false);
+    _mainLineChart.setLegendVisible(false);
+    _mainLineChart.setAnimated(false);
+    _mainLineChart.setHorizontalGridLinesVisible(true);
+    _mainLineChart.setMinWidth(480);
+    _mainLineChart.setPrefSize(480, 80);
+    _mainLineChart.setMaxHeight(80);
+    _mainLineChart.setPadding(new Insets(0));
     //noinspection unchecked
-    _powerLineChart.getData().addAll(_mainVoltageSeries, _upperVoltageSeries, _middleVoltageSeries,
-                                     _lowerVoltageSeries);
+    _mainLineChart.getData().addAll(_mainSeries, _upperSeries, _middleSeries,
+                                    _lowerSeries);
+  }
+
+  private void prepYAxisForDevice()
+  {
+    _yMainAxis.setAutoRanging(true);
+    _yMainAxis.setForceZeroInRange(false);
+  }
+
+  private void prepYAxisForPower()
+  {
+    _yMainAxis.setLowerBound(4.7);
+    _yMainAxis.setUpperBound(5.3);
+    _yMainAxis.setTickUnit(0.3);
+    _yMainAxis.setAutoRanging(false);
+    _yMainAxis.setForceZeroInRange(false);
   }
 }
