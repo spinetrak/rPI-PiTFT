@@ -43,9 +43,69 @@ import java.util.Set;
 
 public class Command
 {
+  private final static String DEVICE_STATUS = "/device.sh";
+  private final static String POWER_STATUS = "/power.sh";
+  private final static String GPS_STATUS = "/gps.sh";
+  private final static String NMEA_STATUS = "/nmea.sh";
+  private final static String GPX_NEW = "/gpx.sh";
+  private final static String NMEA_BACKUP = "/nmea_backup.sh";
+  
+  public enum Commands
+  {
+    DEVICE_STATUS() 
+    {
+      @Override
+      public Result execute(final Stream stream_) 
+      { 
+        return new Command(stream_).execute(Command.init(DEVICE_STATUS));
+      }
+    },
+    POWER_STATUS() 
+    {
+      @Override
+      public Result execute(final Stream stream_) 
+      { 
+        return new Command(stream_).execute(Command.init(POWER_STATUS));
+      }
+    },
+    GPS_STATUS() 
+    {
+      @Override
+      public Result execute(final Stream stream_) 
+      { 
+        return new Command(stream_).execute(Command.init(GPS_STATUS));
+      }
+    },
+    NMEA_STATUS() 
+    {
+      @Override
+      public Result execute(final Stream stream_) 
+      { 
+        return new Command(stream_).execute(Command.init(NMEA_STATUS));
+      }
+    },
+    GPX_NEW() 
+    {
+      @Override
+      public Result execute(final Stream stream_) 
+      { 
+        return new Command(stream_).execute(Command.init(GPX_NEW));
+      }
+    },
+    NMEA_BACKUP() 
+    {
+      @Override
+      public Result execute(final Stream stream_) 
+      { 
+        return new Command(stream_).execute(Command.init(NMEA_BACKUP));
+      }
+    },;
+     
+    public abstract Result execute(final Stream stream_);
+  }
   private final Stream _stream;
 
-  public Command(final Stream stream_)
+  private Command(final Stream stream_)
   {
     _stream = stream_;
   }
@@ -55,7 +115,7 @@ public class Command
     return _stream;
   }
 
-  public static String init(final String script_)
+  private static String init(final String script_)
   {
     final String VAR_TMP = "/var/tmp";
     InputStream scriptIn = null;
@@ -111,7 +171,7 @@ public class Command
     return script;
   }
 
-  public Result execute(final String command_)
+  private Result execute(final String command_)
   {
     final CommandLine commandline = CommandLine.parse(command_);
     final DefaultExecutor exec = new DefaultExecutor();
