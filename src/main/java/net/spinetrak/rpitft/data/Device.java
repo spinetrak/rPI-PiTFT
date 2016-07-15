@@ -29,8 +29,6 @@ import net.spinetrak.rpitft.data.streams.SingleLineStream;
 
 public class Device
 {
-  private final static String DEVICE_STATUS = "/device.sh";
-  private final static String SCRIPT = Command.init(DEVICE_STATUS);
   private float _cpu;
   private float _disk;
   private float _memory;
@@ -40,7 +38,7 @@ public class Device
   {
     try
     {
-      parse(new Command(new SingleLineStream()).execute(SCRIPT).resultAsString());
+      parse(Command.Commands.DEVICE_STATUS.execute(new SingleLineStream()).resultAsString());
     }
     catch (final Exception ex_)
     {
