@@ -38,10 +38,6 @@ public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   public static final int MAX_POINTS = 480;
-  private final static String GPS_STATUS = "/gps.sh";
-  private final static String GPS_SCRIPT = Command.init(GPS_STATUS);
-  private final static String NMEA_STATUS = "/nmea.sh";
-  private final static String NMEA_SCRIPT = Command.init(NMEA_STATUS);
   private float _altitude;
   private float _latitude;
   private float _longitude;
@@ -58,7 +54,7 @@ public class GPS
     try
     {
       gps = new GPS();
-      gps.parseGPS(new Command(new SingleLineStream()).execute(GPS_SCRIPT).resultAsString());
+      gps.parseGPS(Command.COMMANDS.GPS_STATUS.execute(new SingleLineStream()).resultAsString());
     }
     catch (final Exception ex_)
     {
@@ -109,8 +105,8 @@ public class GPS
 
     try
     {
-      @SuppressWarnings("unchecked") final List<GPS> results = new Command(new NMEAStream(steps)).execute(
-        NMEA_SCRIPT).resultAsList();
+      @SuppressWarnings("unchecked")
+      final List<GPS> results = Command.Commands.NMEA_STATUS.execute(new NMEAStream(steps)).resultAsList();
       list.addAll(results);
     }
     catch (final Exception ex_)
