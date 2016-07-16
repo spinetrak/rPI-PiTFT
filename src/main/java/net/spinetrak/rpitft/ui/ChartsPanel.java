@@ -119,7 +119,7 @@ class ChartsPanel
     if (_powerError)
     {
       final float lon = gps_.getLongitude();
-      addMainData(lon, lon * 1.01, lon, lon * 0.99);
+      addMainData(lon, lon * 1.0001, lon, lon * 0.9999);
     }
   }
 
