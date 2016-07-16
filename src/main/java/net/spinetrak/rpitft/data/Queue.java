@@ -101,7 +101,7 @@ public class Queue
     {
       try
       {
-        _gpsQueue.add(GPS.fromCommand());
+        _gpsQueue.add(new GPS());
         Thread.sleep(500);
         _executor.execute(this);
       }
@@ -111,7 +111,8 @@ public class Queue
       }
     }
   }
-  
+
+  /*
   private class AddToPowerQueue implements Runnable
   {
     public void run()
@@ -128,4 +129,5 @@ public class Queue
       }
     }
   }
+  */
 }

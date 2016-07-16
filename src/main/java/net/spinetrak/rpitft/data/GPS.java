@@ -44,25 +44,19 @@ public class GPS
   private DateTime _time;
   private int _trackpoints;
 
-  private GPS()
+  GPS()
   {
-
-  }
-  static GPS fromCommand()
-  {
-    GPS gps = null;
     try
     {
-      gps = new GPS();
-      gps.parseGPS(GPS_STATUS.execute(new SingleLineStream()).resultAsString());
+      parseGPS(GPS_STATUS.execute(new SingleLineStream()).resultAsString());
     }
     catch (final Exception ex_)
     {
       LOGGER.error(ex_.getMessage());
     }
-    return gps;
   }
-  
+
+
   float parseCoordinates(final String token_)
   {
     if ((null != token_) && !token_.isEmpty() && (token_.length() == 10 || token_.length() == 11) && token_.contains(
@@ -82,13 +76,6 @@ public class GPS
       return result;
     }
     return 0;
-  }
-
-  public static GPS fromNMEA(final String nmea_)
-  {
-    final GPS gps = GPS.fromCommand();
-    gps.parseNmea(nmea_);
-    return gps;
   }
 
 
