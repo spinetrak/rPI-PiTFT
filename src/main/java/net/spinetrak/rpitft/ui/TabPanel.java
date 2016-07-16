@@ -24,11 +24,13 @@
 
 package net.spinetrak.rpitft.ui;
 
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.GPS;
+import net.spinetrak.rpitft.data.Threshold;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,13 +38,17 @@ import java.util.concurrent.Executors;
 class TabPanel
 {
   private final SingleLineChart _cpuChart;
+  private final Threshold _cpuThreshold;
   private final ExecutorService _executor;
   private final SingleLineChart _latitudeChart;
   private final SingleLineChart _longitudeChart;
   private final SingleLineChart _memoryChart;
+  private final Threshold _memoryThreshold;
   private final TabPane _tabPane;
   private final SingleLineChart _temperatureChart;
+  private final Threshold _temperatureThreshold;
   private SingleLineChart _altitudeChart;
+  private boolean _inFocus;
 
   TabPanel()
   {
@@ -61,14 +67,17 @@ class TabPanel
     final Tab cpuTab = new Tab("cpu");
     _cpuChart = new SingleLineChart();
     cpuTab.setContent(_cpuChart.getChart());
+    _cpuThreshold = new Threshold(_cpuChart.getChart(), 90, 80);
 
     final Tab memTab = new Tab("mem");
     _memoryChart = new SingleLineChart();
     memTab.setContent(_memoryChart.getChart());
+    _memoryThreshold = new Threshold(_memoryChart.getChart(), 90, 80);
 
     final Tab temTab = new Tab("temp");
     _temperatureChart = new SingleLineChart();
     temTab.setContent(_temperatureChart.getChart());
+    _temperatureThreshold = new Threshold(_temperatureChart.getChart(), 85, 75);
 
     _tabPane = new TabPane();
     _tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
@@ -81,8 +90,12 @@ class TabPanel
       return thread;
     });
     final TransitionTabs transitionTabs = new TransitionTabs();
-    _executor.execute(transitionTabs);
 
+    _tabPane.focusedProperty().addListener(
+      (final ObservableValue<? extends Boolean> observableValue_, final Boolean old_, final Boolean new_) -> {
+        _inFocus = new_;
+      });
+    _executor.execute(transitionTabs);
   }
 
 
@@ -95,9 +108,17 @@ class TabPanel
 
   void addData(final Device device_)
   {
-    _cpuChart.addData(device_.getCpu());
-    _memoryChart.addData(device_.getMemory());
-    _temperatureChart.addData(device_.getTemperature());
+    final float cpu = device_.getCpu();
+    _cpuChart.addData(cpu);
+    _cpuThreshold.setColor(cpu);
+
+    final float memory = device_.getMemory();
+    _memoryChart.addData(memory);
+    _memoryThreshold.setColor(memory);
+
+    float temperature = device_.getTemperature();
+    _temperatureChart.addData(temperature);
+    _temperatureThreshold.setColor(temperature);
   }
 
   Node getCenter()
@@ -111,12 +132,15 @@ class TabPanel
     {
       try
       {
-        final int before = _tabPane.getSelectionModel().getSelectedIndex();
-        _tabPane.getSelectionModel().selectNext();
-        final int after = _tabPane.getSelectionModel().getSelectedIndex();
-        if (before == after)
+        if (!_inFocus)
         {
-          _tabPane.getSelectionModel().selectFirst();
+          final int before = _tabPane.getSelectionModel().getSelectedIndex();
+          _tabPane.getSelectionModel().selectNext();
+          final int after = _tabPane.getSelectionModel().getSelectedIndex();
+          if (before == after)
+          {
+            _tabPane.getSelectionModel().selectFirst();
+          }
         }
         Thread.sleep(5000);
         _executor.execute(this);

@@ -34,8 +34,6 @@ class Charts
   static final int MIN_HEIGHT = 320;
   static final int MIN_TOP_HEIGHT = 40;
   static final int MIN_WIDTH = 480;
-  private static final String FX_STROKE_GREEN = "-fx-stroke: green;";
-  private static final String FX_STROKE_RED = "-fx-stroke: red;";
   private static final int MIN_CENTER_HEIGHT = 255;
 
   static void setPreferences(final LineChart gpsLineChart_)

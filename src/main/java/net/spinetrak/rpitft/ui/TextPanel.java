@@ -90,7 +90,7 @@ class TextPanel
 
     _temperature = new Text("[xx.x C°]");
     _top.getChildren().add(_temperature);
-    _temperatureThreshold = new Threshold(_temperature, 80, 75);
+    _temperatureThreshold = new Threshold(_temperature, 85, 75);
 
     _cpu = new Text("[xx.xx% cpu]");
     _top.getChildren().add(_cpu);

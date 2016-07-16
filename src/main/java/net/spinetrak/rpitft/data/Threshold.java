@@ -24,22 +24,29 @@
 
 package net.spinetrak.rpitft.data;
 
+import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
 import javafx.scene.text.Text;
+
+import static net.spinetrak.rpitft.data.Threshold.State.*;
 
 public class Threshold
 {
   private static final String FX_FILL_AMBER = "-fx-fill: orange;";
   private static final String FX_FILL_GREEN = "-fx-fill: green;";
   private static final String FX_FILL_RED = "-fx-fill: red;";
+  private static final String FX_STROKE_AMBER = "-fx-stroke: orange;";
+  private static final String FX_STROKE_GREEN = "-fx-stroke: green;";
+  private static final String FX_STROKE_RED = "-fx-stroke: red;";
   private final float _amber;
   private final boolean _inverse;
+  private final Node _node;
   private final float _red;
-  private final Text _text;
   private State _state = null;
 
-  public Threshold(final Text text_, final float red_, final float amber_)
+  public Threshold(final Node node_, final float red_, final float amber_)
   {
-    _text = text_;
+    _node = node_;
     _red = red_;
     _amber = amber_;
     _inverse = red_ < amber_;
@@ -49,46 +56,90 @@ public class Threshold
   {
     if (!_inverse)
     {
-      if (data_ >= _red && _state != State.RED)
+      if (data_ >= _red && _state != RED)
       {
-        _state = State.RED;
-        _text.setStyle(FX_FILL_RED);
+        _state = RED;
+        RED.setStyle(_node);
       }
       else if (data_ < _red && data_ >= _amber && _state != State.AMBER)
       {
         _state = State.AMBER;
-        _text.setStyle(FX_FILL_AMBER);
+        AMBER.setStyle(_node);
       }
-      else if (data_ < _amber && _state != State.GREEN)
+      else if (data_ < _amber && _state != GREEN)
       {
-        _state = State.GREEN;
-        _text.setStyle(FX_FILL_GREEN);
+        _state = GREEN;
+        GREEN.setStyle(_node);
       }
     }
     else
     {
-      if (data_ <= _red && _state != State.RED)
+      if (data_ <= _red && _state != RED)
       {
-        _state = State.RED;
-        _text.setStyle(FX_FILL_RED);
+        _state = RED;
+        RED.setStyle(_node);
       }
       else if (data_ > _red && data_ <= _amber && _state != State.AMBER)
       {
         _state = State.AMBER;
-        _text.setStyle(FX_FILL_AMBER);
+        AMBER.setStyle(_node);
       }
-      else if (data_ > _amber && _state != State.GREEN)
+      else if (data_ > _amber && _state != GREEN)
       {
-        _state = State.GREEN;
-        _text.setStyle(FX_FILL_GREEN);
+        _state = GREEN;
+        GREEN.setStyle(_node);
       }
     }
   }
 
-  private enum State
+  enum State
   {
-    RED,
-    AMBER,
+    RED
+      {
+        @Override
+        void setStyle(final Node node_)
+        {
+          if (node_ instanceof Text)
+          {
+            node_.setStyle(FX_FILL_RED);
+          }
+          else if (node_ instanceof LineChart)
+          {
+            node_.setStyle(FX_STROKE_RED);
+          }
+        }
+      },
+    AMBER
+      {
+        @Override
+        void setStyle(final Node node_)
+        {
+          if (node_ instanceof Text)
+          {
+            node_.setStyle(FX_FILL_AMBER);
+          }
+          else if (node_ instanceof LineChart)
+          {
+            node_.setStyle(FX_STROKE_AMBER);
+          }
+        }
+      },
     GREEN
+      {
+        @Override
+        void setStyle(final Node node_)
+        {
+          if (node_ instanceof Text)
+          {
+            node_.setStyle(FX_FILL_GREEN);
+          }
+          else if (node_ instanceof LineChart)
+          {
+            node_.setStyle(FX_STROKE_GREEN);
+          }
+        }
+      };
+
+    abstract void setStyle(final Node node_);
   }
 }
