@@ -26,8 +26,6 @@ package net.spinetrak.rpitft.data.streams;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SingleLineStream extends ByteArrayOutputStream implements Stream
 {
@@ -35,11 +33,5 @@ public class SingleLineStream extends ByteArrayOutputStream implements Stream
   public OutputStream getStream()
   {
     return this;
-  }
-
-  @Override
-  public List toList()
-  {
-    return new ArrayList<String>();
   }
 }

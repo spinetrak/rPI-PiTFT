@@ -33,10 +33,10 @@ import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.Queue;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static net.spinetrak.rpitft.ui.Charts.*;
+import static net.spinetrak.rpitft.ui.Charts.MIN_HEIGHT;
+import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
 
 public class Main extends Application
 {
@@ -71,22 +71,6 @@ public class Main extends Application
       final GPS gps = gpsQueue_.remove();
       _textPanel.addData(gps);
       _tabPanel.addData(gps);
-    }
-    if (gpsQueue_.isEmpty() && !_added)
-    {
-      _added = true;
-      int count = 0;
-      final List<GPS> data = GPS.getNMEAData();
-      for (final GPS gps : data)
-      {
-        count++;
-        _textPanel.addData(gps);
-        _tabPanel.addData(gps);
-        if (count >= MAX_DATA_POINTS)
-        {
-          break;
-        }
-      }
     }
   }
 

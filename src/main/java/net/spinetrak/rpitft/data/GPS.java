@@ -24,7 +24,6 @@
 
 package net.spinetrak.rpitft.data;
 
-import net.spinetrak.rpitft.data.streams.NMEAStream;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -32,11 +31,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static net.spinetrak.rpitft.command.Commands.GPS_STATUS;
-import static net.spinetrak.rpitft.command.Commands.NMEA_STATUS;
 
 public class GPS
 {
@@ -91,36 +86,11 @@ public class GPS
 
   public static GPS fromNMEA(final String nmea_)
   {
-    final GPS gps = new GPS();
+    final GPS gps = GPS.fromCommand();
     gps.parseNmea(nmea_);
     return gps;
   }
 
-  public static List<GPS> getNMEAData()
-  {
-    final List<GPS> list = new ArrayList<>();
-
-    final GPS gps = GPS.fromCommand();
-    final int points = gps.getTrackpoints();
-    final int steps = points / MAX_POINTS;
-    if (points == 0 || steps == 0)
-    {
-      return list;
-    }
-
-    try
-    {
-      @SuppressWarnings("unchecked")
-      final List<GPS> results = NMEA_STATUS.execute(new NMEAStream(steps)).resultAsList();
-      list.addAll(results);
-    }
-    catch (final Exception ex_)
-    {
-      LOGGER.error(ex_.getMessage());
-    }
-
-    return list;
-  }
 
   @Override
   public boolean equals(final Object obj_)

@@ -26,8 +26,6 @@ package net.spinetrak.rpitft.command;
 
 import net.spinetrak.rpitft.data.streams.Stream;
 
-import java.util.List;
-
 public class Result
 {
   private final int _result;
@@ -44,10 +42,6 @@ public class Result
     return _result;
   }
 
-  public List resultAsList()
-  {
-    return _stream.toList();
-  }
 
   public String resultAsString()
   {

@@ -25,11 +25,8 @@
 package net.spinetrak.rpitft.data.streams;
 
 import java.io.OutputStream;
-import java.util.List;
 
 public interface Stream
 {
   OutputStream getStream();
-
-  List toList();
 }

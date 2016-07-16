@@ -58,8 +58,8 @@ public class Queue
     final AddToDeviceQueue addToDeviceQueue = new AddToDeviceQueue();
     _executor.execute(addToDeviceQueue);
 
-    final TransitionTabs transitionTabs = new TransitionTabs();
-    _executor.execute(transitionTabs);
+    final AddToGPSQueue addToGPSQueue = new AddToGPSQueue();
+    _executor.execute(addToGPSQueue);
 
     //final AddToPowerQueue addToPowerQueue = new AddToPowerQueue();
     //_executor.execute(addToPowerQueue);
@@ -94,14 +94,14 @@ public class Queue
       }
     }
   }
-  
-  private class AddToPowerQueue implements Runnable
+
+  private class AddToGPSQueue implements Runnable
   {
     public void run()
     {
       try
       {
-        _powerQueue.add(new Power());
+        _gpsQueue.add(GPS.fromCommand());
         Thread.sleep(500);
         _executor.execute(this);
       }
@@ -111,8 +111,8 @@ public class Queue
       }
     }
   }
-
-  private class TransitionTabs implements Runnable
+  
+  private class AddToPowerQueue implements Runnable
   {
     public void run()
     {

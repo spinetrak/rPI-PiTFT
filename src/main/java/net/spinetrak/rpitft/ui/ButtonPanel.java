@@ -33,7 +33,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import net.spinetrak.rpitft.command.Result;
-import net.spinetrak.rpitft.data.streams.GPXStream;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,7 +119,7 @@ class ButtonPanel
       {
         _error.setText("Generating GPX file...");
 
-        final Result result = GPX_NEW.execute(new GPXStream());
+        final Result result = GPX_NEW.execute(new SingleLineStream());
         if (0 == result.getResult())
         {
           _error.setText("GPX file generated.");
