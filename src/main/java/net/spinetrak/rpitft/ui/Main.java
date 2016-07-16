@@ -31,16 +31,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.spinetrak.rpitft.data.Device;
 import net.spinetrak.rpitft.data.GPS;
-import net.spinetrak.rpitft.data.Power;
 import net.spinetrak.rpitft.data.Queue;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static net.spinetrak.rpitft.ui.Charts.*;
+
 public class Main extends Application
 {
   private boolean _added = false;
-  private ChartsPanel _chartsPanel;
+  private TabPanel _tabPanel;
   private TextPanel _textPanel;
 
   public static void main(String[] args_)
@@ -48,27 +49,28 @@ public class Main extends Application
     launch(args_);
   }
 
-  public void addDataToSeries(final ConcurrentLinkedQueue<Power> powerQueue_,
+  public void addDataToSeries(//final ConcurrentLinkedQueue<Power> powerQueue_,
                               final ConcurrentLinkedQueue<Device> deviceQueue_,
                               final ConcurrentLinkedQueue<GPS> gpsQueue_)
   {
+    /*
     while (!powerQueue_.isEmpty())
     {
       final Power power = powerQueue_.remove();
       _textPanel.addData(power);
-      _chartsPanel.addData(power);
-
     }
+    */
     while (!deviceQueue_.isEmpty())
     {
       final Device device = deviceQueue_.remove();
       _textPanel.addData(device);
+      _tabPanel.addData(device);
     }
     while (!gpsQueue_.isEmpty())
     {
       final GPS gps = gpsQueue_.remove();
       _textPanel.addData(gps);
-      _chartsPanel.addData(gps);
+      _tabPanel.addData(gps);
     }
     if (gpsQueue_.isEmpty() && !_added)
     {
@@ -79,8 +81,8 @@ public class Main extends Application
       {
         count++;
         _textPanel.addData(gps);
-        _chartsPanel.addData(gps);
-        if (count >= 480)
+        _tabPanel.addData(gps);
+        if (count >= MAX_DATA_POINTS)
         {
           break;
         }
@@ -101,25 +103,25 @@ public class Main extends Application
 
   private void init(final Stage stage_)
   {
-    _chartsPanel = new ChartsPanel();
+    _tabPanel = new TabPanel();
     _textPanel = new TextPanel();
 
     final BorderPane border = new BorderPane();
     border.setPadding(new Insets(1));
-    border.setPrefSize(480, 320);
-    border.setMaxHeight(320);
-    border.setMinHeight(320);
-    border.setMaxWidth(480);
-    border.setMinWidth(480);
+    border.setPrefSize(MIN_WIDTH, MIN_HEIGHT);
+    border.setMaxHeight(MIN_HEIGHT);
+    border.setMinHeight(MIN_HEIGHT);
+    border.setMaxWidth(MIN_WIDTH);
+    border.setMinWidth(MIN_WIDTH);
 
-    border.setCenter(_chartsPanel.getCenter());
+    border.setCenter(_tabPanel.getCenter());
 
     border.setTop(_textPanel.getTop());
 
     final ButtonPanel buttonPanel = new ButtonPanel();
     border.setBottom(buttonPanel.getBottom());
 
-    final Scene scene = new Scene(border, 480, 320);
+    final Scene scene = new Scene(border, MIN_WIDTH, MIN_HEIGHT);
     scene.getStylesheets().add("stylesheet.css");
     stage_.setScene(scene);
     stage_.setFullScreen(true);

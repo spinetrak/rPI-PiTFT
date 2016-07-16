@@ -36,13 +36,18 @@ import org.joda.time.DateTime;
 
 import java.util.Date;
 
+import static net.spinetrak.rpitft.ui.Charts.MIN_TOP_HEIGHT;
+import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
+
 class TextPanel
 {
-  private final Text _altitude;
+  /*
   private final Text _batteryCapacity;
   private final Threshold _batteryCapacityThreshold;
   private final Text _batteryPower;
   private final Threshold _batteryPowerThreshold;
+  */
+  private final Text _altitude;
   private final Text _cpu;
   private final Threshold _cpuThreshold;
   private final Text _disk;
@@ -62,8 +67,8 @@ class TextPanel
   TextPanel()
   {
     _top = new FlowPane(Orientation.HORIZONTAL);
-    _top.setMinHeight(60);
-    _top.setPrefSize(480, 60);
+    _top.setMinHeight(MIN_TOP_HEIGHT);
+    _top.setPrefSize(MIN_WIDTH, MIN_TOP_HEIGHT);
     _top.setPadding(new Insets(1));
 
     _time = new Text("[hh:mm:ss]");
@@ -99,6 +104,7 @@ class TextPanel
     _top.getChildren().add(_memory);
     _memoryThreshold = new Threshold(_memory, 90, 80);
 
+    /*
     _batteryCapacity = new Text("[xxx.xx% bat]");
     _top.getChildren().add(_batteryCapacity);
     _batteryCapacityThreshold = new Threshold(_batteryCapacity, 25, 50);
@@ -106,10 +112,12 @@ class TextPanel
     _batteryPower = new Text("[xxx.xxx mA]");
     _top.getChildren().add(_batteryPower);
     _batteryPowerThreshold = new Threshold(_batteryPower, 400, 500);
+    */
   }
 
   void addData(final Power power_)
   {
+    /*
     final float capacity = power_.getCapacity();
     final float power = power_.getPower();
 
@@ -118,6 +126,7 @@ class TextPanel
 
     _batteryPower.setText(String.format("[%.2f mA]", power));
     _batteryPowerThreshold.setColor(power);
+    */
   }
 
   void addData(final Device device_)

@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
+import static net.spinetrak.rpitft.ui.Charts.MIN_BOTTOM_HEIGHT;
+import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
 
 class ButtonPanel
 {
@@ -54,8 +56,8 @@ class ButtonPanel
     _bottom.setPadding(new Insets(1));
     _bottom.setSpacing(1);
     _bottom.setAlignment(Pos.CENTER_RIGHT);
-    _bottom.setPrefSize(480, 20);
-    _bottom.setMinHeight(20);
+    _bottom.setPrefSize(MIN_WIDTH, MIN_BOTTOM_HEIGHT);
+    _bottom.setMinHeight(MIN_BOTTOM_HEIGHT);
 
     _error = new Text(DEFAULT_TEXT);
     _bottom.getChildren().add(_error);

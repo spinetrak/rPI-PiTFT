@@ -22,36 +22,31 @@
  * SOFTWARE.
  */
 
-.chart-series-line {
-    -fx-stroke-width: 1px;
-    -fx-effect: null;
-}
+package net.spinetrak.rpitft.ui;
 
-.default-color0.chart-series-line {
-    -fx-stroke: #00ff00;
-}
+import javafx.geometry.Insets;
+import javafx.scene.chart.LineChart;
 
-.default-color1.chart-series-line {
-    -fx-stroke: #ff0000;
-}
+class Charts
+{
+  static final int MAX_DATA_POINTS = 480;
+  static final int MIN_BOTTOM_HEIGHT = 20;
+  static final int MIN_HEIGHT = 320;
+  static final int MIN_TOP_HEIGHT = 40;
+  static final int MIN_WIDTH = 480;
+  private static final String FX_STROKE_GREEN = "-fx-stroke: green;";
+  private static final String FX_STROKE_RED = "-fx-stroke: red;";
+  private static final int MIN_CENTER_HEIGHT = 255;
 
-.default-color2.chart-series-line {
-    -fx-stroke: #0000ff;
-}
-
-.default-color3.chart-series-line {
-    -fx-stroke: #ff0000;
-}
-
-.root {
-    -fx-font: 16px "Courier New";
-}
-
-.axis {
-    -fx-tick-label-font-size: 10px;
-}
-
-.tab .tab-label {
-    -fx-text-fill: -fx-text-base-color;
-    -fx-font-size: 12px;
+  static void setPreferences(final LineChart gpsLineChart_)
+  {
+    gpsLineChart_.setCreateSymbols(false);
+    gpsLineChart_.setLegendVisible(false);
+    gpsLineChart_.setAnimated(false);
+    gpsLineChart_.setHorizontalGridLinesVisible(true);
+    gpsLineChart_.setMinWidth(MIN_WIDTH);
+    gpsLineChart_.setPrefSize(MIN_WIDTH, MIN_CENTER_HEIGHT);
+    gpsLineChart_.setMaxHeight(MIN_CENTER_HEIGHT);
+    gpsLineChart_.setPadding(new Insets(0));
+  }
 }
