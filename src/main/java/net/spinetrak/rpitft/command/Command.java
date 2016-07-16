@@ -68,7 +68,7 @@ class Command
     }
     catch (final IOException ex_)
     {
-      LOGGER.error(ex_.getMessage());
+      //LOGGER.error(ex_.getMessage());
     }
     return new Result(stream_, result);
   }
