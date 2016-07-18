@@ -34,10 +34,9 @@ import net.spinetrak.rpitft.data.Power;
 import net.spinetrak.rpitft.data.Threshold;
 import org.joda.time.DateTime;
 
-import java.util.Date;
-
 import static net.spinetrak.rpitft.ui.Charts.MIN_TOP_HEIGHT;
 import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
+import static org.joda.time.DateTimeZone.UTC;
 
 class TextPanel
 {
@@ -168,7 +167,22 @@ class TextPanel
     _trackPoints.setText(String.format("[%d]", trackpoints));
     _trackpointsThreshold.setColor(trackpoints);
   }
-  
+
+  int getTimeDifferenceInSeconds(final DateTime time_)
+  {
+    if (time_ == null)
+    {
+      return 0;
+    }
+    final int nowSeconds = (int) ((new DateTime(UTC).getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
+    final int timeSeconds = (int) ((time_.getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
+    if (nowSeconds < timeSeconds)
+    {
+      return 60;
+    }
+    return nowSeconds - timeSeconds;
+  }
+
   FlowPane getTop()
   {
     return _top;
@@ -182,21 +196,6 @@ class TextPanel
   private String formatLongitude(final float longitude_)
   {
     return String.format("[%.4f %s]", longitude_, longitude_ > 0 ? "E" : "W");
-  }
-
-  private int getTimeDifferenceInSeconds(final DateTime time_)
-  {
-    if (time_ == null)
-    {
-      return 0;
-    }
-    final int nowSeconds = (int) ((new Date().getTime() % (24 * 60 * 60 * 1000L)) / 1000);
-    final int timeSeconds = (int) ((time_.getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
-    if (nowSeconds > timeSeconds)
-    {
-      return 60;
-    }
-    return nowSeconds - timeSeconds;
   }
 
 }
