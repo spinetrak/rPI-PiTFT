@@ -72,7 +72,7 @@ class TextPanel
 
     _time = new Text("[hh:mm:ss]");
     _top.getChildren().add(_time);
-    _timeThreshold = new Threshold(_time, 10000, 30000);
+    _timeThreshold = new Threshold(_time, 10, 30);
 
     _latitude = new Text("[xxxx.xxx N]");
     _top.getChildren().add(_latitude);
