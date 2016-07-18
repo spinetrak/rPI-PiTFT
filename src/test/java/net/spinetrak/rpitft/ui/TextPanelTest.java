@@ -28,21 +28,29 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TextPanelTest
 {
   @org.junit.Test
   public void getTimeDifferenceInSeconds()
   {
-    final TextPanel textPanel = new TextPanel();
-    final int zero = textPanel.getTimeDifferenceInSeconds(new DateTime(DateTimeZone.UTC));
-    assertEquals(0, zero);
+    try
+    {
+      final TextPanel textPanel = new TextPanel();
+      final int zero = textPanel.getTimeDifferenceInSeconds(new DateTime(DateTimeZone.UTC));
+      assertEquals(0, zero);
 
-    final int ten = textPanel.getTimeDifferenceInSeconds(new DateTime(DateTimeZone.UTC).minusSeconds(10));
-    assertEquals(10, ten);
+      final int ten = textPanel.getTimeDifferenceInSeconds(new DateTime(DateTimeZone.UTC).minusSeconds(10));
+      assertEquals(10, ten);
 
-    final int minusten = textPanel.getTimeDifferenceInSeconds(new DateTime(DateTimeZone.UTC).minusSeconds(-10));
-    assertEquals(60, minusten);
+      final int minusten = textPanel.getTimeDifferenceInSeconds(new DateTime(DateTimeZone.UTC).minusSeconds(-10));
+      assertEquals(60, minusten);
+    }
+    catch (final RuntimeException ex_)
+    {
+      assertTrue(ex_.getMessage().contains("Internal graphics not initialized yet"));
+    }
   }
 
 }
