@@ -12,7 +12,7 @@ Components:
 What does it do?
 - displays various JavaFX linecharts in a tab panel for various data series
   - ~~S.USV backup battery status in a JavaFX linechart~~ 
-  - RPi3 cpu / disk / temperature
+  - RPi3 cpu / disk / memory / temperature
   - GPS location (latitude, longitude, altitude)
 - creates GPX file from current NMEA log
  
