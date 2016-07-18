@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.ui;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -85,6 +86,9 @@ class ButtonPanel
     shutdown.setPrefSize(15, 15);
     shutdown.setMaxHeight(15);
     _bottom.getChildren().add(shutdown);
+
+    Platform.runLater(gpx::requestFocus);
+
   }
 
   HBox getBottom()

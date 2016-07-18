@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.data;
 
+import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -38,23 +39,36 @@ public class GPS
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.GPS");
   private float _altitude;
+  private boolean _hasError = false;
   private float _latitude;
   private float _longitude;
   private DateTime _time;
   private int _trackpoints;
-
   GPS()
   {
     try
     {
-      parseGPS(GPS_STATUS.execute(new SingleLineStream()).resultAsString());
+      final Result result = GPS_STATUS.execute(new SingleLineStream());
+      if (0 != result.getResult())
+      {
+        _hasError = true;
+      }
+      else
+      {
+        parseGPS(result.resultAsString());
+      }
     }
     catch (final Exception ex_)
     {
+      _hasError = true;
       LOGGER.error(ex_.getMessage());
     }
   }
 
+  boolean isHasError()
+  {
+    return _hasError;
+  }
 
   float parseCoordinates(final String token_)
   {
@@ -76,7 +90,6 @@ public class GPS
     }
     return 0;
   }
-
 
   @Override
   public boolean equals(final Object obj_)

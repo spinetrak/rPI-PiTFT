@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.data;
 
+import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,19 +36,33 @@ public class Device
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Device");
   private float _cpu;
   private float _disk;
+  private boolean _hasError = false;
   private float _memory;
   private float _temperature;
-
   Device()
   {
     try
     {
-      parse(DEVICE_STATUS.execute(new SingleLineStream()).resultAsString());
+      final Result result = DEVICE_STATUS.execute(new SingleLineStream());
+      if (0 != result.getResult())
+      {
+        _hasError = true;
+      }
+      else
+      {
+        parse(result.resultAsString());
+      }
     }
     catch (final Exception ex_)
     {
+      _hasError = true;
       LOGGER.error(ex_.getMessage());
     }
+  }
+
+  boolean isHasError()
+  {
+    return _hasError;
   }
 
   public float getCpu()

@@ -33,11 +33,11 @@ import static net.spinetrak.rpitft.command.Commands.POWER_STATUS;
 
 public class Power
 {
-  public final static String BATTERY = "B";
-  public final static String PRIMARY = "P";
+  private final static String BATTERY = "B";
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Power");
+  private final static String PRIMARY = "P";
   private float _capacity;
-  private boolean _error = false;
+  private boolean _hasError = false;
   private float _power;
   private String _source;
   private float _voltage;
@@ -49,7 +49,7 @@ public class Power
       final Result result = POWER_STATUS.execute(new SingleLineStream());
       if (0 != result.getResult())
       {
-        _error = true;
+        _hasError = true;
       }
       else
       {
@@ -58,6 +58,7 @@ public class Power
     }
     catch (final Exception ex_)
     {
+      _hasError = true;
       LOGGER.error(ex_.getMessage());
     }
   }
@@ -82,9 +83,9 @@ public class Power
     return _voltage;
   }
 
-  public boolean isError()
+  public boolean isHasError()
   {
-    return _error;
+    return _hasError;
   }
 
   private void parse(final String data_)

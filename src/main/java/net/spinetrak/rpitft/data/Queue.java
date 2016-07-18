@@ -84,7 +84,11 @@ public class Queue
     {
       try
       {
-        _deviceQueue.add(new Device());
+        final Device device = new Device();
+        if (!device.isHasError())
+        {
+          _deviceQueue.add(new Device());
+        }
         Thread.sleep(500);
         _executor.execute(this);
       }
@@ -101,7 +105,11 @@ public class Queue
     {
       try
       {
-        _gpsQueue.add(new GPS());
+        final GPS gps = new GPS();
+        if (!gps.isHasError() && !(gps.getLatitude() == 0 && gps.getLongitude() == 0))
+        {
+          _gpsQueue.add(new GPS());
+        }
         Thread.sleep(500);
         _executor.execute(this);
       }
@@ -119,7 +127,11 @@ public class Queue
     {
       try
       {
-        _powerQueue.add(new Power());
+        final Power power = new Power()
+        if(!power.haError())
+        {
+          _powerQueue.add(new Power());
+        }
         Thread.sleep(500);
         _executor.execute(this);
       }
