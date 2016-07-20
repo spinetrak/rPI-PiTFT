@@ -106,7 +106,12 @@ public class Queue
       try
       {
         final GPS gps = new GPS();
-        if (!gps.isHasError() && !(gps.getLatitude() == 0 && gps.getLongitude() == 0))
+        //noinspection StatementWithEmptyBody
+        if (gps.isHasError() || gps.getLatitude() == 0 || gps.getLongitude() == 0 || gps.getAltitude() == 0)
+        {
+          //left empty on purpose
+        }
+        else
         {
           _gpsQueue.add(new GPS());
         }
