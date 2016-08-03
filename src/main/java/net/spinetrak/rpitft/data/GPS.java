@@ -44,6 +44,7 @@ public class GPS
   private float _longitude;
   private DateTime _time;
   private int _trackpoints;
+
   GPS()
   {
     try
@@ -55,7 +56,7 @@ public class GPS
       }
       else
       {
-        parseGPS(result.resultAsString());
+        _hasError = parseGPS(result.resultAsString());
       }
     }
     catch (final Exception ex_)
@@ -88,26 +89,45 @@ public class GPS
       }
       return result;
     }
-    return 0;
+    return -1000;
   }
 
   @Override
-  public boolean equals(final Object obj_)
+  public boolean equals(final Object o_)
   {
-    if (this == obj_)
+    if (this == o_)
     {
       return true;
     }
-    if (!(obj_ instanceof GPS))
+    if (!(o_ instanceof GPS))
     {
       return false;
     }
 
-    final GPS gps = (GPS) obj_;
+    final GPS gps = (GPS) o_;
 
-    return !((Float.compare(gps._altitude, _altitude) != 0) || (Float.compare(gps._latitude,
-                                                                              _latitude) != 0) || Float.compare(
-      gps._longitude, _longitude) != 0);
+    if (Float.compare(gps._altitude, _altitude) != 0)
+    {
+      return false;
+    }
+    if (_hasError != gps._hasError)
+    {
+      return false;
+    }
+    if (Float.compare(gps._latitude, _latitude) != 0)
+    {
+      return false;
+    }
+    if (Float.compare(gps._longitude, _longitude) != 0)
+    {
+      return false;
+    }
+    if (_trackpoints != gps._trackpoints)
+    {
+      return false;
+    }
+    return _time != null ? _time.equals(gps._time) : gps._time == null;
+
   }
 
   public float getAltitude()
@@ -156,31 +176,33 @@ public class GPS
       '}';
   }
 
-  private void parseAltitude(final String token_)
+  private boolean parseAltitude(final String token_)
   {
     if ((null != token_) && !token_.isEmpty())
     {
       _altitude = Float.parseFloat(token_.trim());
+      return true;
     }
+    return false;
   }
 
-  private void parseGPS(final String data_)
+  private boolean parseGPS(final String data_)
   {
     final String tokens[] = data_.split("/");
     if (tokens.length == 5)
     {
-      parseTime(tokens[0]);
-
+      boolean parsedTime = parseTime(tokens[0]);
+      boolean parsedTrackpoints = parseTrackpoints(tokens[3]);
+      boolean parsedAltitude = parseAltitude(tokens[4]);
       _latitude = parseCoordinates(tokens[1]);
-
       _longitude = parseCoordinates(tokens[2]);
 
-      parseTrackpoints(tokens[3]);
-      parseAltitude(tokens[4]);
+      return parsedTime && parsedAltitude && parsedTrackpoints && _latitude != -1000 && _longitude != -1000;
     }
+    return false;
   }
 
-  private void parseNmea(final String line_)
+  private boolean parseNmea(final String line_)
   {
     if(null != line_ && !line_.isEmpty())
     {
@@ -188,28 +210,38 @@ public class GPS
       if (tokens.length > 10)
       {
         final String[] time = tokens[1].split("\\.");
-        parseTime(time[0]);
+        boolean parsedTime = parseTime(time[0]);
+        boolean parsedAltitude = parseAltitude(tokens[9]);
         _latitude = parseCoordinates(tokens[2] + tokens[3]);
         _longitude = parseCoordinates(tokens[4] + tokens[5]);
-        parseAltitude(tokens[9]);
+
+        return parsedTime && parsedAltitude && _latitude != -1000 && _longitude != -1000;
       }
     }
+    return false;
   }
 
-  private void parseTime(final String token_)
+  private boolean parseTime(final String token_)
   {
     if ((null != token_) && !token_.isEmpty() && (token_.length() == 6))
     {
       final String[] tokens = token_.split("(?<=\\G..)");
       _time = DTF.parseDateTime(tokens[0] + ":" + tokens[1] + ":" + tokens[2]);
+      return true;
     }
+    return false;
   }
 
-  private void parseTrackpoints(final String token_)
+  private boolean parseTrackpoints(final String token_)
   {
     if ((null != token_) && !token_.isEmpty())
     {
       _trackpoints = Integer.parseInt(token_.replaceAll("[\\D]", ""));
+      if (_trackpoints > 0)
+      {
+        return true;
+      }
     }
+    return false;
   }
 }

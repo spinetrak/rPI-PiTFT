@@ -45,7 +45,7 @@ import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
 
 class ButtonPanel
 {
-  private final static String DEFAULT_TEXT = "";
+  private final static String DEFAULT_TEXT = "----------------------------------";
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.ui.ButtonPanel");
   private final HBox _bottom;
   private final Text _error;
