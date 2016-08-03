@@ -50,14 +50,7 @@ public class GPS
     try
     {
       final Result result = GPS_STATUS.execute(new SingleLineStream());
-      if (0 != result.getResult())
-      {
-        _hasError = true;
-      }
-      else
-      {
-        _hasError = parseGPS(result.resultAsString());
-      }
+      _hasError = 0 != result.getResult() || !parseGPS(result.resultAsString());
     }
     catch (final Exception ex_)
     {

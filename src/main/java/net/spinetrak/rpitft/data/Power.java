@@ -47,14 +47,7 @@ public class Power
     try
     {
       final Result result = POWER_STATUS.execute(new SingleLineStream());
-      if (0 != result.getResult())
-      {
-        _hasError = true;
-      }
-      else
-      {
-        _hasError = parse(result.resultAsString());
-      }
+      _hasError = 0 != result.getResult() || !parse(result.resultAsString());
     }
     catch (final Exception ex_)
     {
