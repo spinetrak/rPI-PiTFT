@@ -39,6 +39,7 @@ public class Device
   private boolean _hasError = false;
   private float _memory;
   private float _temperature;
+
   Device()
   {
     try
@@ -50,7 +51,7 @@ public class Device
       }
       else
       {
-        parse(result.resultAsString());
+        _hasError = parse(result.resultAsString());
       }
     }
     catch (final Exception ex_)
@@ -85,7 +86,7 @@ public class Device
     return _temperature;
   }
 
-  private void parse(final String data_)
+  private boolean parse(final String data_)
   {
     final String[] tokens = data_.split("/");
     if (tokens.length == 4)
@@ -94,7 +95,9 @@ public class Device
       _disk = Float.parseFloat(tokens[1]);
       _memory = Float.parseFloat(tokens[2]);
       _temperature = Float.parseFloat(tokens[3]);
+      return true;
     }
+    return false;
   }
 
 }

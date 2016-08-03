@@ -87,7 +87,7 @@ public class Queue
         final Device device = new Device();
         if (!device.isHasError())
         {
-          _deviceQueue.add(new Device());
+          _deviceQueue.add(device);
         }
         Thread.sleep(500);
         _executor.execute(this);

@@ -53,7 +53,7 @@ public class Power
       }
       else
       {
-        parse(result.resultAsString());
+        _hasError = parse(result.resultAsString());
       }
     }
     catch (final Exception ex_)
@@ -88,51 +88,58 @@ public class Power
     return _hasError;
   }
 
-  private void parse(final String data_)
+  private boolean parse(final String data_)
   {
     final String tokens[] = data_.split("/");
     if (tokens.length == 4)
     {
-      parseSource(tokens[0]);
-
-      parseCapacity(tokens[1]);
-
-      parseVoltage(tokens[2]);
-
-      parsePower(tokens[3]);
+      final boolean parsedSource = parseSource(tokens[0]);
+      final boolean parsedCapacity = parseCapacity(tokens[1]);
+      final boolean parsedVoltage = parseVoltage(tokens[2]);
+      final boolean parsedPower = parsePower(tokens[3]);
+      return parsedSource && parsedCapacity && parsedVoltage && parsedPower;
     }
+    return false;
   }
 
-  private void parseCapacity(final String token_)
+  private boolean parseCapacity(final String token_)
   {
     if ((null != token_) && !token_.isEmpty() && (token_.contains("%")))
     {
       _capacity = Float.parseFloat(token_.substring(0, token_.indexOf('%')));
+      return true;
     }
+    return false;
   }
 
-  private void parsePower(final String token_)
+  private boolean parsePower(final String token_)
   {
     if ((null != token_) && !token_.isEmpty() && (token_.contains("mA")))
     {
       _power = Float.parseFloat(token_.substring(0, token_.indexOf("mA")));
+      return true;
     }
+    return false;
   }
 
-  private void parseSource(final String token_)
+  private boolean parseSource(final String token_)
   {
     if ((null != token_) && !token_.isEmpty() && (token_.contains("P") || token_.contains("B")))
     {
       _source = token_.contains(PRIMARY) ? PRIMARY : BATTERY;
+      return true;
     }
+    return false;
   }
 
-  private void parseVoltage(final String token_)
+  private boolean parseVoltage(final String token_)
   {
     if (null != token_ && !token_.isEmpty() && token_.contains("V"))
     {
       _voltage = Float.parseFloat(token_.substring(0, token_.indexOf('V')));
+      return true;
     }
+    return false;
   }
 }
 

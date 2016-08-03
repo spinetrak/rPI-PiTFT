@@ -85,7 +85,7 @@ class TextPanel
 
     _trackPoints = new Text("[xxxxxxx]");
     _top.getChildren().add(_trackPoints);
-    _trackpointsThreshold = new Threshold(_trackPoints, 15, 30);
+    _trackpointsThreshold = new Threshold(_trackPoints, 40000, 30000);
 
     _temperature = new Text("[xx.x C°]");
     _top.getChildren().add(_temperature);
