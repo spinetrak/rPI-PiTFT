@@ -32,11 +32,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
-import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
@@ -45,10 +41,7 @@ import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
 
 class ButtonPanel
 {
-  private final static String DEFAULT_TEXT = "----------------------------------";
-  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.ui.ButtonPanel");
   private final HBox _bottom;
-  private final Text _error;
 
   ButtonPanel()
   {
@@ -59,8 +52,6 @@ class ButtonPanel
     _bottom.setPrefSize(MIN_WIDTH, MIN_BOTTOM_HEIGHT);
     _bottom.setMinHeight(MIN_BOTTOM_HEIGHT);
 
-    _error = new Text(DEFAULT_TEXT);
-    _bottom.getChildren().add(_error);
 
     final Button exit = getExitButton();
     exit.setPrefSize(15, 15);
@@ -121,31 +112,12 @@ class ButtonPanel
     gpx.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        _error.setText("Generating GPX file...");
-
-        final Result result = GPX_NEW.execute(new SingleLineStream());
-        if (0 == result.getResult())
-        {
-          _error.setText("GPX file generated.");
-        }
-        else
-        {
-          _error.setText("Error generating GPX file.");
-        }
-        try
-        {
-          Thread.sleep(5000);
-          _error.setText(DEFAULT_TEXT);
-        }
-        catch (final InterruptedException ex_)
-        {
-          LOGGER.error(ex_.getMessage());
-        }
+        GPX_NEW.execute(new SingleLineStream());
       }
     });
     return gpx;
   }
-  
+
   private Button getNMEAButton()
   {
     final Image nmeaImg = new Image(getClass().getResourceAsStream("/nmea.png"));
@@ -155,26 +127,10 @@ class ButtonPanel
     nmea.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        _error.setText("Backing up NMEA file...");
-
-        final Result result = NMEA_BACKUP.execute(new SingleLineStream());
-        if (0 == result.getResult())
-        {
-          _error.setText("NMEA file backed up.");
-        }
-        else
-        {
-          _error.setText("Error backing up file.");
-        }
-        try
-        {
-          Thread.sleep(5000);
-          _error.setText(DEFAULT_TEXT);
-        }
-        catch (final InterruptedException ex_)
-        {
-          LOGGER.error(ex_.getMessage());
-        }
+        GPX_NEW.execute(new SingleLineStream());
+        NMEA_BACKUP.execute(new SingleLineStream());
+        RESTART.execute(new SingleLineStream());
+        System.exit(0);
       }
     });
     return nmea;
@@ -190,7 +146,6 @@ class ButtonPanel
       if (event_.getCode().equals(KeyCode.ENTER))
       {
         RESTART.execute(new SingleLineStream());
-
         System.exit(0);
       }
     });
