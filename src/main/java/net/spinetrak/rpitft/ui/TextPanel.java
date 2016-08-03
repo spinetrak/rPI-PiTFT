@@ -72,7 +72,7 @@ class TextPanel
 
     _time = new Text("[hh:mm:ss]");
     _top.getChildren().add(_time);
-    _timeThreshold = new Threshold(_time, 30, 10);
+    _timeThreshold = new Threshold(_time, 60, 30);
 
     _latitude = new Text("[xxxx.xxx N]");
     _top.getChildren().add(_latitude);
@@ -172,7 +172,7 @@ class TextPanel
   {
     if (time_ == null)
     {
-      return 0;
+      return 60;
     }
     final int nowSeconds = (int) ((new DateTime(UTC).getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
     final int timeSeconds = (int) ((time_.getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
