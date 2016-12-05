@@ -40,6 +40,7 @@ class TabPanel
   private final SingleLineChart _cpuChart;
   private final Threshold _cpuThreshold;
   private final ExecutorService _executor;
+  private final GPSMapView _gpsMapView;
   private final SingleLineChart _latitudeChart;
   private final SingleLineChart _longitudeChart;
   private final SingleLineChart _memoryChart;
@@ -79,9 +80,14 @@ class TabPanel
     temTab.setContent(_temperatureChart.getChart());
     _temperatureThreshold = new Threshold(_temperatureChart.getChart(), 85, 75);
 
+    final Tab mapTab = new Tab("map");
+    _gpsMapView = new GPSMapView();
+    mapTab.setContent(_gpsMapView.getPane());
+
+
     _tabPane = new TabPane();
     _tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-    _tabPane.getTabs().addAll(lonTab, latTab, altTab, cpuTab, memTab, temTab);
+    _tabPane.getTabs().addAll(lonTab, latTab, altTab, cpuTab, memTab, temTab, mapTab);
 
 
     _executor = Executors.newCachedThreadPool(runnable_ -> {
@@ -89,13 +95,16 @@ class TabPanel
       thread.setDaemon(true);
       return thread;
     });
+
+
+    _tabPane.getSelectionModel().select(mapTab);
+
     final TransitionTabs transitionTabs = new TransitionTabs();
 
     _tabPane.focusedProperty().addListener(
       (final ObservableValue<? extends Boolean> observableValue_, final Boolean old_, final Boolean new_) -> {
         _inFocus = new_;
       });
-    _executor.execute(transitionTabs);
   }
 
 
@@ -104,6 +113,7 @@ class TabPanel
     _longitudeChart.addData(gps_.getLongitude());
     _latitudeChart.addData(gps_.getLatitude());
     _altitudeChart.addData(gps_.getAltitude());
+    //_gpsMapView.addData(gps_);
   }
 
   void addData(final Device device_)
@@ -119,6 +129,7 @@ class TabPanel
     float temperature = device_.getTemperature();
     _temperatureChart.addData(temperature);
     _temperatureThreshold.setColor(temperature);
+    _gpsMapView.addData();
   }
 
   Node getCenter()
@@ -142,8 +153,8 @@ class TabPanel
             _tabPane.getSelectionModel().selectFirst();
           }
         }
-        Thread.sleep(5000);
         _executor.execute(this);
+        Thread.sleep(5000);
       }
       catch (final InterruptedException ex_)
       {

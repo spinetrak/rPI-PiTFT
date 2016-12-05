@@ -26,6 +26,7 @@ package net.spinetrak.rpitft.data;
 
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
 
 public class GPSTest
 {
@@ -45,6 +46,17 @@ public class GPSTest
 
     final float west = gps.parseCoordinates("00758.2052W");
     assertEquals(String.format("%.4f", -7.9701), String.format("%.4f", west));
+  }
+
+  @org.junit.Test
+  public void fromString()
+  {
+    final GPS gps1 = GPS.fromString("130001/0053.1111N/00009.2222E/1/10.1");
+    assertFalse(gps1.isHasError());
+    final GPS gps2 = GPS.fromString("130002/0053.2222N/0009.3333E/2/11.2");
+    assertFalse(gps2.isHasError());
+    final GPS gps3 = GPS.fromString("130003/0053.3333N/0009.4444E/3/12.3");
+    assertFalse(gps3.isHasError());
   }
 
 }

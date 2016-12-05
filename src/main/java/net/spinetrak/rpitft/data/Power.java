@@ -44,6 +44,17 @@ public class Power
 
   Power()
   {
+  }
+
+  public static Power fromString(final String data_)
+  {
+    final Power power = new Power();
+    power._hasError = power.parse(data_);
+    return power;
+  }
+
+  public void query()
+  {
     try
     {
       final Result result = POWER_STATUS.execute(new SingleLineStream());

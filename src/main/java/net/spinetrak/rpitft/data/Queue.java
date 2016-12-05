@@ -85,6 +85,7 @@ public class Queue
       try
       {
         final Device device = new Device();
+        device.query();
         if (!device.isHasError())
         {
           _deviceQueue.add(device);
@@ -106,12 +107,8 @@ public class Queue
       try
       {
         final GPS gps = new GPS();
-        //noinspection StatementWithEmptyBody
-        if (gps.isHasError())
-        {
-          //left empty on purpose
-        }
-        else
+        gps.query();
+        if (!gps.isHasError())
         {
           _gpsQueue.add(gps);
         }
@@ -133,6 +130,7 @@ public class Queue
       try
       {
         final Power power = new Power()
+        power.query();
         if(!power.haError())
         {
           _powerQueue.add(new Power());

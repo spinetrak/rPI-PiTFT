@@ -42,6 +42,17 @@ public class Device
 
   Device()
   {
+  }
+
+  public static Device fromString(final String data_)
+  {
+    final Device device = new Device();
+    device._hasError = device.parse(data_);
+    return device;
+  }
+
+  public void query()
+  {
     try
     {
       final Result result = DEVICE_STATUS.execute(new SingleLineStream());

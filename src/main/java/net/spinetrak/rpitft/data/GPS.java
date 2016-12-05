@@ -47,6 +47,18 @@ public class GPS
 
   GPS()
   {
+    query();
+  }
+
+  public static GPS fromString(final String data_)
+  {
+    final GPS gps = new GPS();
+    gps._hasError = !gps.parseGPS(data_);
+    return gps;
+  }
+
+  public void query()
+  {
     try
     {
       final Result result = GPS_STATUS.execute(new SingleLineStream());
@@ -179,6 +191,9 @@ public class GPS
     return false;
   }
 
+  /*
+  echo "${time}/${latitude}${northsouth}/${longitude}${eastwest}/${points}/${altitude}"
+   */
   private boolean parseGPS(final String data_)
   {
     final String tokens[] = data_.split("/");

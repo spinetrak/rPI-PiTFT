@@ -90,22 +90,22 @@ public class Main extends Application
     _tabPanel = new TabPanel();
     _textPanel = new TextPanel();
 
-    final BorderPane border = new BorderPane();
-    border.setPadding(new Insets(1));
-    border.setPrefSize(MIN_WIDTH, MIN_HEIGHT);
-    border.setMaxHeight(MIN_HEIGHT);
-    border.setMinHeight(MIN_HEIGHT);
-    border.setMaxWidth(MIN_WIDTH);
-    border.setMinWidth(MIN_WIDTH);
+    final BorderPane pane = new BorderPane();
+    pane.setPadding(new Insets(1));
+    pane.setPrefSize(MIN_WIDTH, MIN_HEIGHT);
+    pane.setMaxHeight(MIN_HEIGHT);
+    pane.setMinHeight(MIN_HEIGHT);
+    pane.setMaxWidth(MIN_WIDTH);
+    pane.setMinWidth(MIN_WIDTH);
 
-    border.setCenter(_tabPanel.getCenter());
+    pane.setCenter(_tabPanel.getCenter());
 
-    border.setTop(_textPanel.getTop());
+    pane.setTop(_textPanel.getTop());
 
     final ButtonPanel buttonPanel = new ButtonPanel();
-    border.setBottom(buttonPanel.getBottom());
+    pane.setBottom(buttonPanel.getBottom());
 
-    final Scene scene = new Scene(border, MIN_WIDTH, MIN_HEIGHT);
+    final Scene scene = new Scene(pane, MIN_WIDTH, MIN_HEIGHT);
     scene.getStylesheets().add("stylesheet.css");
     stage_.setScene(scene);
     stage_.setFullScreen(true);
