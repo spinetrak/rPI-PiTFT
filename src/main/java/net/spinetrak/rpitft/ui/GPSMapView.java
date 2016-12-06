@@ -25,6 +25,7 @@
 package net.spinetrak.rpitft.ui;
 
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
 import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.GPSService;
@@ -58,6 +59,9 @@ class GPSMapView
     }
     final MapService mapService = new MapService(_gpsService);
     mapService.makeMap();
+    final Polyline track = mapService.getPolyline();
+    track.setStroke(Color.RED);
+    track.setStrokeWidth(2.0);
     _pane.setCenter(mapService.getPolyline());
   }
 

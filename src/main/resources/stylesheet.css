@@ -23,16 +23,16 @@
  */
 
 .chart-series-line {
-    -fx-stroke-width: 1px;
+    -fx-stroke-width: 2px;
     -fx-effect: null;
 }
 
 .default-color0.chart-series-line {
-    -fx-stroke: #00ff00;
+    -fx-stroke: #ff0000;
 }
 
 .default-color1.chart-series-line {
-    -fx-stroke: #ff0000;
+    -fx-stroke: #00ff00;
 }
 
 .default-color2.chart-series-line {
@@ -40,7 +40,7 @@
 }
 
 .default-color3.chart-series-line {
-    -fx-stroke: #ff0000;
+    -fx-stroke: #00ff00;
 }
 
 .root {
