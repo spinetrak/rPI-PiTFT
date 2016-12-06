@@ -42,7 +42,7 @@ public class Power
   private String _source;
   private float _voltage;
 
-  Power()
+  private Power()
   {
   }
 
@@ -51,20 +51,6 @@ public class Power
     final Power power = new Power();
     power._hasError = power.parse(data_);
     return power;
-  }
-
-  public void query()
-  {
-    try
-    {
-      final Result result = POWER_STATUS.execute(new SingleLineStream());
-      _hasError = 0 != result.getResult() || !parse(result.resultAsString());
-    }
-    catch (final Exception ex_)
-    {
-      _hasError = true;
-      LOGGER.error(ex_.getMessage());
-    }
   }
 
   public float getCapacity()
@@ -90,6 +76,20 @@ public class Power
   public boolean isHasError()
   {
     return _hasError;
+  }
+
+  public void query()
+  {
+    try
+    {
+      final Result result = POWER_STATUS.execute(new SingleLineStream());
+      _hasError = 0 != result.getResult() || !parse(result.resultAsString());
+    }
+    catch (final Exception ex_)
+    {
+      _hasError = true;
+      LOGGER.error(ex_.getMessage());
+    }
   }
 
   private boolean parse(final String data_)

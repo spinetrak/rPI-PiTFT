@@ -40,7 +40,6 @@ import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
 
 public class Main extends Application
 {
-  private boolean _added = false;
   private TabPanel _tabPanel;
   private TextPanel _textPanel;
 

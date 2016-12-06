@@ -47,28 +47,14 @@ public class GPS
 
   GPS()
   {
-    query();
+
   }
 
-  public static GPS fromString(final String data_)
+  static GPS fromString(final String data_)
   {
     final GPS gps = new GPS();
     gps._hasError = !gps.parseGPS(data_);
     return gps;
-  }
-
-  public void query()
-  {
-    try
-    {
-      final Result result = GPS_STATUS.execute(new SingleLineStream());
-      _hasError = 0 != result.getResult() || !parseGPS(result.resultAsString());
-    }
-    catch (final Exception ex_)
-    {
-      _hasError = true;
-      LOGGER.error(ex_.getMessage());
-    }
   }
 
   boolean isHasError()
@@ -95,6 +81,20 @@ public class GPS
       return result;
     }
     return -1000;
+  }
+
+  void query()
+  {
+    try
+    {
+      final Result result = GPS_STATUS.execute(new SingleLineStream());
+      _hasError = 0 != result.getResult() || !parseGPS(result.resultAsString());
+    }
+    catch (final Exception ex_)
+    {
+      _hasError = true;
+      LOGGER.error(ex_.getMessage());
+    }
   }
 
   @Override
@@ -212,7 +212,7 @@ public class GPS
 
   private boolean parseNmea(final String line_)
   {
-    if(null != line_ && !line_.isEmpty())
+    if (null != line_ && !line_.isEmpty())
     {
       final String[] tokens = line_.split(",");
       if (tokens.length > 10)

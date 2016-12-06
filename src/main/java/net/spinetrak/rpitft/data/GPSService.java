@@ -29,7 +29,8 @@ import java.util.List;
 
 public class GPSService
 {
-  private final static String[] TEST_COORDINATES =     new String[]{
+  private static final int MAX_LENGTH = 100;
+  private final static String[] TEST_COORDINATES = new String[]{
     "122130/5039.7532N/01121.2532E/1/225.4",
     "122131/5039.7522N/01121.2721E/1/224.8",
     "122132/5039.7512N/01121.2909E/1/224.1",
@@ -267,13 +268,10 @@ public class GPSService
 
   public void addGPS(final GPS gps_)
   {
-    if(_gpsCoordinates.size() < TEST_COORDINATES.length)
+    _gpsCoordinates.add(gps_);
+    if (_gpsCoordinates.size() >= MAX_LENGTH)
     {
-      _gpsCoordinates.add(gps_);
-    }
-    if(_gpsCoordinates.size() >= TEST_COORDINATES.length)
-    {
-      _gpsCoordinates.clear();
+      _gpsCoordinates.remove(0);
     }
   }
 
@@ -282,10 +280,10 @@ public class GPSService
     return _gpsCoordinates;
   }
 
-  public GPS getNext()
+  public GPS getNextMock()
   {
     i++;
-    if(i >= TEST_COORDINATES.length)
+    if (i >= TEST_COORDINATES.length)
     {
       i = 0;
     }

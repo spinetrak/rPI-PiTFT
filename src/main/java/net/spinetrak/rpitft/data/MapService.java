@@ -41,20 +41,18 @@ public class MapService
 
   // formula for quarter PI
   private final static double QUARTERPI = Math.PI / 4.0;
-
-  private final Polyline _polyline = new Polyline();
-
   // some service that provides GPS data in longitude and latitude
   private final GPSService _gpsService;
+  private final Polyline _polyline = new Polyline();
+
+  public MapService(final GPSService gpsService_)
+  {
+    _gpsService = gpsService_;
+  }
 
   public Polyline getPolyline()
   {
     return _polyline;
-  }
-
-  public MapService(final GPSService gpsService_)
-  {
-     _gpsService = gpsService_;
   }
 
   public void makeMap()

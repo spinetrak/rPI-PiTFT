@@ -26,7 +26,6 @@ package net.spinetrak.rpitft.ui;
 
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Polyline;
-import javafx.scene.text.Text;
 import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.GPSService;
 import net.spinetrak.rpitft.data.MapService;
@@ -34,37 +33,35 @@ import net.spinetrak.rpitft.data.MapService;
 import static net.spinetrak.rpitft.ui.Charts.MIN_HEIGHT;
 import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
 
-public class GPSMapView
+class GPSMapView
 {
-  final private BorderPane _pane = new BorderPane();
-  final GPSService _gpsService = new GPSService();
-  final Text _text = new Text("             ");
+  private final GPSService _gpsService = new GPSService();
+  private final BorderPane _pane = new BorderPane();
 
-  public GPSMapView()
+  GPSMapView()
   {
     _pane.setPrefSize(MIN_WIDTH, MIN_HEIGHT);
     _pane.setMinWidth(MIN_WIDTH);
     _pane.setMinHeight(MIN_HEIGHT);
-    _pane.setBottom(_text);
+    _pane.setCenter(new Polyline());
   }
 
-  public void addData(final GPS gps_)
+  void addData(final GPS gps_, final boolean mock_)
   {
-    _gpsService.addGPS(gps_);
-    _text.setText("["+gps_.getLatitude()+"]["+gps_.getLongitude()+"]");
+    if (mock_)
+    {
+      _gpsService.addGPS(_gpsService.getNextMock());
+    }
+    else
+    {
+      _gpsService.addGPS(gps_);
+    }
     final MapService mapService = new MapService(_gpsService);
     mapService.makeMap();
-    _pane.setCenter(new Polyline());
     _pane.setCenter(mapService.getPolyline());
   }
 
-  public void addData()
-  {
-    final GPS gps = _gpsService.getNext();
-    addData(gps);
-  }
-
-  public BorderPane getPane()
+  BorderPane getPane()
   {
     return _pane;
   }

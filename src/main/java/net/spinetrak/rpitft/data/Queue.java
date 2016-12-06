@@ -47,14 +47,14 @@ public class Queue
     _deviceQueue = new ConcurrentLinkedQueue<>();
     _gpsQueue = new ConcurrentLinkedQueue<>();
     _powerQueue = new ConcurrentLinkedQueue<>();
-    
-    
+
+
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
       thread.setDaemon(true);
       return thread;
     });
-    
+
     final AddToDeviceQueue addToDeviceQueue = new AddToDeviceQueue();
     _executor.execute(addToDeviceQueue);
 

@@ -44,14 +44,12 @@ public class Device
   {
   }
 
-  public static Device fromString(final String data_)
+  boolean isHasError()
   {
-    final Device device = new Device();
-    device._hasError = device.parse(data_);
-    return device;
+    return _hasError;
   }
 
-  public void query()
+  void query()
   {
     try
     {
@@ -65,9 +63,11 @@ public class Device
     }
   }
 
-  boolean isHasError()
+  public static Device fromString(final String data_)
   {
-    return _hasError;
+    final Device device = new Device();
+    device._hasError = device.parse(data_);
+    return device;
   }
 
   public float getCpu()

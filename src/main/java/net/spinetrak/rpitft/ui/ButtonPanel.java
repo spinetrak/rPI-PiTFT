@@ -62,7 +62,7 @@ class ButtonPanel
     gpx.setPrefSize(15, 15);
     gpx.setMaxHeight(15);
     _bottom.getChildren().add(gpx);
-    
+
     final Button nmea = getNMEAButton();
     nmea.setPrefSize(15, 15);
     nmea.setMaxHeight(15);
