@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 
 class TabPanel
 {
+  private final SingleLineChart _altitudeChart;
   private final SingleLineChart _cpuChart;
   private final Threshold _cpuThreshold;
   private final ExecutorService _executor;
@@ -48,7 +49,6 @@ class TabPanel
   private final TabPane _tabPane;
   private final SingleLineChart _temperatureChart;
   private final Threshold _temperatureThreshold;
-  //private final SingleLineChart _altitudeChart;
   private boolean _inFocus;
 
   TabPanel()
@@ -61,12 +61,12 @@ class TabPanel
     final Tab latTab = new Tab("lat");
     _latitudeChart = new SingleLineChart();
     latTab.setContent(_latitudeChart.getChart());
-
+    */
     final Tab altTab = new Tab("alt");
     _altitudeChart = new SingleLineChart();
     altTab.setContent(_altitudeChart.getChart());
 
-*/
+
     final Tab cpuTab = new Tab("cpu");
     _cpuChart = new SingleLineChart();
     cpuTab.setContent(_cpuChart.getChart());
@@ -92,7 +92,7 @@ class TabPanel
     _tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
     //_tabPane.getTabs().addAll(lonTab, latTab, altTab, cpuTab, memTab, temTab, mapTab);
 
-    _tabPane.getTabs().addAll(cpuTab, memTab, temTab, mapTab);
+    _tabPane.getTabs().addAll(cpuTab, memTab, temTab, altTab, mapTab);
 
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
@@ -119,7 +119,7 @@ class TabPanel
   {
     //_longitudeChart.addData(gps_.getLongitude());
     //_latitudeChart.addData(gps_.getLatitude());
-    //_altitudeChart.addData(gps_.getAltitude());
+    _altitudeChart.addData(gps_.getAltitude());
     _gpsMapView.addData(gps_, false);
   }
 
@@ -151,26 +151,26 @@ class TabPanel
     public void run()
     {
       while (true)
+      {
+        if (!_inFocus)
         {
-          if (!_inFocus)
+          final int before = _tabPane.getSelectionModel().getSelectedIndex();
+          _tabPane.getSelectionModel().selectNext();
+          final int after = _tabPane.getSelectionModel().getSelectedIndex();
+          if (before == after)
           {
-            final int before = _tabPane.getSelectionModel().getSelectedIndex();
-            _tabPane.getSelectionModel().selectNext();
-            final int after = _tabPane.getSelectionModel().getSelectedIndex();
-            if (before == after)
-            {
-              _tabPane.getSelectionModel().selectFirst();
-            }
-          }
-          try
-          {
-            Thread.sleep(5000);
-          }
-          catch (final InterruptedException e_)
-          {
-            //ignore
+            _tabPane.getSelectionModel().selectFirst();
           }
         }
+        try
+        {
+          Thread.sleep(5000);
+        }
+        catch (final InterruptedException e_)
+        {
+          //ignore
+        }
+      }
     }
   }
 }

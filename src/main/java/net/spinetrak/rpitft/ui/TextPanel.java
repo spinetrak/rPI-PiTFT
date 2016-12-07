@@ -34,6 +34,8 @@ import net.spinetrak.rpitft.data.Power;
 import net.spinetrak.rpitft.data.Threshold;
 import org.joda.time.DateTime;
 
+import static net.spinetrak.rpitft.data.Formatter.formatLatitude;
+import static net.spinetrak.rpitft.data.Formatter.formatLongitude;
 import static net.spinetrak.rpitft.ui.Charts.MIN_TOP_HEIGHT;
 import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
 import static org.joda.time.DateTimeZone.UTC;
@@ -188,14 +190,5 @@ class TextPanel
     return _top;
   }
 
-  private String formatLatitude(final float latitude_)
-  {
-    return String.format("[%.4f %s]", latitude_, latitude_ > 0 ? "N" : "S");
-  }
-
-  private String formatLongitude(final float longitude_)
-  {
-    return String.format("[%.4f %s]", longitude_, longitude_ > 0 ? "E" : "W");
-  }
 
 }

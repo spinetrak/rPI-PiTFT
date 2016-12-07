@@ -44,10 +44,34 @@ public class MapService
   // some service that provides GPS data in longitude and latitude
   private final GPSService _gpsService;
   private final Polyline _polyline = new Polyline();
+  private float _maxLatY = 200.0f;
+  private float _maxLonX = 200.0f;
+  private float _minLatY = -200.0f;
+  private float _minLonX = -200.0f;
 
   public MapService(final GPSService gpsService_)
   {
     _gpsService = gpsService_;
+  }
+
+  public float getMaxLatY()
+  {
+    return _maxLatY;
+  }
+
+  public float getMaxLonX()
+  {
+    return _maxLonX;
+  }
+
+  public float getMinLatY()
+  {
+    return _minLatY;
+  }
+
+  public float getMinLonX()
+  {
+    return _minLonX;
   }
 
   public Polyline getPolyline()
@@ -67,8 +91,15 @@ public class MapService
     for (final GPS gps : _gpsService.getGPS())
     {
       // convert to radian
-      double longitude = gps.getLongitude() * Math.PI / 180;
-      double latitude = gps.getLatitude() * Math.PI / 180;
+      float lon = gps.getLongitude();
+      float lat = gps.getLatitude();
+      double longitude = lon * Math.PI / 180;
+      double latitude = lat * Math.PI / 180;
+
+      _minLatY = (_minLatY == -200.0f) ? lat : Math.min(_minLatY, lat);
+      _maxLatY = (_maxLatY == 200.0f) ? lat : Math.max(_maxLatY, lat);
+      _minLonX = (_minLonX == -200.0f) ? lon : Math.min(_minLonX, lon);
+      _maxLonX = (_maxLonX == 200.0f) ? lon : Math.max(_maxLonX, lon);
 
       final Point2D.Double xy = new Point2D.Double();
       xy.x = longitude;

@@ -22,36 +22,17 @@
  * SOFTWARE.
  */
 
-.chart-series-line {
-    -fx-stroke-width: 2px;
-    -fx-effect: null;
-}
+package net.spinetrak.rpitft.data;
 
-.default-color0.chart-series-line {
-    -fx-stroke: #ff0000;
-}
+public class Formatter
+{
+  public static String formatLatitude(final float latitude_)
+  {
+    return String.format("[%.4f %s]", latitude_, latitude_ > 0 ? "N" : "S");
+  }
 
-.default-color1.chart-series-line {
-    -fx-stroke: #00ff00;
-}
-
-.default-color2.chart-series-line {
-    -fx-stroke: #0000ff;
-}
-
-.default-color3.chart-series-line {
-    -fx-stroke: #00ff00;
-}
-
-.root {
-    -fx-font: 16px "Arial";
-}
-
-.axis {
-    -fx-tick-label-font-size: 10px;
-}
-
-.tab .tab-label {
-    -fx-text-fill: -fx-text-base-color;
-    -fx-font-size: 12px;
+  public static String formatLongitude(final float longitude_)
+  {
+    return String.format("[%.4f %s]", longitude_, longitude_ > 0 ? "E" : "W");
+  }
 }

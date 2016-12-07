@@ -24,9 +24,13 @@
 
 package net.spinetrak.rpitft.ui;
 
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.GPSService;
 import net.spinetrak.rpitft.data.MapService;
@@ -37,14 +41,28 @@ import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
 class GPSMapView
 {
   private final GPSService _gpsService = new GPSService();
-  private final BorderPane _pane = new BorderPane();
+  private final Line _latYAxis = new Line(2, 2, 2, MIN_HEIGHT - 2);
+  private final Line _lonXAxis = new Line(2, 2, MIN_WIDTH - 2, 2);
+  private final Text _maxLatY = new Text(4, 30, "[90.0000]");
+  private final Text _maxLonX = new Text(MIN_WIDTH - 60, 15, "[180.0000]");
+  private final Text _minLatY = new Text(4, MIN_HEIGHT - 110, "[-90.0000]");
+  private final Text _minLonX = new Text(4, 15, "[-180.0000]");
+  private final Pane _pane = new Pane();
 
   GPSMapView()
   {
     _pane.setPrefSize(MIN_WIDTH, MIN_HEIGHT);
     _pane.setMinWidth(MIN_WIDTH);
     _pane.setMinHeight(MIN_HEIGHT);
-    _pane.setCenter(new Polyline());
+    _pane.getChildren().addAll(_lonXAxis, _latYAxis);
+    _lonXAxis.setStroke(Color.BLUE);
+    _latYAxis.setStroke(Color.BLUE);
+    _lonXAxis.setStrokeWidth(0.5);
+    _latYAxis.setStrokeWidth(0.5);
+    _maxLonX.setFont(Font.font(10.0));
+    _minLonX.setFont(Font.font(10.0));
+    _maxLatY.setFont(Font.font(10.0));
+    _minLatY.setFont(Font.font(10.0));
   }
 
   void addData(final GPS gps_, final boolean mock_)
@@ -59,13 +77,18 @@ class GPSMapView
     }
     final MapService mapService = new MapService(_gpsService);
     mapService.makeMap();
+    _minLatY.setText(Formatter.formatLatitude(mapService.getMinLatY()));
+    _maxLatY.setText(Formatter.formatLatitude(mapService.getMaxLatY()));
+    _minLonX.setText(Formatter.formatLongitude(mapService.getMinLonX()));
+    _maxLonX.setText(Formatter.formatLongitude(mapService.getMaxLonX()));
     final Polyline track = mapService.getPolyline();
     track.setStroke(Color.RED);
     track.setStrokeWidth(2.0);
-    _pane.setCenter(mapService.getPolyline());
+    _pane.getChildren().clear();
+    _pane.getChildren().addAll(_lonXAxis, _latYAxis, _minLonX, _maxLonX, _minLatY, _maxLatY, track);
   }
 
-  BorderPane getPane()
+  Pane getPane()
   {
     return _pane;
   }
