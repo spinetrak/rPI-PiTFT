@@ -26,28 +26,20 @@ package net.spinetrak.rpitft.data;
 
 import javafx.animation.AnimationTimer;
 import net.spinetrak.rpitft.ui.Main;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Queue
 {
-  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Queue");
-  private final ConcurrentLinkedQueue<Device> _deviceQueue;
+  private final DeviceClient _deviceClient;
   private final ExecutorService _executor;
-  private final ConcurrentLinkedQueue<GPS> _gpsQueue;
-  private final ConcurrentLinkedQueue<Power> _powerQueue;
+  private final GPSdClient _gpsdClient;
 
 
   public Queue()
   {
-    _deviceQueue = new ConcurrentLinkedQueue<>();
-    _gpsQueue = new ConcurrentLinkedQueue<>();
-    _powerQueue = new ConcurrentLinkedQueue<>();
-
+    //_powerQueue = new ConcurrentLinkedQueue<>();
 
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
@@ -55,11 +47,14 @@ public class Queue
       return thread;
     });
 
-    final AddToDeviceQueue addToDeviceQueue = new AddToDeviceQueue();
-    _executor.execute(addToDeviceQueue);
+    _deviceClient = new DeviceClient(_executor);
+    _executor.execute(_deviceClient);
 
-    final AddToGPSQueue addToGPSQueue = new AddToGPSQueue();
-    _executor.execute(addToGPSQueue);
+    _gpsdClient = new GPSdClient();
+    _executor.execute(_gpsdClient);
+
+    //final AddToGPSQueue addToGPSQueue = new AddToGPSQueue();
+    //_executor.execute(addToGPSQueue);
 
     //final AddToPowerQueue addToPowerQueue = new AddToPowerQueue();
     //_executor.execute(addToPowerQueue);
@@ -73,33 +68,12 @@ public class Queue
       @Override
       public void handle(final long now_)
       {
-        main_.addDataToSeries(_deviceQueue, _gpsQueue);
+        main_.addDataToSeries(_deviceClient.getQueue(), _gpsdClient.getQueue());
       }
     }.start();
   }
 
-  private class AddToDeviceQueue implements Runnable
-  {
-    public void run()
-    {
-      try
-      {
-        final Device device = new Device();
-        device.query();
-        if (!device.isHasError())
-        {
-          _deviceQueue.add(device);
-        }
-        Thread.sleep(500);
-        _executor.execute(this);
-      }
-      catch (final InterruptedException ex_)
-      {
-        LOGGER.error(ex_.getMessage());
-      }
-    }
-  }
-
+  /*
   private class AddToGPSQueue implements Runnable
   {
     public void run()
@@ -122,7 +96,6 @@ public class Queue
     }
   }
 
-  /*
   private class AddToPowerQueue implements Runnable
   {
     public void run()

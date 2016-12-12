@@ -94,5 +94,10 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.21</version>
         </dependency>
+        <dependency>
+            <groupId>de.taimos</groupId>
+            <artifactId>gpsd4java</artifactId>
+            <version>1.7</version>
+        </dependency>
     </dependencies>
 </project>

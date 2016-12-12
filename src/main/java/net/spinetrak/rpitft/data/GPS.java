@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.data;
 
+import de.taimos.gpsd4java.types.TPVObject;
 import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.joda.time.DateTime;
@@ -54,6 +55,19 @@ public class GPS
   {
     final GPS gps = new GPS();
     gps._hasError = !gps.parseGPS(data_);
+    return gps;
+  }
+
+  static GPS fromTPVObject(final TPVObject tpv_, final int counter_)
+  {
+    final GPS gps = new GPS();
+    gps._altitude = (float) tpv_.getAltitude();
+    gps._latitude = (float) tpv_.getLatitude();
+    gps._longitude = (float) tpv_.getLongitude();
+    gps._time = new DateTime((long) (tpv_.getTimestamp() * 1000));
+    gps._trackpoints = counter_;
+    gps._hasError = false;
+
     return gps;
   }
 
