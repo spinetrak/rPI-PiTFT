@@ -40,14 +40,15 @@ import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
 
 class GPSMapView
 {
+  private final Text _distance = new Text(200, 15, "distance");
   private final GPSService _gpsService = new GPSService();
   private final Line _latYAxis = new Line(2, 2, 2, MIN_HEIGHT - 2);
   private final Line _lonXAxis = new Line(2, 2, MIN_WIDTH - 2, 2);
-  private final Text _maxLatY = new Text(4, 30, "[90.0000]");
-  private final Text _maxLonX = new Text(MIN_WIDTH - 60, 15, "[180.0000]");
-  private final Text _minLatY = new Text(4, MIN_HEIGHT - 110, "[-90.0000]");
-  private final Text _minLonX = new Text(4, 15, "[-180.0000]");
+  private final Text _lowerLeft = new Text(4, MIN_HEIGHT - 125, "[-90.0000]\n[-180.0000]");
+  private final Text _lowerRight = new Text(MIN_WIDTH - 60, MIN_HEIGHT - 125, "[-90.0000]\n[180.0000]");
   private final Pane _pane = new Pane();
+  private final Text _upperLeft = new Text(4, 15, "[90.0000]\n[-180.0000]");
+  private final Text _upperRight = new Text(MIN_WIDTH - 60, 15, "[90.0000]\n[180.0000]");
 
   GPSMapView()
   {
@@ -59,10 +60,11 @@ class GPSMapView
     _latYAxis.setStroke(Color.BLUE);
     _lonXAxis.setStrokeWidth(0.5);
     _latYAxis.setStrokeWidth(0.5);
-    _maxLonX.setFont(Font.font(10.0));
-    _minLonX.setFont(Font.font(10.0));
-    _maxLatY.setFont(Font.font(10.0));
-    _minLatY.setFont(Font.font(10.0));
+    _upperRight.setFont(Font.font(10.0));
+    _lowerLeft.setFont(Font.font(10.0));
+    _upperLeft.setFont(Font.font(10.0));
+    _lowerRight.setFont(Font.font(10.0));
+    _distance.setFont(Font.font(12.0));
   }
 
   void addData(final GPS gps_, final boolean mock_)
@@ -77,15 +79,21 @@ class GPSMapView
     }
     final MapService mapService = new MapService(_gpsService);
     mapService.makeMap();
-    _minLatY.setText(Formatter.formatLatitude(mapService.getMinLatY()));
-    _maxLatY.setText(Formatter.formatLatitude(mapService.getMaxLatY()));
-    _minLonX.setText(Formatter.formatLongitude(mapService.getMinLonX()));
-    _maxLonX.setText(Formatter.formatLongitude(mapService.getMaxLonX()));
+    final String minLatY = Formatter.formatLatitude(mapService.getMinLatY());
+    final String maxLatY = Formatter.formatLatitude(mapService.getMaxLatY());
+    final String minLonX = Formatter.formatLongitude(mapService.getMinLonX());
+    final String maxLonX = Formatter.formatLongitude(mapService.getMaxLonX());
+    _lowerLeft.setText(minLatY + "\n" + minLonX);
+    _lowerRight.setText(minLatY + "\n" + maxLonX);
+    _upperLeft.setText(maxLatY + "\n" + minLonX);
+    _upperRight.setText(maxLatY + "\n" + maxLonX);
+    _distance.setText(Formatter.formatDistance(mapService.getDistance()));
     final Polyline track = mapService.getPolyline();
     track.setStroke(Color.RED);
     track.setStrokeWidth(2.0);
     _pane.getChildren().clear();
-    _pane.getChildren().addAll(_lonXAxis, _latYAxis, _minLonX, _maxLonX, _minLatY, _maxLatY, track);
+    _pane.getChildren().addAll(_lonXAxis, _latYAxis, _lowerLeft, _upperRight, _lowerRight, _upperLeft, _distance,
+                               track);
   }
 
   Pane getPane()

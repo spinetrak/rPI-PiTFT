@@ -28,10 +28,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
-import net.spinetrak.rpitft.data.Device;
-import net.spinetrak.rpitft.data.GPS;
-import net.spinetrak.rpitft.data.Power;
-import net.spinetrak.rpitft.data.Threshold;
+import net.spinetrak.rpitft.data.*;
 import org.joda.time.DateTime;
 
 import static net.spinetrak.rpitft.data.Formatter.formatLatitude;
@@ -137,16 +134,16 @@ class TextPanel
     final float temperature = device_.getTemperature();
     final float memory = device_.getMemory();
 
-    _cpu.setText(String.format("[%.2f%% cpu]", cpu));
+    _cpu.setText(Formatter.formatCPU(cpu));
     _cpuThreshold.setColor(cpu);
 
-    _disk.setText(String.format("[%.2f%% hd]", disk));
+    _disk.setText(Formatter.formatHD(disk));
     _diskThreshold.setColor(disk);
 
-    _memory.setText(String.format("[%.2f%% mem]", memory));
+    _memory.setText(Formatter.formatMEM(memory));
     _memoryThreshold.setColor(memory);
 
-    _temperature.setText(String.format("[%.2f C°]", temperature));
+    _temperature.setText(Formatter.formatTemperature(temperature));
     _temperatureThreshold.setColor(temperature);
   }
 
@@ -165,8 +162,8 @@ class TextPanel
     _timeThreshold.setColor(getTimeDifferenceInSeconds(time));
     _latitude.setText(formatLatitude(latitude));
     _longitude.setText(formatLongitude(longitude));
-    _altitude.setText(String.format("[%.1f m]", altitude));
-    _trackPoints.setText(String.format("[%d]", trackpoints));
+    _altitude.setText(Formatter.formatAltitude(altitude));
+    _trackPoints.setText(Formatter.formatTrackpoints(trackpoints));
     _trackpointsThreshold.setColor(trackpoints);
   }
 

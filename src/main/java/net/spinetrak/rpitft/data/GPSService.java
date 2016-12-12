@@ -265,6 +265,15 @@ public class GPSService
 
   private int i = -1;
 
+  GPS getFinish()
+  {
+    return _gpsCoordinates.get(_gpsCoordinates.size() - 1);
+  }
+
+  GPS getStart()
+  {
+    return _gpsCoordinates.get(0);
+  }
 
   public void addGPS(final GPS gps_)
   {

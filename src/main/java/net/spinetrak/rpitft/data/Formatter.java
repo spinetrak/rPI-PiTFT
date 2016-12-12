@@ -26,6 +26,28 @@ package net.spinetrak.rpitft.data;
 
 public class Formatter
 {
+
+
+  public static String formatAltitude(final float altitude_)
+  {
+    return String.format("[%.1f m]", altitude_);
+  }
+
+  public static String formatCPU(final float cpu_)
+  {
+    return String.format("[%.2f%% cpu]", cpu_);
+  }
+
+  public static String formatDistance(final double distance_)
+  {
+    return String.format("[%.4f km]", distance_);
+  }
+
+  public static String formatHD(final float disk_)
+  {
+    return String.format("[%.2f%% hd]", disk_);
+  }
+
   public static String formatLatitude(final float latitude_)
   {
     return String.format("[%.4f %s]", latitude_, latitude_ > 0 ? "N" : "S");
@@ -34,5 +56,20 @@ public class Formatter
   public static String formatLongitude(final float longitude_)
   {
     return String.format("[%.4f %s]", longitude_, longitude_ > 0 ? "E" : "W");
+  }
+
+  public static String formatMEM(final float memory_)
+  {
+    return String.format("[%.2f%% mem]", memory_);
+  }
+
+  public static String formatTemperature(final float temperature_)
+  {
+    return String.format("[%.2f C°]", temperature_);
+  }
+
+  public static String formatTrackpoints(final int trackpoints_)
+  {
+    return String.format("[%d]", trackpoints_);
   }
 }

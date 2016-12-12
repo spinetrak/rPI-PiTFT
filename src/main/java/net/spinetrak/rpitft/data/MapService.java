@@ -54,6 +54,23 @@ public class MapService
     _gpsService = gpsService_;
   }
 
+  public double getDistance()
+  {
+    final GPS start = _gpsService.getStart();
+    final GPS finish = _gpsService.getFinish();
+    double d2r = Math.PI / 180;
+
+    double dlong = (finish.getLongitude() - start.getLongitude()) * d2r;
+    double dlat = (finish.getLatitude() - start.getLatitude()) * d2r;
+    double a =
+      Math.pow(Math.sin(dlat / 2.0), 2)
+        + Math.cos(start.getLatitude() * d2r)
+        * Math.cos(finish.getLatitude() * d2r)
+        * Math.pow(Math.sin(dlong / 2.0), 2);
+    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return 6367 * c;
+  }
+
   public float getMaxLatY()
   {
     return _maxLatY;
