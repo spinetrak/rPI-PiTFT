@@ -27,7 +27,11 @@ package net.spinetrak.rpitft.data;
 import de.taimos.gpsd4java.api.ObjectListener;
 import de.taimos.gpsd4java.backend.GPSdEndpoint;
 import de.taimos.gpsd4java.backend.ResultParser;
+import de.taimos.gpsd4java.types.DeviceObject;
+import de.taimos.gpsd4java.types.DevicesObject;
+import de.taimos.gpsd4java.types.ENMEAMode;
 import de.taimos.gpsd4java.types.TPVObject;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,20 +58,46 @@ class GPSdClient implements Runnable
       ep.addListener(new ObjectListener()
       {
         @Override
-        public void handleTPV(final TPVObject tpv)
+        public void handleDevice(final DeviceObject device)
         {
-          COUNTER++;
-          _queue.add(GPS.fromTPVObject(tpv, COUNTER));
+          LOGGER.info("Device: {}", device);
+        }
+
+        @Override
+        public void handleDevices(final DevicesObject devices)
+        {
+          for (final DeviceObject d : devices.getDevices())
+          {
+            LOGGER.info("Device: {}", d);
+          }
+        }
+
+        @Override
+        public void handleTPV(final TPVObject tpv_)
+        {
+          LOGGER.info("TPV: {}", tpv_);
+          if (tpv_.getMode() != ENMEAMode.NotSeen && tpv_.getMode() != ENMEAMode.NoFix)
+          {
+            COUNTER++;
+            _queue.add(GPS.fromTPVObject(tpv_, COUNTER));
+          }
         }
       });
 
       ep.start();
-      LOGGER.info("gpsd client started: " + ep.version());
 
+      LOGGER.info("Version: {}", ep.version());
+
+      LOGGER.info("Watch: {}", ep.watch(true, true));
+
+      LOGGER.info("Poll: {}", ep.poll());
+      LOGGER.info("gpsd client started: " + ep.version());
+      Thread.sleep(60000);
     }
-    catch (final IOException ex_)
+    catch (final IOException | JSONException | InterruptedException ex_)
     {
       LOGGER.error("Error starting gpsd client: " + ex_.getMessage());
     }
+
   }
 }
