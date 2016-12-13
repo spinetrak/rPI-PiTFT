@@ -138,7 +138,7 @@ class TabPanel
     _temperatureChart.addData(temperature);
     _temperatureThreshold.setColor(temperature);
 
-    _gpsMapView.addData(null, true);
+    //_gpsMapView.addData(null, true);
   }
 
   Node getCenter()

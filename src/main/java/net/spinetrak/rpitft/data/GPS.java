@@ -25,20 +25,13 @@
 package net.spinetrak.rpitft.data;
 
 import de.taimos.gpsd4java.types.TPVObject;
-import net.spinetrak.rpitft.command.Result;
-import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static net.spinetrak.rpitft.command.Commands.GPS_STATUS;
 
 public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
-  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.GPS");
   private float _altitude;
   private boolean _hasError = false;
   private float _latitude;
@@ -97,19 +90,6 @@ public class GPS
     return -1000;
   }
 
-  void query()
-  {
-    try
-    {
-      final Result result = GPS_STATUS.execute(new SingleLineStream());
-      _hasError = 0 != result.getResult() || !parseGPS(result.resultAsString());
-    }
-    catch (final Exception ex_)
-    {
-      _hasError = true;
-      LOGGER.error(ex_.getMessage());
-    }
-  }
 
   @Override
   public boolean equals(final Object o_)
