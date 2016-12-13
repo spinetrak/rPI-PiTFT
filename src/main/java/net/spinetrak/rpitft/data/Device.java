@@ -24,50 +24,46 @@
 
 package net.spinetrak.rpitft.data;
 
-import net.spinetrak.rpitft.command.Result;
-import net.spinetrak.rpitft.data.streams.SingleLineStream;
+import com.pi4j.system.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static net.spinetrak.rpitft.command.Commands.DEVICE_STATUS;
+import javax.management.*;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Device
 {
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Device");
-  private float _cpu;
-  private float _disk;
+  private float _cpu = Float.NaN;
+  private float _disk = Float.NaN;
   private boolean _hasError = false;
-  private float _memory;
-  private float _temperature;
+  private float _memory = Float.NaN;
+  private float _temperature = Float.NaN;
 
   Device()
   {
+    try
+    {
+      _memory = calculateMemory();
+      _cpu = calculateCPU();
+      _temperature = SystemInfo.getCpuTemperature();
+      _disk = calculateFreeDiskSpace();
+    }
+    catch (final IOException | InterruptedException | MalformedObjectNameException | InstanceNotFoundException | ReflectionException ex_)
+    {
+      LOGGER.error("Error calculating data: " + ex_.getMessage());
+      _hasError = true;
+    }
   }
 
   boolean isHasError()
   {
     return _hasError;
-  }
-
-  void query()
-  {
-    try
-    {
-      final Result result = DEVICE_STATUS.execute(new SingleLineStream());
-      _hasError = 0 != result.getResult() || !parse(result.resultAsString());
-    }
-    catch (final Exception ex_)
-    {
-      _hasError = true;
-      LOGGER.error(ex_.getMessage());
-    }
-  }
-
-  public static Device fromString(final String data_)
-  {
-    final Device device = new Device();
-    device._hasError = device.parse(data_);
-    return device;
   }
 
   public float getCpu()
@@ -90,18 +86,47 @@ public class Device
     return _temperature;
   }
 
-  private boolean parse(final String data_)
+  private float calculateCPU() throws MalformedObjectNameException, ReflectionException, InstanceNotFoundException
   {
-    final String[] tokens = data_.split("/");
-    if (tokens.length == 4)
+    final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+    final ObjectName name = ObjectName.getInstance("java.lang:type=OperatingSystem");
+    final AttributeList list = mbs.getAttributes(name, new String[]{"ProcessCpuLoad"});
+
+    if (list.isEmpty())
     {
-      _cpu = Float.parseFloat(tokens[0]);
-      _disk = Float.parseFloat(tokens[1]);
-      _memory = Float.parseFloat(tokens[2]);
-      _temperature = Float.parseFloat(tokens[3]);
-      return true;
+      return Float.NaN;
     }
-    return false;
+
+    final Attribute att = (Attribute) list.get(0);
+    final float value = (float) ((double) att.getValue());
+
+    if (value == -1.0)
+    {
+      return Float.NaN;
+    }
+    return (value * 1000) / 10.0f;
   }
 
+  private float calculateFreeDiskSpace() throws IOException
+  {
+    float freeTotal = 0.0f;
+    float totalTotal = 0.0f;
+    float totalUsed;
+    for (final Path root : FileSystems.getDefault().getRootDirectories())
+    {
+      final FileStore store = Files.getFileStore(root);
+      freeTotal += store.getUsableSpace();
+      totalTotal += store.getTotalSpace();
+    }
+    totalUsed = totalTotal - freeTotal;
+    return totalUsed * 100 / totalTotal;
+  }
+
+  private float calculateMemory() throws IOException, InterruptedException
+  {
+    final long total = SystemInfo.getMemoryTotal();
+    final long free = SystemInfo.getMemoryFree();
+    final long used = total - free;
+    return (float) used * 100 / total;
+  }
 }

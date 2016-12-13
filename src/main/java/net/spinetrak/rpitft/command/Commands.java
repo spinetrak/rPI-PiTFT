@@ -28,16 +28,6 @@ import net.spinetrak.rpitft.data.streams.Stream;
 
 public enum Commands
 {
-  DEVICE_STATUS()
-    {
-      private final Command _command = new Command("/device.sh");
-
-      @Override
-      public Result execute(final Stream stream_)
-      {
-        return _command.execute(stream_);
-      }
-    },
   POWER_STATUS()
     {
       private final Command _command = new Command("/power.sh");

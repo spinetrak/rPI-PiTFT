@@ -24,24 +24,23 @@
 
 package net.spinetrak.rpitft.data;
 
+import de.taimos.gpsd4java.api.ObjectListener;
+import de.taimos.gpsd4java.backend.GPSdEndpoint;
+import de.taimos.gpsd4java.backend.ResultParser;
+import de.taimos.gpsd4java.types.TPVObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 
-class DeviceClient implements Runnable
+class GPSdClient implements Runnable
 {
-  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.DeviceClient");
-  private final ExecutorService _executor;
-  private final ConcurrentLinkedQueue<Device> _queue = new ConcurrentLinkedQueue<>();
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.GpsdClient");
+  private static int COUNTER = 0;
+  private final ConcurrentLinkedQueue<GPS> _queue = new ConcurrentLinkedQueue<>();
 
-  DeviceClient(final ExecutorService executor_)
-  {
-    _executor = executor_;
-  }
-
-  ConcurrentLinkedQueue<Device> getQueue()
+  ConcurrentLinkedQueue<GPS> getQueue()
   {
     return _queue;
   }
@@ -50,17 +49,25 @@ class DeviceClient implements Runnable
   {
     try
     {
-      final Device device = new Device();
-      if (!device.isHasError())
+      final GPSdEndpoint ep = new GPSdEndpoint("localhost", 2947, new ResultParser());
+
+      ep.addListener(new ObjectListener()
       {
-        _queue.add(device);
-      }
-      Thread.sleep(500);
-      _executor.execute(this);
+        @Override
+        public void handleTPV(final TPVObject tpv)
+        {
+          COUNTER++;
+          _queue.add(GPS.fromTPVObject(tpv, COUNTER));
+        }
+      });
+
+      ep.start();
+      LOGGER.info("gpsd client started: " + ep.version());
+
     }
-    catch (final InterruptedException ex_)
+    catch (final IOException ex_)
     {
-      LOGGER.error(ex_.getMessage());
+      LOGGER.error("Error starting gpsd client: " + ex_.getMessage());
     }
   }
 }
