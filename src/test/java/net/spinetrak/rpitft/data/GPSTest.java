@@ -31,6 +31,17 @@ import static junit.framework.TestCase.assertFalse;
 public class GPSTest
 {
   @org.junit.Test
+  public void fromString()
+  {
+    final GPS gps1 = GPS.fromString("130001/0053.1111N/00009.2222E/1/10.1");
+    assertFalse(gps1.isHasError());
+    final GPS gps2 = GPS.fromString("130002/0053.2222N/0009.3333E/2/11.2");
+    assertFalse(gps2.isHasError());
+    final GPS gps3 = GPS.fromString("130003/0053.3333N/0009.4444E/3/12.3");
+    assertFalse(gps3.isHasError());
+  }
+
+  @org.junit.Test
   public void parse() throws Exception
   {
     final GPS gps = new GPS();
@@ -49,14 +60,17 @@ public class GPSTest
   }
 
   @org.junit.Test
-  public void fromString()
+  public void printGPS()
   {
     final GPS gps1 = GPS.fromString("130001/0053.1111N/00009.2222E/1/10.1");
-    assertFalse(gps1.isHasError());
     final GPS gps2 = GPS.fromString("130002/0053.2222N/0009.3333E/2/11.2");
-    assertFalse(gps2.isHasError());
     final GPS gps3 = GPS.fromString("130003/0053.3333N/0009.4444E/3/12.3");
-    assertFalse(gps3.isHasError());
+
+    final NmeaLogger logger = new NmeaLogger("/Users/renzop/nmea2.txt");
+
+    logger.writeGGASentence(gps1);
+    logger.writeGGASentence(gps2);
+    logger.writeGGASentence(gps3);
   }
 
 }
