@@ -34,7 +34,7 @@ public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private float _altitude;
-  private boolean _hasError = false;
+  private GpsFixQuality _fix;
   private float _latitude;
   private float _longitude;
   private DateTime _time;
@@ -53,8 +53,6 @@ public class GPS
     gps._longitude = (float) gga_.getPosition().getLongitude();
     gps._altitude = (float) gga_.getPosition().getAltitude();
     gps._latitude = (float) gga_.getPosition().getLatitude();
-    final GpsFixQuality fix = gga_.getFixQuality();
-    gps._hasError = GpsFixQuality.INVALID == fix;
     gps._trackpoints = counter_;
     return gps;
   }
@@ -77,7 +75,7 @@ public class GPS
     {
       return false;
     }
-    if (_hasError != gps._hasError)
+    if (_fix != gps._fix)
     {
       return false;
     }
