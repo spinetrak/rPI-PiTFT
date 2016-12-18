@@ -38,26 +38,6 @@ public enum Commands
         return _command.execute(stream_);
       }
     },
-  GPS_STATUS()
-    {
-      private final Command _command = new Command("/gps.sh");
-
-      @Override
-      public Result execute(final Stream stream_)
-      {
-        return _command.execute(stream_);
-      }
-    },
-  NMEA_STATUS()
-    {
-      private final Command _command = new Command("/nmea.sh");
-
-      @Override
-      public Result execute(final Stream stream_)
-      {
-        return _command.execute(stream_);
-      }
-    },
   GPX_NEW()
     {
       private final Command _command = new Command("/gpx.sh");

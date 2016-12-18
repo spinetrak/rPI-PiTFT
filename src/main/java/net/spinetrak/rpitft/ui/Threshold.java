@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data;
+package net.spinetrak.rpitft.ui;
 
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.text.Text;
 
-import static net.spinetrak.rpitft.data.Threshold.State.*;
+import static net.spinetrak.rpitft.ui.Threshold.State.*;
 
-public class Threshold
+class Threshold
 {
   private static final String FX_FILL_AMBER = "-fx-fill: orange;";
   private static final String FX_FILL_GREEN = "-fx-fill: green;";
@@ -44,7 +44,7 @@ public class Threshold
   private final float _red;
   private State _state = null;
 
-  public Threshold(final Node node_, final float red_, final float amber_)
+  Threshold(final Node node_, final float red_, final float amber_)
   {
     _node = node_;
     _red = red_;
@@ -52,7 +52,7 @@ public class Threshold
     _inverse = red_ < amber_;
   }
 
-  public void setColor(final float data_)
+  void setColor(final float data_)
   {
     if (!_inverse)
     {

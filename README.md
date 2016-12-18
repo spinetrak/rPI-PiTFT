@@ -13,7 +13,8 @@ What does it do?
 - displays various JavaFX linecharts in a tab panel for various data series
   - ~~S.USV backup battery status in a JavaFX linechart~~ 
   - RPi3 cpu / disk / memory / temperature  (via [Pi4J] (http://pi4j.com/))
-  - GPS location (latitude, longitude, altitude) (via [GPSd4Java] (https://github.com/taimos/GPSd4Java))
+  - GPS location (latitude, longitude, altitude) (via [ktuukkan/marine-api] (https://github.com/ktuukkan/marine-api))
+- writes NMEA log of GGA sentences
 - creates GPX file from current NMEA log on command
 - backs up NMEA log on command
  

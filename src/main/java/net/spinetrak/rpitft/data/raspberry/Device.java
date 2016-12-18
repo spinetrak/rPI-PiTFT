@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data;
+package net.spinetrak.rpitft.data.raspberry;
 
 import com.pi4j.system.SystemInfo;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ import java.nio.file.Path;
 
 public class Device
 {
-  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Device");
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.raspberry.Device");
   private float _cpu = Float.NaN;
   private float _disk = Float.NaN;
   private boolean _hasError = false;

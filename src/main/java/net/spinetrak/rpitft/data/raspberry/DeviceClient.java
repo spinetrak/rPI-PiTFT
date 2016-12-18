@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data;
+package net.spinetrak.rpitft.data.raspberry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +30,18 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 
-class DeviceClient implements Runnable
+public class DeviceClient implements Runnable
 {
-  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.DeviceClient");
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.raspberry.DeviceClient");
   private final ExecutorService _executor;
   private final ConcurrentLinkedQueue<Device> _queue = new ConcurrentLinkedQueue<>();
 
-  DeviceClient(final ExecutorService executor_)
+  public DeviceClient(final ExecutorService executor_)
   {
     _executor = executor_;
   }
 
-  ConcurrentLinkedQueue<Device> getQueue()
+  public ConcurrentLinkedQueue<Device> getQueue()
   {
     return _queue;
   }

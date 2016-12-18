@@ -29,9 +29,9 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import net.spinetrak.rpitft.data.Device;
-import net.spinetrak.rpitft.data.GPS;
 import net.spinetrak.rpitft.data.Queue;
+import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.raspberry.Device;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 

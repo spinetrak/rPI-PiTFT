@@ -31,9 +31,9 @@ import javafx.scene.shape.Polyline;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import net.spinetrak.rpitft.data.Formatter;
-import net.spinetrak.rpitft.data.GPS;
-import net.spinetrak.rpitft.data.GPSService;
-import net.spinetrak.rpitft.data.MapService;
+import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.location.GPSService;
+import net.spinetrak.rpitft.data.location.MapService;
 
 import static net.spinetrak.rpitft.ui.Charts.MIN_HEIGHT;
 import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
@@ -67,16 +67,9 @@ class GPSMapView
     _distance.setFont(Font.font(12.0));
   }
 
-  void addData(final GPS gps_, final boolean mock_)
+  void addData(final GPS gps_)
   {
-    if (mock_)
-    {
-      _gpsService.addGPS(_gpsService.getNextMock());
-    }
-    else
-    {
-      _gpsService.addGPS(gps_);
-    }
+    _gpsService.addGPS(gps_);
     final MapService mapService = new MapService(_gpsService);
     mapService.makeMap();
     final String minLatY = Formatter.formatLatitude(mapService.getMinLatY());

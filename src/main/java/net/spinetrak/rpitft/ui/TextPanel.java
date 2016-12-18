@@ -28,7 +28,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
-import net.spinetrak.rpitft.data.*;
+import net.spinetrak.rpitft.data.Formatter;
+import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.raspberry.Device;
+import net.spinetrak.rpitft.data.raspberry.Power;
 import org.joda.time.DateTime;
 
 import static net.spinetrak.rpitft.data.Formatter.formatLatitude;

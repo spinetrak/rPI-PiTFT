@@ -25,6 +25,8 @@
 package net.spinetrak.rpitft.data;
 
 import javafx.animation.AnimationTimer;
+import net.spinetrak.rpitft.data.location.NmeaLogger;
+import net.spinetrak.rpitft.data.raspberry.DeviceClient;
 import net.spinetrak.rpitft.ui.Main;
 
 import java.util.concurrent.ExecutorService;
@@ -34,7 +36,7 @@ public class Queue
 {
   private final DeviceClient _deviceClient;
   private final ExecutorService _executor;
-  private final GPSdClient _gpsdClient;
+  private final NmeaLogger _nmeaLogger;
 
 
   public Queue()
@@ -50,8 +52,7 @@ public class Queue
     _deviceClient = new DeviceClient(_executor);
     _executor.execute(_deviceClient);
 
-    _gpsdClient = new GPSdClient();
-    _executor.execute(_gpsdClient);
+    _nmeaLogger = new NmeaLogger();
 
     //final AddToGPSQueue addToGPSQueue = new AddToGPSQueue();
     //_executor.execute(addToGPSQueue);
@@ -68,7 +69,7 @@ public class Queue
       @Override
       public void handle(final long now_)
       {
-        main_.addDataToSeries(_deviceClient.getQueue(), _gpsdClient.getQueue());
+        main_.addDataToSeries(_deviceClient.getQueue(), _nmeaLogger.getQueue());
       }
     }.start();
   }

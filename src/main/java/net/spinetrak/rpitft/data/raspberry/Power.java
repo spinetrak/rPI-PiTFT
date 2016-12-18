@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data;
+package net.spinetrak.rpitft.data.raspberry;
 
 import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
@@ -34,7 +34,7 @@ import static net.spinetrak.rpitft.command.Commands.POWER_STATUS;
 public class Power
 {
   private final static String BATTERY = "B";
-  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.Power");
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.raspberry.Power");
   private final static String PRIMARY = "P";
   private float _capacity;
   private boolean _hasError = false;

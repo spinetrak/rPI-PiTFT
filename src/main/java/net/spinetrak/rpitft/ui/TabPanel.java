@@ -28,9 +28,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import net.spinetrak.rpitft.data.Device;
-import net.spinetrak.rpitft.data.GPS;
-import net.spinetrak.rpitft.data.Threshold;
+import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.raspberry.Device;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,8 +41,6 @@ class TabPanel
   private final Threshold _cpuThreshold;
   private final ExecutorService _executor;
   private final GPSMapView _gpsMapView;
-  //private final SingleLineChart _latitudeChart;
-  //private final SingleLineChart _longitudeChart;
   private final SingleLineChart _memoryChart;
   private final Threshold _memoryThreshold;
   private final TabPane _tabPane;
@@ -53,15 +50,6 @@ class TabPanel
 
   TabPanel()
   {
-    /*
-    final Tab lonTab = new Tab("lon");
-    _longitudeChart = new SingleLineChart();
-    lonTab.setContent(_longitudeChart.getChart());
-
-    final Tab latTab = new Tab("lat");
-    _latitudeChart = new SingleLineChart();
-    latTab.setContent(_latitudeChart.getChart());
-    */
     final Tab altTab = new Tab("alt");
     _altitudeChart = new SingleLineChart();
     altTab.setContent(_altitudeChart.getChart());
@@ -90,7 +78,6 @@ class TabPanel
 
     _tabPane = new TabPane();
     _tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-    //_tabPane.getTabs().addAll(lonTab, latTab, altTab, cpuTab, memTab, temTab, mapTab);
 
     _tabPane.getTabs().addAll(cpuTab, memTab, temTab, altTab, mapTab);
 
@@ -99,9 +86,6 @@ class TabPanel
       thread.setDaemon(true);
       return thread;
     });
-
-
-    //_tabPane.getSelectionModel().select(mapTab);
 
 
     final TransitionTabs transitionTabs = new TransitionTabs();
@@ -117,15 +101,12 @@ class TabPanel
 
   void addData(final GPS gps_)
   {
-    //_longitudeChart.addData(gps_.getLongitude());
-    //_latitudeChart.addData(gps_.getLatitude());
     _altitudeChart.addData(gps_.getAltitude());
-    _gpsMapView.addData(gps_, false);
+    _gpsMapView.addData(gps_);
   }
 
   void addData(final Device device_)
   {
-
     final float cpu = device_.getCpu();
     _cpuChart.addData(cpu);
     _cpuThreshold.setColor(cpu);
@@ -137,8 +118,6 @@ class TabPanel
     float temperature = device_.getTemperature();
     _temperatureChart.addData(temperature);
     _temperatureThreshold.setColor(temperature);
-
-    //_gpsMapView.addData(null, true);
   }
 
   Node getCenter()
@@ -166,7 +145,7 @@ class TabPanel
         {
           Thread.sleep(5000);
         }
-        catch (final InterruptedException e_)
+        catch (final InterruptedException ex_)
         {
           //ignore
         }

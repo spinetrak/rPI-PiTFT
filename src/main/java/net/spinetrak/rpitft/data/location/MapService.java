@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data;
+package net.spinetrak.rpitft.data.location;
 
 import javafx.scene.shape.Polyline;
 
