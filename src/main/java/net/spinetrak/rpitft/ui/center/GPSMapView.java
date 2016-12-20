@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.ui;
+package net.spinetrak.rpitft.ui.center;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -35,8 +35,8 @@ import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.location.GPSService;
 import net.spinetrak.rpitft.data.location.MapService;
 
-import static net.spinetrak.rpitft.ui.Charts.MIN_HEIGHT;
-import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
+import static net.spinetrak.rpitft.ui.center.Charts.MIN_HEIGHT;
+import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
 class GPSMapView
 {

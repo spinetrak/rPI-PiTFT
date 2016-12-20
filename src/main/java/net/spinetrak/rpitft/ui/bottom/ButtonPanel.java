@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.ui;
+package net.spinetrak.rpitft.ui.bottom;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -36,14 +36,14 @@ import net.spinetrak.rpitft.data.streams.SingleLineStream;
 
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
-import static net.spinetrak.rpitft.ui.Charts.MIN_BOTTOM_HEIGHT;
-import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
+import static net.spinetrak.rpitft.ui.center.Charts.MIN_BOTTOM_HEIGHT;
+import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
-class ButtonPanel
+public class ButtonPanel
 {
   private final HBox _bottom;
 
-  ButtonPanel()
+  public ButtonPanel()
   {
     _bottom = new HBox();
     _bottom.setPadding(new Insets(1));
@@ -82,7 +82,7 @@ class ButtonPanel
 
   }
 
-  HBox getBottom()
+  public HBox getBottom()
   {
     return _bottom;
   }

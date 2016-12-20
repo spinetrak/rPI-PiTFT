@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.ui;
+package net.spinetrak.rpitft.ui.center;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -30,11 +30,12 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.raspberry.Device;
+import net.spinetrak.rpitft.ui.Threshold;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-class TabPanel
+public class TabPanel
 {
   private final SingleLineChart _altitudeChart;
   private final SingleLineChart _cpuChart;
@@ -48,7 +49,7 @@ class TabPanel
   private final Threshold _temperatureThreshold;
   private boolean _inFocus;
 
-  TabPanel()
+  public TabPanel()
   {
     final Tab altTab = new Tab("alt");
     _altitudeChart = new SingleLineChart();
@@ -99,13 +100,13 @@ class TabPanel
   }
 
 
-  void addData(final GPS gps_)
+  public void addData(final GPS gps_)
   {
     _altitudeChart.addData(gps_.getAltitude());
     _gpsMapView.addData(gps_);
   }
 
-  void addData(final Device device_)
+  public void addData(final Device device_)
   {
     final float cpu = device_.getCpu();
     _cpuChart.addData(cpu);
@@ -120,7 +121,7 @@ class TabPanel
     _temperatureThreshold.setColor(temperature);
   }
 
-  Node getCenter()
+  public Node getCenter()
   {
     return _tabPane;
   }

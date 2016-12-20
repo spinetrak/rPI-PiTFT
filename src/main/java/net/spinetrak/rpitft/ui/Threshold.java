@@ -30,7 +30,7 @@ import javafx.scene.text.Text;
 
 import static net.spinetrak.rpitft.ui.Threshold.State.*;
 
-class Threshold
+public class Threshold
 {
   private static final String FX_FILL_AMBER = "-fx-fill: orange;";
   private static final String FX_FILL_GREEN = "-fx-fill: green;";
@@ -44,7 +44,7 @@ class Threshold
   private final float _red;
   private State _state = null;
 
-  Threshold(final Node node_, final float red_, final float amber_)
+  public Threshold(final Node node_, final float red_, final float amber_)
   {
     _node = node_;
     _red = red_;
@@ -52,7 +52,7 @@ class Threshold
     _inverse = red_ < amber_;
   }
 
-  void setColor(final float data_)
+  public void setColor(final float data_)
   {
     if (!_inverse)
     {

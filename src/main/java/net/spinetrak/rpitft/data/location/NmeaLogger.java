@@ -110,13 +110,9 @@ public class NmeaLogger
     {
       if (_sentenceReader != null)
       {
-        Runtime.getRuntime().addShutdownHook(new Thread()
-        {
-          public void run()
-          {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             _sentenceReader.stop();
-          }
-        });
+        }));
       }
       if (_inputStream != null)
       {

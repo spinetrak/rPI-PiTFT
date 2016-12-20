@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.ui;
 
+import net.spinetrak.rpitft.ui.top.TextPanel;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

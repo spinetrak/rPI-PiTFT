@@ -32,11 +32,14 @@ import javafx.stage.Stage;
 import net.spinetrak.rpitft.data.Queue;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.raspberry.Device;
+import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
+import net.spinetrak.rpitft.ui.center.TabPanel;
+import net.spinetrak.rpitft.ui.top.TextPanel;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static net.spinetrak.rpitft.ui.Charts.MIN_HEIGHT;
-import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
+import static net.spinetrak.rpitft.ui.center.Charts.MIN_HEIGHT;
+import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
 public class Main extends Application
 {

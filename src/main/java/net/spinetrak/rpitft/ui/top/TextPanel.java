@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.ui;
+package net.spinetrak.rpitft.ui.top;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -32,15 +32,16 @@ import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.data.raspberry.Power;
+import net.spinetrak.rpitft.ui.Threshold;
 import org.joda.time.DateTime;
 
 import static net.spinetrak.rpitft.data.Formatter.formatLatitude;
 import static net.spinetrak.rpitft.data.Formatter.formatLongitude;
-import static net.spinetrak.rpitft.ui.Charts.MIN_TOP_HEIGHT;
-import static net.spinetrak.rpitft.ui.Charts.MIN_WIDTH;
+import static net.spinetrak.rpitft.ui.center.Charts.MIN_TOP_HEIGHT;
+import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 import static org.joda.time.DateTimeZone.UTC;
 
-class TextPanel
+public class TextPanel
 {
   /*
   private final Text _batteryCapacity;
@@ -65,7 +66,7 @@ class TextPanel
   private final Text _trackPoints;
   private final Threshold _trackpointsThreshold;
 
-  TextPanel()
+  public TextPanel()
   {
     _top = new FlowPane(Orientation.HORIZONTAL);
     _top.setMinHeight(MIN_TOP_HEIGHT);
@@ -130,7 +131,7 @@ class TextPanel
     */
   }
 
-  void addData(final Device device_)
+  public void addData(final Device device_)
   {
     final float cpu = device_.getCpu();
     final float disk = device_.getDisk();
@@ -150,7 +151,7 @@ class TextPanel
     _temperatureThreshold.setColor(temperature);
   }
 
-  void addData(final GPS gps_)
+  public void addData(final GPS gps_)
   {
     final DateTime time = gps_.getTime();
     final float latitude = gps_.getLatitude();
@@ -170,7 +171,7 @@ class TextPanel
     _trackpointsThreshold.setColor(trackpoints);
   }
 
-  int getTimeDifferenceInSeconds(final DateTime time_)
+  public int getTimeDifferenceInSeconds(final DateTime time_)
   {
     if (time_ == null)
     {
@@ -185,7 +186,7 @@ class TextPanel
     return nowSeconds - timeSeconds;
   }
 
-  FlowPane getTop()
+  public FlowPane getTop()
   {
     return _top;
   }

@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.ui;
+package net.spinetrak.rpitft.ui.center;
 
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 
-import static net.spinetrak.rpitft.ui.Charts.MAX_DATA_POINTS;
+import static net.spinetrak.rpitft.ui.center.Charts.MAX_DATA_POINTS;
 
 class SingleLineChart
 {
