@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.ui;
 
+import com.pi4j.system.NetworkInfo;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -36,6 +37,7 @@ import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
 import net.spinetrak.rpitft.ui.center.TabPanel;
 import net.spinetrak.rpitft.ui.top.TextPanel;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_HEIGHT;
@@ -43,6 +45,7 @@ import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
 public class Main extends Application
 {
+  private ButtonPanel _buttonPanel;
   private TabPanel _tabPanel;
   private TextPanel _textPanel;
 
@@ -67,6 +70,17 @@ public class Main extends Application
       final Device device = deviceQueue_.remove();
       _textPanel.addData(device);
       _tabPanel.addData(device);
+      try
+      {
+        final String[] addresses = NetworkInfo.getIPAddresses();
+        final String address = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
+        _buttonPanel.getStatusText().setText(
+          "[" + NetworkInfo.getHostname() + "/" + address + "/" + NetworkInfo.getFQDN() + "]  ");
+      }
+      catch (final IOException | InterruptedException ex_)
+      {
+        _buttonPanel.getStatusText().setText("[" + ex_.getMessage() + "]  ");
+      }
     }
     while (!gpsQueue_.isEmpty())
     {
@@ -91,6 +105,7 @@ public class Main extends Application
   {
     _tabPanel = new TabPanel();
     _textPanel = new TextPanel();
+    _buttonPanel = new ButtonPanel();
 
     final BorderPane pane = new BorderPane();
     pane.setPadding(new Insets(1));
@@ -104,8 +119,7 @@ public class Main extends Application
 
     pane.setTop(_textPanel.getTop());
 
-    final ButtonPanel buttonPanel = new ButtonPanel();
-    pane.setBottom(buttonPanel.getBottom());
+    pane.setBottom(_buttonPanel.getBottom());
 
     final Scene scene = new Scene(pane, MIN_WIDTH, MIN_HEIGHT);
     scene.getStylesheets().add("stylesheet.css");
