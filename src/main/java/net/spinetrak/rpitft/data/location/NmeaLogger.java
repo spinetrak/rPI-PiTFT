@@ -31,7 +31,9 @@ import gnu.io.UnsupportedCommOperationException;
 import net.sf.marineapi.nmea.event.AbstractSentenceListener;
 import net.sf.marineapi.nmea.io.SentenceReader;
 import net.sf.marineapi.nmea.sentence.GGASentence;
+import net.sf.marineapi.nmea.sentence.RMCSentence;
 import net.sf.marineapi.nmea.sentence.SentenceValidator;
+import net.sf.marineapi.nmea.util.FaaMode;
 import net.sf.marineapi.nmea.util.GpsFixQuality;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -54,7 +56,7 @@ public class NmeaLogger
   public NmeaLogger()
   {
     initOutput(OUTFILE);
-    initInput();
+    initInput(false);
   }
 
   public ConcurrentLinkedQueue<GPS> getQueue()
@@ -73,7 +75,7 @@ public class NmeaLogger
       if (id.getPortType() == CommPortIdentifier.PORT_SERIAL)
       {
         sp = (SerialPort) id.open("SerialExample", 30);
-        sp.setSerialPortParams(4800, SerialPort.DATABITS_8,
+        sp.setSerialPortParams(9600, SerialPort.DATABITS_8,
                                SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 
         if (isValid(sp.getInputStream()))
@@ -85,7 +87,7 @@ public class NmeaLogger
     return sp;
   }
 
-  private void initInput()
+  private void initInput(final boolean mock_)
   {
     try
     {
@@ -93,9 +95,17 @@ public class NmeaLogger
 
       if (sp != null)
       {
-        _inputStream = sp.getInputStream();
+        if (mock_)
+        {
+          _inputStream = new FileInputStream(new File("/home/pi/tracks/nmea_test.txt"));
+        }
+        else
+        {
+          _inputStream = sp.getInputStream();
+        }
         _sentenceReader = new SentenceReader(_inputStream);
         _sentenceReader.addSentenceListener(new GGAListener());
+        _sentenceReader.addSentenceListener(new VTGListener());
         _sentenceReader.start();
       }
     }
@@ -185,12 +195,26 @@ public class NmeaLogger
     @Override
     public void sentenceRead(final GGASentence gga_)
     {
-      if (gga_.getFixQuality() != GpsFixQuality.INVALID)
+      final GpsFixQuality fix = gga_.getFixQuality();
+      if (GpsFixQuality.INVALID != fix)
       {
         COUNTER++;
         _printStream.println(gga_.toSentence());
         _printStream.flush();
         _queue.add(GPS.fromGGASentence(gga_, COUNTER));
+      }
+    }
+  }
+
+  private class VTGListener extends AbstractSentenceListener<RMCSentence>
+  {
+    @Override
+    public void sentenceRead(final RMCSentence rmc_)
+    {
+      final FaaMode mode = rmc_.getMode();
+      if (FaaMode.NONE != mode)
+      {
+        _queue.add(GPS.fromRMCSentence(rmc_));
       }
     }
   }

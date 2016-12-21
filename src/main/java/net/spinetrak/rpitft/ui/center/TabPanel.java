@@ -38,12 +38,14 @@ import java.util.concurrent.Executors;
 public class TabPanel
 {
   private final SingleLineChart _altitudeChart;
+  private final CompassView _compassView;
   private final SingleLineChart _cpuChart;
   private final Threshold _cpuThreshold;
   private final ExecutorService _executor;
-  private final GPSMapView _gpsMapView;
+  private final GPSLocationView _gpsLocationView;
   private final SingleLineChart _memoryChart;
   private final Threshold _memoryThreshold;
+  private final SingleLineChart _speedChart;
   private final TabPane _tabPane;
   private final SingleLineChart _temperatureChart;
   private final Threshold _temperatureThreshold;
@@ -51,36 +53,42 @@ public class TabPanel
 
   public TabPanel()
   {
-    final Tab altTab = new Tab("alt");
+    final Tab altTab = new Tab("altitude");
     _altitudeChart = new SingleLineChart();
     altTab.setContent(_altitudeChart.getChart());
-
 
     final Tab cpuTab = new Tab("cpu");
     _cpuChart = new SingleLineChart();
     cpuTab.setContent(_cpuChart.getChart());
     _cpuThreshold = new Threshold(_cpuChart.getChart(), 90, 80);
 
-    final Tab memTab = new Tab("mem");
+    final Tab memTab = new Tab("memory");
     _memoryChart = new SingleLineChart();
     memTab.setContent(_memoryChart.getChart());
     _memoryThreshold = new Threshold(_memoryChart.getChart(), 90, 80);
 
-    final Tab temTab = new Tab("temp");
+    final Tab temTab = new Tab("temperature");
     _temperatureChart = new SingleLineChart();
     temTab.setContent(_temperatureChart.getChart());
     _temperatureThreshold = new Threshold(_temperatureChart.getChart(), 85, 75);
 
+    final Tab mapTab = new Tab("location");
+    _gpsLocationView = new GPSLocationView();
+    mapTab.setContent(_gpsLocationView.getPane());
 
-    final Tab mapTab = new Tab("map");
-    _gpsMapView = new GPSMapView();
-    mapTab.setContent(_gpsMapView.getPane());
+    final Tab speedTab = new Tab("speed");
+    _speedChart = new SingleLineChart();
+    speedTab.setContent(_speedChart.getChart());
+
+    final Tab dirTab = new Tab("direction");
+    _compassView = new CompassView();
+    dirTab.setContent(_compassView.getPane());
 
 
     _tabPane = new TabPane();
     _tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-    _tabPane.getTabs().addAll(cpuTab, memTab, temTab, altTab, mapTab);
+    _tabPane.getTabs().addAll(cpuTab, memTab, temTab, mapTab, altTab, speedTab, dirTab);
 
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
@@ -102,8 +110,16 @@ public class TabPanel
 
   public void addData(final GPS gps_)
   {
-    _altitudeChart.addData(gps_.getAltitude());
-    _gpsMapView.addData(gps_);
+    if (gps_.isValidLocation())
+    {
+      _altitudeChart.addData(gps_.getAltitude());
+      _gpsLocationView.addData(gps_);
+    }
+    if (gps_.isValidMovement())
+    {
+      _speedChart.addData((float) gps_.getSpeed());
+      _compassView.addData(gps_);
+    }
   }
 
   public void addData(final Device device_)

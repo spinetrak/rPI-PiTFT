@@ -33,9 +33,9 @@ import java.util.Collection;
 public class MapService
 {
   // CHANGE THIS: image height in pixel
-  private static final int IMAGE_HEIGHT_IN_PX = 320;
+  private static final int IMAGE_HEIGHT_IN_PX = 200;
   // CHANGE THIS: image width in pixel
-  private static final int IMAGE_WIDTH_IN_PX = 480;
+  private static final int IMAGE_WIDTH_IN_PX = 470;
   // CHANGE THIS: minimum padding in pixel
   private static final int MINIMUM_IMAGE_PADDING_IN_PX = 1;
 

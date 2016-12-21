@@ -35,26 +35,26 @@ import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.location.GPSService;
 import net.spinetrak.rpitft.data.location.MapService;
 
-import static net.spinetrak.rpitft.ui.center.Charts.MIN_HEIGHT;
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
-class GPSMapView
+class GPSLocationView
 {
+  private final static int HEIGHT = 200;
   private final Text _distance = new Text(200, 15, "distance");
   private final GPSService _gpsService = new GPSService();
-  private final Line _latYAxis = new Line(2, 2, 2, MIN_HEIGHT - 2);
+  private final Line _latYAxis = new Line(2, 2, 2, HEIGHT - 2);
   private final Line _lonXAxis = new Line(2, 2, MIN_WIDTH - 2, 2);
-  private final Text _lowerLeft = new Text(4, MIN_HEIGHT - 125, "[-90.0000]\n[-180.0000]");
-  private final Text _lowerRight = new Text(MIN_WIDTH - 60, MIN_HEIGHT - 125, "[-90.0000]\n[180.0000]");
+  private final Text _lowerLeft = new Text(4, HEIGHT, "[-90.0000]\n[-180.0000]");
+  private final Text _lowerRight = new Text(MIN_WIDTH - 60, HEIGHT, "[-90.0000]\n[180.0000]");
   private final Pane _pane = new Pane();
   private final Text _upperLeft = new Text(4, 15, "[90.0000]\n[-180.0000]");
   private final Text _upperRight = new Text(MIN_WIDTH - 60, 15, "[90.0000]\n[180.0000]");
 
-  GPSMapView()
+  GPSLocationView()
   {
-    _pane.setPrefSize(MIN_WIDTH, MIN_HEIGHT);
+    _pane.setPrefSize(MIN_WIDTH, HEIGHT);
     _pane.setMinWidth(MIN_WIDTH);
-    _pane.setMinHeight(MIN_HEIGHT);
+    _pane.setMinHeight(HEIGHT);
     _pane.getChildren().addAll(_lonXAxis, _latYAxis);
     _lonXAxis.setStroke(Color.BLUE);
     _latYAxis.setStroke(Color.BLUE);

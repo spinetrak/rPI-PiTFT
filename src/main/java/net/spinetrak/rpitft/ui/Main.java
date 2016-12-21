@@ -85,7 +85,10 @@ public class Main extends Application
     while (!gpsQueue_.isEmpty())
     {
       final GPS gps = gpsQueue_.remove();
-      _textPanel.addData(gps);
+      if (gps.isValidLocation())
+      {
+        _textPanel.addData(gps);
+      }
       _tabPanel.addData(gps);
     }
   }

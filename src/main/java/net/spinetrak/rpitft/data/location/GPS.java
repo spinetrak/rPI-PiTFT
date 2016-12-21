@@ -25,6 +25,7 @@
 package net.spinetrak.rpitft.data.location;
 
 import net.sf.marineapi.nmea.sentence.GGASentence;
+import net.sf.marineapi.nmea.sentence.RMCSentence;
 import net.sf.marineapi.nmea.util.GpsFixQuality;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -34,17 +35,19 @@ public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private float _altitude;
+  private double _course;
   private GpsFixQuality _fix;
   private float _latitude;
   private float _longitude;
+  private double _speed;
   private DateTime _time;
   private int _trackpoints;
-
+  private boolean _validLocation;
+  private boolean _validMovement;
   private GPS()
   {
 
   }
-
 
   static GPS fromGGASentence(final GGASentence gga_, final int counter_)
   {
@@ -54,6 +57,19 @@ public class GPS
     gps._altitude = (float) gga_.getPosition().getAltitude();
     gps._latitude = (float) gga_.getPosition().getLatitude();
     gps._trackpoints = counter_;
+    gps._fix = gga_.getFixQuality();
+    gps._validLocation = true;
+    gps._validMovement = false;
+    return gps;
+  }
+
+  static GPS fromRMCSentence(final RMCSentence rmc_)
+  {
+    final GPS gps = new GPS();
+    gps._speed = rmc_.getSpeed() * 1.852;      //knots -> km/h
+    gps._course = rmc_.getCourse();
+    gps._validMovement = true;
+    gps._validLocation = false;
     return gps;
   }
 
@@ -75,7 +91,7 @@ public class GPS
     {
       return false;
     }
-    if (_fix != gps._fix)
+    if (Double.compare(gps._course, _course) != 0)
     {
       return false;
     }
@@ -87,17 +103,43 @@ public class GPS
     {
       return false;
     }
+    if (Double.compare(gps._speed, _speed) != 0)
+    {
+      return false;
+    }
     if (_trackpoints != gps._trackpoints)
     {
       return false;
     }
-    return _time != null ? _time.equals(gps._time) : gps._time == null;
+    if (_validLocation != gps._validLocation)
+    {
+      return false;
+    }
+    if (_validMovement != gps._validMovement)
+    {
+      return false;
+    }
+    if (_fix != gps._fix)
+    {
+      return false;
+    }
+    return _time.equals(gps._time);
 
   }
 
   public float getAltitude()
   {
     return _altitude;
+  }
+
+  public double getCourse()
+  {
+    return _course;
+  }
+
+  public GpsFixQuality getFix()
+  {
+    return _fix;
   }
 
   public float getLatitude()
@@ -108,6 +150,11 @@ public class GPS
   public float getLongitude()
   {
     return _longitude;
+  }
+
+  public double getSpeed()
+  {
+    return _speed;
   }
 
   public DateTime getTime()
@@ -123,10 +170,31 @@ public class GPS
   @Override
   public int hashCode()
   {
-    int result = (_altitude != +0.0f ? Float.floatToIntBits(_altitude) : 0);
+    int result;
+    long temp;
+    result = (_altitude != +0.0f ? Float.floatToIntBits(_altitude) : 0);
+    temp = Double.doubleToLongBits(_course);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + _fix.hashCode();
     result = 31 * result + (_latitude != +0.0f ? Float.floatToIntBits(_latitude) : 0);
     result = 31 * result + (_longitude != +0.0f ? Float.floatToIntBits(_longitude) : 0);
+    temp = Double.doubleToLongBits(_speed);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + _time.hashCode();
+    result = 31 * result + _trackpoints;
+    result = 31 * result + (_validLocation ? 1 : 0);
+    result = 31 * result + (_validMovement ? 1 : 0);
     return result;
+  }
+
+  public boolean isValidLocation()
+  {
+    return _validLocation;
+  }
+
+  public boolean isValidMovement()
+  {
+    return _validMovement;
   }
 
   @Override
@@ -134,10 +202,15 @@ public class GPS
   {
     return "GPS{" +
       "_altitude=" + _altitude +
+      ", _course=" + _course +
+      ", _fix=" + _fix +
       ", _latitude=" + _latitude +
       ", _longitude=" + _longitude +
+      ", _speed=" + _speed +
       ", _time=" + _time +
       ", _trackpoints=" + _trackpoints +
+      ", _validLocation=" + _validLocation +
+      ", _validMovement=" + _validMovement +
       '}';
   }
 }

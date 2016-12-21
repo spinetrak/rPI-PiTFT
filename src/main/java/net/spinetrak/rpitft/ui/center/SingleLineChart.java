@@ -58,9 +58,9 @@ class SingleLineChart
     _lineChart.getData().add(_dataSeries);
   }
 
-  void addData(final float altitude_)
+  void addData(final float data_)
   {
-    _dataSeries.getData().add(new XYChart.Data<>(_xSeriesData++, altitude_));
+    _dataSeries.getData().add(new XYChart.Data<>(_xSeriesData++, data_));
 
     if (_dataSeries.getData().size() > MAX_DATA_POINTS)
     {
