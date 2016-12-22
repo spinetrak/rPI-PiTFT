@@ -56,7 +56,7 @@ public class NmeaLogger
   public NmeaLogger()
   {
     initOutput(OUTFILE);
-    initInput(true);
+    initInput(false);
   }
 
   public ConcurrentLinkedQueue<GPS> getQueue()
