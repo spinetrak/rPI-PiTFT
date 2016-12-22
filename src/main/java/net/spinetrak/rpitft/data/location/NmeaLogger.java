@@ -56,7 +56,7 @@ public class NmeaLogger
   public NmeaLogger()
   {
     initOutput(OUTFILE);
-    initInput(false);
+    initInput(true);
   }
 
   public ConcurrentLinkedQueue<GPS> getQueue()
@@ -105,7 +105,7 @@ public class NmeaLogger
         }
         _sentenceReader = new SentenceReader(_inputStream);
         _sentenceReader.addSentenceListener(new GGAListener());
-        _sentenceReader.addSentenceListener(new VTGListener());
+        _sentenceReader.addSentenceListener(new RMCListener());
         _sentenceReader.start();
       }
     }
@@ -206,7 +206,7 @@ public class NmeaLogger
     }
   }
 
-  private class VTGListener extends AbstractSentenceListener<RMCSentence>
+  private class RMCListener extends AbstractSentenceListener<RMCSentence>
   {
     @Override
     public void sentenceRead(final RMCSentence rmc_)
@@ -214,6 +214,8 @@ public class NmeaLogger
       final FaaMode mode = rmc_.getMode();
       if (FaaMode.NONE != mode)
       {
+        _printStream.println(rmc_.toSentence());
+        _printStream.flush();
         _queue.add(GPS.fromRMCSentence(rmc_));
       }
     }

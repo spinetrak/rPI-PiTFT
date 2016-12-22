@@ -37,8 +37,6 @@ import net.spinetrak.rpitft.data.streams.SingleLineStream;
 
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
-import static net.spinetrak.rpitft.ui.center.Charts.MIN_BOTTOM_HEIGHT;
-import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
 public class ButtonPanel
 {
@@ -51,14 +49,14 @@ public class ButtonPanel
     _bottom.setPadding(new Insets(1));
     _bottom.setSpacing(1);
     _bottom.setAlignment(Pos.CENTER_RIGHT);
-    _bottom.setPrefSize(MIN_WIDTH / 2, MIN_BOTTOM_HEIGHT);
-    _bottom.setMinHeight(MIN_BOTTOM_HEIGHT);
+    //_bottom.setPrefSize(MIN_WIDTH / 2, MIN_BOTTOM_HEIGHT);
+    //_bottom.setMinHeight(MIN_BOTTOM_HEIGHT);
 
 
     HBox statusPanel = new HBox();
     statusPanel.setAlignment(Pos.CENTER_LEFT);
-    statusPanel.setPrefSize(MIN_WIDTH / 2, MIN_BOTTOM_HEIGHT);
-    statusPanel.setMinHeight(MIN_BOTTOM_HEIGHT);
+    //statusPanel.setPrefSize(MIN_WIDTH / 2, MIN_BOTTOM_HEIGHT);
+    //statusPanel.setMinHeight(MIN_BOTTOM_HEIGHT);
     _statusText = new Text("");
     statusPanel.getChildren().add(_statusText);
     _bottom.getChildren().add(statusPanel);

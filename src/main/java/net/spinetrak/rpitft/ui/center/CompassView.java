@@ -32,6 +32,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.location.GPS;
 
 import java.util.Locale;
@@ -40,15 +42,19 @@ class CompassView
 {
   private final Gauge _compass;
   private final VBox _compassBox;
+  private final Label _speed = new Label();
 
   CompassView()
   {
+    _speed.setAlignment(Pos.CENTER);
+    _speed.setTextFill(Color.RED);
     final Label compassValue = new Label("0\u00B0");
     _compass = initCompass(compassValue);
-    _compassBox = new VBox(_compass, compassValue);
+    _compassBox = new VBox(new Label("\n"), _compass, compassValue, _speed);
+    _compassBox.setAlignment(Pos.BOTTOM_CENTER);
     _compassBox.setSpacing(2);
     _compassBox.setPadding(new Insets(1));
-
+    _compassBox.setPrefSize(100, 180);
   }
 
   void addData(final GPS gps_)
@@ -56,6 +62,7 @@ class CompassView
     if (gps_.isValidMovement())
     {
       _compass.setValue(gps_.getCourse());
+      _speed.setText(Formatter.formatSpeed(gps_.getSpeed()));
     }
   }
 
@@ -67,16 +74,16 @@ class CompassView
   private Gauge initCompass(final Label compassValue_)
   {
     final Gauge gauge = GaugeBuilder.create()
-      .prefSize(200, 200)
+      .prefSize(100, 100)
       .borderPaint(Gauge.DARK_COLOR)
       .minValue(0)
       .maxValue(359)
       .autoScale(false)
       .startAngle(180)
       .angleRange(360)
-      .minorTickMarksVisible(false)
-      .mediumTickMarksVisible(false)
-      .majorTickMarksVisible(false)
+      .minorTickMarksVisible(true)
+      .mediumTickMarksVisible(true)
+      .majorTickMarksVisible(true)
       .customTickLabelsEnabled(true)
       .customTickLabels("N", "", "", "", "", "", "", "", "",
                         "E", "", "", "", "", "", "", "", "",
@@ -99,9 +106,9 @@ class CompassView
     });
 
 
-    compassValue_.setFont(Fonts.latoBold(72));
+    compassValue_.setFont(Fonts.latoBold(20));
     compassValue_.setAlignment(Pos.CENTER);
-    compassValue_.setPrefWidth(400);
+    compassValue_.setPrefWidth(100);
 
     return gauge;
   }

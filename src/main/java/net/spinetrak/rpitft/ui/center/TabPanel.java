@@ -38,7 +38,6 @@ import java.util.concurrent.Executors;
 public class TabPanel
 {
   private final SingleLineChart _altitudeChart;
-  private final CompassView _compassView;
   private final SingleLineChart _cpuChart;
   private final Threshold _cpuThreshold;
   private final ExecutorService _executor;
@@ -80,15 +79,11 @@ public class TabPanel
     _speedChart = new SingleLineChart();
     speedTab.setContent(_speedChart.getChart());
 
-    final Tab dirTab = new Tab("direction");
-    _compassView = new CompassView();
-    dirTab.setContent(_compassView.getPane());
-
 
     _tabPane = new TabPane();
     _tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-    _tabPane.getTabs().addAll(cpuTab, memTab, temTab, mapTab, altTab, speedTab, dirTab);
+    _tabPane.getTabs().addAll(cpuTab, memTab, temTab, mapTab, altTab, speedTab);
 
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
@@ -110,16 +105,9 @@ public class TabPanel
 
   public void addData(final GPS gps_)
   {
-    if (gps_.isValidLocation())
-    {
       _altitudeChart.addData(gps_.getAltitude());
       _gpsLocationView.addData(gps_);
-    }
-    if (gps_.isValidMovement())
-    {
       _speedChart.addData((float) gps_.getSpeed());
-      _compassView.addData(gps_);
-    }
   }
 
   public void addData(final Device device_)

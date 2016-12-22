@@ -26,7 +26,9 @@ package net.spinetrak.rpitft.ui.top;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.location.GPS;
@@ -37,18 +39,10 @@ import org.joda.time.DateTime;
 
 import static net.spinetrak.rpitft.data.Formatter.formatLatitude;
 import static net.spinetrak.rpitft.data.Formatter.formatLongitude;
-import static net.spinetrak.rpitft.ui.center.Charts.MIN_TOP_HEIGHT;
-import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 import static org.joda.time.DateTimeZone.UTC;
 
 public class TextPanel
 {
-  /*
-  private final Text _batteryCapacity;
-  private final Threshold _batteryCapacityThreshold;
-  private final Text _batteryPower;
-  private final Threshold _batteryPowerThreshold;
-  */
   private final Text _altitude;
   private final Text _cpu;
   private final Threshold _cpuThreshold;
@@ -62,59 +56,56 @@ public class TextPanel
   private final Threshold _temperatureThreshold;
   private final Text _time;
   private final Threshold _timeThreshold;
-  private final FlowPane _top;
   private final Text _trackPoints;
   private final Threshold _trackpointsThreshold;
+  private final VBox _vbox;
 
   public TextPanel()
   {
-    _top = new FlowPane(Orientation.HORIZONTAL);
-    _top.setMinHeight(MIN_TOP_HEIGHT);
-    _top.setPrefSize(MIN_WIDTH, MIN_TOP_HEIGHT);
-    _top.setPadding(new Insets(1));
+    final FlowPane gpsData;
+    final FlowPane deviceData;
+
+    gpsData = new FlowPane(Orientation.HORIZONTAL);
+    gpsData.setPadding(new Insets(1));
+    deviceData = new FlowPane(Orientation.HORIZONTAL);
+    deviceData.setPadding(new Insets(1));
 
     _time = new Text("[hh:mm:ss]");
-    _top.getChildren().add(_time);
+    gpsData.getChildren().add(_time);
     _timeThreshold = new Threshold(_time, 60, 30);
 
     _latitude = new Text("[xxxx.xxx N]");
-    _top.getChildren().add(_latitude);
+    gpsData.getChildren().add(_latitude);
 
     _longitude = new Text("[xxxx.xxx E]");
-    _top.getChildren().add(_longitude);
+    gpsData.getChildren().add(_longitude);
 
     _altitude = new Text("[xxxx.x M]");
-    _top.getChildren().add(_altitude);
+    gpsData.getChildren().add(_altitude);
 
     _trackPoints = new Text("[xxxxxxx]");
-    _top.getChildren().add(_trackPoints);
+    gpsData.getChildren().add(_trackPoints);
     _trackpointsThreshold = new Threshold(_trackPoints, 40000, 30000);
 
     _temperature = new Text("[xx.x C°]");
-    _top.getChildren().add(_temperature);
+    deviceData.getChildren().add(_temperature);
     _temperatureThreshold = new Threshold(_temperature, 85, 75);
 
     _cpu = new Text("[xx.xx% cpu]");
-    _top.getChildren().add(_cpu);
+    deviceData.getChildren().add(_cpu);
     _cpuThreshold = new Threshold(_cpu, 90, 80);
 
     _disk = new Text("[xx.xx% hd]");
-    _top.getChildren().add(_disk);
+    deviceData.getChildren().add(_disk);
     _diskThreshold = new Threshold(_disk, 90, 80);
 
     _memory = new Text("[xx.xx% mem]");
-    _top.getChildren().add(_memory);
+    deviceData.getChildren().add(_memory);
     _memoryThreshold = new Threshold(_memory, 90, 80);
 
-    /*
-    _batteryCapacity = new Text("[xxx.xx% bat]");
-    _top.getChildren().add(_batteryCapacity);
-    _batteryCapacityThreshold = new Threshold(_batteryCapacity, 25, 50);
-
-    _batteryPower = new Text("[xxx.xxx mA]");
-    _top.getChildren().add(_batteryPower);
-    _batteryPowerThreshold = new Threshold(_batteryPower, 400, 500);
-    */
+    _vbox = new VBox(gpsData, deviceData);
+    _vbox.setSpacing(1);
+    _vbox.setPadding(new Insets(1));
   }
 
   void addData(final Power power_)
@@ -186,9 +177,9 @@ public class TextPanel
     return nowSeconds - timeSeconds;
   }
 
-  public FlowPane getTop()
+  public Node getTop()
   {
-    return _top;
+    return _vbox;
   }
 
 

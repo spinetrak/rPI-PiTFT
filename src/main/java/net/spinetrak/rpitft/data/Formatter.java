@@ -63,6 +63,11 @@ public class Formatter
     return String.format("[%.2f%% mem]", memory_);
   }
 
+  public static String formatSpeed(final double speed_)
+  {
+    return String.format("[%.2f kmH]", speed_);
+  }
+
   public static String formatTemperature(final float temperature_)
   {
     return String.format("[%.2f C°]", temperature_);

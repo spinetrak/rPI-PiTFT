@@ -30,8 +30,10 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import net.sf.marineapi.nmea.parser.SentenceFactory;
 import net.spinetrak.rpitft.data.Queue;
 import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.parser.TXTParser;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
 import net.spinetrak.rpitft.ui.center.TabPanel;
@@ -99,13 +101,14 @@ public class Main extends Application
   {
     init(stage_);
     stage_.show();
-
     final Queue queue = new Queue();
     queue.start(this);
   }
 
   private void init(final Stage stage_)
   {
+    SentenceFactory.getInstance().registerParser("TXT", TXTParser.class);
+
     _tabPanel = new TabPanel();
     _textPanel = new TextPanel();
     _buttonPanel = new ButtonPanel();

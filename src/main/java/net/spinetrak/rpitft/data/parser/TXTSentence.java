@@ -22,42 +22,10 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.location;
+package net.spinetrak.rpitft.data.parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.sf.marineapi.nmea.sentence.Sentence;
 
-public class GPSService
+public interface TXTSentence extends Sentence
 {
-  private static final int MAX_LENGTH = 60 * 60; //1 hour
-
-  private final List<GPS> _gpsCoordinates = new ArrayList<>();
-
-  GPS getFinish()
-  {
-    return _gpsCoordinates.get(_gpsCoordinates.size() - 1);
-  }
-
-  GPS getStart()
-  {
-    return _gpsCoordinates.get(0);
-  }
-
-  public void addGPS(final GPS gps_)
-  {
-    if (gps_.isValidLocation())
-    {
-      _gpsCoordinates.add(gps_);
-      if (_gpsCoordinates.size() >= MAX_LENGTH)
-      {
-        _gpsCoordinates.remove(0);
-      }
-    }
-  }
-
-  public List<GPS> getGPS()
-  {
-    return _gpsCoordinates;
-  }
-
 }
