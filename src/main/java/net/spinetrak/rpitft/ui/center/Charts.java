@@ -29,9 +29,7 @@ import javafx.scene.chart.LineChart;
 
 public class Charts
 {
-  public static final int MIN_BOTTOM_HEIGHT = 20;
   public static final int MIN_HEIGHT = 320;
-  public static final int MIN_TOP_HEIGHT = 40;
   public static final int MIN_WIDTH = 480;
   static final int MAX_DATA_POINTS = 480;
   private static final int MIN_CENTER_HEIGHT = 255;

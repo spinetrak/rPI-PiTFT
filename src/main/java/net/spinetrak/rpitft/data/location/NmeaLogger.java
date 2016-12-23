@@ -53,10 +53,10 @@ public class NmeaLogger
   private PrintStream _printStream;
   private SentenceReader _sentenceReader;
 
-  public NmeaLogger()
+  public NmeaLogger(final boolean mockdata_)
   {
     initOutput(OUTFILE);
-    initInput(false);
+    initInput(mockdata_);
   }
 
   public ConcurrentLinkedQueue<GPS> getQueue()

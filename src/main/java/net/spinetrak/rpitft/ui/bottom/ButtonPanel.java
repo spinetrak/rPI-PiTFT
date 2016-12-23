@@ -90,7 +90,7 @@ public class ButtonPanel
 
   }
 
-  public HBox getBottom()
+  public HBox getPanel()
   {
     return _bottom;
   }

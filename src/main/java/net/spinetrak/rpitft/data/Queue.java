@@ -39,7 +39,7 @@ public class Queue
   private final NmeaLogger _nmeaLogger;
 
 
-  public Queue()
+  public Queue(final boolean mockdata_)
   {
     //_powerQueue = new ConcurrentLinkedQueue<>();
 
@@ -52,7 +52,7 @@ public class Queue
     _deviceClient = new DeviceClient(_executor);
     _executor.execute(_deviceClient);
 
-    _nmeaLogger = new NmeaLogger();
+    _nmeaLogger = new NmeaLogger(mockdata_);
 
     //final AddToGPSQueue addToGPSQueue = new AddToGPSQueue();
     //_executor.execute(addToGPSQueue);

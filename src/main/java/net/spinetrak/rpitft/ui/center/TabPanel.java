@@ -28,6 +28,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.VBox;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.ui.Threshold;
@@ -41,17 +42,27 @@ public class TabPanel
   private final SingleLineChart _cpuChart;
   private final Threshold _cpuThreshold;
   private final ExecutorService _executor;
+  private final Tab _gaugesTab;
+  private final GaugesView _gaugesView;
   private final GPSLocationView _gpsLocationView;
+  private final VBox _mainPanel;
   private final SingleLineChart _memoryChart;
   private final Threshold _memoryThreshold;
   private final SingleLineChart _speedChart;
   private final TabPane _tabPane;
   private final SingleLineChart _temperatureChart;
   private final Threshold _temperatureThreshold;
+  private final TextPanel _textPanel;
   private boolean _inFocus;
 
   public TabPanel()
   {
+    _textPanel = new TextPanel();
+
+    _gaugesTab = new Tab("gauges");
+    _gaugesView = new GaugesView();
+    _gaugesTab.setContent(_gaugesView.getPanel());
+
     final Tab altTab = new Tab("altitude");
     _altitudeChart = new SingleLineChart();
     altTab.setContent(_altitudeChart.getChart());
@@ -83,7 +94,7 @@ public class TabPanel
     _tabPane = new TabPane();
     _tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-    _tabPane.getTabs().addAll(cpuTab, memTab, temTab, mapTab, altTab, speedTab);
+    _tabPane.getTabs().addAll(_gaugesTab, cpuTab, memTab, temTab, mapTab, altTab, speedTab);
 
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
@@ -100,18 +111,36 @@ public class TabPanel
         _inFocus = new_;
       });
 
+    _mainPanel = new VBox(_textPanel.getPanel(), _tabPane);
+
   }
 
 
   public void addData(final GPS gps_)
   {
-      _altitudeChart.addData(gps_.getAltitude());
-      _gpsLocationView.addData(gps_);
-      _speedChart.addData((float) gps_.getSpeed());
+    _textPanel.addData(gps_);
+
+    //gauges are cpu hogs
+    if (_gaugesTab.isSelected())
+    {
+      _gaugesView.addData(gps_);
+    }
+
+    _gpsLocationView.addData(gps_);
+
+    _altitudeChart.addData(gps_.getAltitude());
+    _speedChart.addData((float) gps_.getSpeed());
   }
 
   public void addData(final Device device_)
   {
+    _textPanel.addData(device_);
+
+    if (_gaugesTab.isSelected())
+    {
+      _gaugesView.addData(device_);
+    }
+
     final float cpu = device_.getCpu();
     _cpuChart.addData(cpu);
     _cpuThreshold.setColor(cpu);
@@ -125,9 +154,9 @@ public class TabPanel
     _temperatureThreshold.setColor(temperature);
   }
 
-  public Node getCenter()
+  public Node getPanel()
   {
-    return _tabPane;
+    return _mainPanel;
   }
 
   private class TransitionTabs implements Runnable

@@ -65,7 +65,7 @@ public class Formatter
 
   public static String formatSpeed(final double speed_)
   {
-    return String.format("[%.2f kmH]", speed_);
+    return String.format("[%.2f km/h]", speed_);
   }
 
   public static String formatTemperature(final float temperature_)

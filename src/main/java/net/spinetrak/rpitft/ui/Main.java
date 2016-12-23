@@ -28,7 +28,7 @@ import com.pi4j.system.NetworkInfo;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.sf.marineapi.nmea.parser.SentenceFactory;
 import net.spinetrak.rpitft.data.Queue;
@@ -37,7 +37,6 @@ import net.spinetrak.rpitft.data.parser.TXTParser;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
 import net.spinetrak.rpitft.ui.center.TabPanel;
-import net.spinetrak.rpitft.ui.top.TextPanel;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -49,7 +48,6 @@ public class Main extends Application
 {
   private ButtonPanel _buttonPanel;
   private TabPanel _tabPanel;
-  private TextPanel _textPanel;
 
   public static void main(String[] args_)
   {
@@ -60,17 +58,9 @@ public class Main extends Application
                               final ConcurrentLinkedQueue<Device> deviceQueue_,
                               final ConcurrentLinkedQueue<GPS> gpsQueue_)
   {
-    /*
-    while (!powerQueue_.isEmpty())
-    {
-      final Power power = powerQueue_.remove();
-      _textPanel.addData(power);
-    }
-    */
     while (!deviceQueue_.isEmpty())
     {
       final Device device = deviceQueue_.remove();
-      _textPanel.addData(device);
       _tabPanel.addData(device);
       try
       {
@@ -87,10 +77,6 @@ public class Main extends Application
     while (!gpsQueue_.isEmpty())
     {
       final GPS gps = gpsQueue_.remove();
-      if (gps.isValidLocation())
-      {
-        _textPanel.addData(gps);
-      }
       _tabPanel.addData(gps);
     }
   }
@@ -101,7 +87,8 @@ public class Main extends Application
   {
     init(stage_);
     stage_.show();
-    final Queue queue = new Queue();
+    final boolean mockdata = Boolean.valueOf(System.getProperty("mockdata"));
+    final Queue queue = new Queue(mockdata);
     queue.start(this);
   }
 
@@ -110,22 +97,15 @@ public class Main extends Application
     SentenceFactory.getInstance().registerParser("TXT", TXTParser.class);
 
     _tabPanel = new TabPanel();
-    _textPanel = new TextPanel();
     _buttonPanel = new ButtonPanel();
 
-    final BorderPane pane = new BorderPane();
+    final VBox pane = new VBox(_tabPanel.getPanel(), _buttonPanel.getPanel());
     pane.setPadding(new Insets(1));
     pane.setPrefSize(MIN_WIDTH, MIN_HEIGHT);
     pane.setMaxHeight(MIN_HEIGHT);
     pane.setMinHeight(MIN_HEIGHT);
     pane.setMaxWidth(MIN_WIDTH);
     pane.setMinWidth(MIN_WIDTH);
-
-    pane.setCenter(_tabPanel.getCenter());
-
-    pane.setTop(_textPanel.getTop());
-
-    pane.setBottom(_buttonPanel.getBottom());
 
     final Scene scene = new Scene(pane, MIN_WIDTH, MIN_HEIGHT);
     scene.getStylesheets().add("stylesheet.css");

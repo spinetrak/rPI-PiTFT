@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.ui.top;
+package net.spinetrak.rpitft.ui.center;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -52,6 +52,8 @@ public class TextPanel
   private final Text _longitude;
   private final Text _memory;
   private final Threshold _memoryThreshold;
+  private final Text _speed;
+  private final Threshold _speedThreshold;
   private final Text _temperature;
   private final Threshold _temperatureThreshold;
   private final Text _time;
@@ -86,6 +88,10 @@ public class TextPanel
     _trackPoints = new Text("[xxxxxxx]");
     gpsData.getChildren().add(_trackPoints);
     _trackpointsThreshold = new Threshold(_trackPoints, 40000, 30000);
+
+    _speed = new Text("[xxx.xx km/h]");
+    gpsData.getChildren().add(_speed);
+    _speedThreshold = new Threshold(_speed, 160, 140);
 
     _temperature = new Text("[xx.x C°]");
     deviceData.getChildren().add(_temperature);
@@ -122,7 +128,7 @@ public class TextPanel
     */
   }
 
-  public void addData(final Device device_)
+  void addData(final Device device_)
   {
     final float cpu = device_.getCpu();
     final float disk = device_.getDisk();
@@ -142,24 +148,38 @@ public class TextPanel
     _temperatureThreshold.setColor(temperature);
   }
 
-  public void addData(final GPS gps_)
+  void addData(final GPS gps_)
   {
-    final DateTime time = gps_.getTime();
-    final float latitude = gps_.getLatitude();
-    final float longitude = gps_.getLongitude();
-    final float altitude = gps_.getAltitude();
-    final int trackpoints = gps_.getTrackpoints();
-
-    if (time != null)
+    if (gps_.isValidLocation())
     {
-      _time.setText(String.format("[%s]", time.toString(GPS.DTF)));
+      final DateTime time = gps_.getTime();
+      final float latitude = gps_.getLatitude();
+      final float longitude = gps_.getLongitude();
+      final float altitude = gps_.getAltitude();
+      final int trackpoints = gps_.getTrackpoints();
+
+      if (time != null)
+      {
+        _time.setText(String.format("[%s]", time.toString(GPS.DTF)));
+      }
+      _timeThreshold.setColor(getTimeDifferenceInSeconds(time));
+      _latitude.setText(formatLatitude(latitude));
+      _longitude.setText(formatLongitude(longitude));
+      _altitude.setText(Formatter.formatAltitude(altitude));
+      _trackPoints.setText(Formatter.formatTrackpoints(trackpoints));
+      _trackpointsThreshold.setColor(trackpoints);
     }
-    _timeThreshold.setColor(getTimeDifferenceInSeconds(time));
-    _latitude.setText(formatLatitude(latitude));
-    _longitude.setText(formatLongitude(longitude));
-    _altitude.setText(Formatter.formatAltitude(altitude));
-    _trackPoints.setText(Formatter.formatTrackpoints(trackpoints));
-    _trackpointsThreshold.setColor(trackpoints);
+
+    if (gps_.isValidMovement())
+    {
+      final float speed = (float) gps_.getSpeed();
+      _speed.setText(Formatter.formatSpeed(speed));
+    }
+  }
+
+  Node getPanel()
+  {
+    return _vbox;
   }
 
   public int getTimeDifferenceInSeconds(final DateTime time_)
@@ -175,11 +195,6 @@ public class TextPanel
       return 60;
     }
     return nowSeconds - timeSeconds;
-  }
-
-  public Node getTop()
-  {
-    return _vbox;
   }
 
 
