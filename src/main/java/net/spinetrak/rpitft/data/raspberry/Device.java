@@ -25,6 +25,7 @@
 package net.spinetrak.rpitft.data.raspberry;
 
 import com.pi4j.system.SystemInfo;
+import net.spinetrak.rpitft.data.DataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class Device
+public class Device implements DataEvent
 {
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.raspberry.Device");
   private float _cpu = Float.NaN;

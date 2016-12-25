@@ -33,12 +33,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import net.spinetrak.rpitft.data.Dispatcher;
+import net.spinetrak.rpitft.data.listeners.NetworkListener;
+import net.spinetrak.rpitft.data.raspberry.Network;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
 
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
 
-public class ButtonPanel
+public class ButtonPanel implements NetworkListener
 {
   private final HBox _bottom;
   private final Text _statusText;
@@ -87,7 +90,7 @@ public class ButtonPanel
     _bottom.getChildren().add(shutdown);
 
     Platform.runLater(gpx::requestFocus);
-
+    Dispatcher.getInstance().addListener(this);
   }
 
   public HBox getPanel()
@@ -98,6 +101,12 @@ public class ButtonPanel
   public Text getStatusText()
   {
     return _statusText;
+  }
+
+  @Override
+  public void handleData(final Network network_)
+  {
+    _statusText.setText(network_.getStatus());
   }
 
   private Button getExitButton()

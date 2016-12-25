@@ -30,10 +30,12 @@ import javafx.scene.Node;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Formatter;
+import net.spinetrak.rpitft.data.listeners.DeviceListener;
+import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.raspberry.Device;
-import net.spinetrak.rpitft.data.raspberry.Power;
 import net.spinetrak.rpitft.ui.Threshold;
 import org.joda.time.DateTime;
 
@@ -41,7 +43,7 @@ import static net.spinetrak.rpitft.data.Formatter.formatLatitude;
 import static net.spinetrak.rpitft.data.Formatter.formatLongitude;
 import static org.joda.time.DateTimeZone.UTC;
 
-public class TextPanel
+public class TextPanel implements GPSListener, DeviceListener
 {
   private final Text _altitude;
   private final Text _cpu;
@@ -112,11 +114,15 @@ public class TextPanel
     _vbox = new VBox(gpsData, deviceData);
     _vbox.setSpacing(1);
     _vbox.setPadding(new Insets(1));
+
+    Dispatcher.getInstance().addListener((GPSListener) this);
+    Dispatcher.getInstance().addListener((DeviceListener) this);
   }
 
+  /*
   void addData(final Power power_)
   {
-    /*
+
     final float capacity = power_.getCapacity();
     final float power = power_.getPower();
 
@@ -125,10 +131,33 @@ public class TextPanel
 
     _batteryPower.setText(String.format("[%.2f mA]", power));
     _batteryPowerThreshold.setColor(power);
-    */
+  }
+  */
+
+
+  Node getPanel()
+  {
+    return _vbox;
   }
 
-  void addData(final Device device_)
+  public int getTimeDifferenceInSeconds(final DateTime time_)
+  {
+    if (time_ == null)
+    {
+      return 60;
+    }
+    final int nowSeconds = (int) ((new DateTime(UTC).getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
+    final int timeSeconds = (int) ((time_.getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
+    if (nowSeconds < timeSeconds)
+    {
+      return 60;
+    }
+    return nowSeconds - timeSeconds;
+  }
+
+
+  @Override
+  public void handleData(final Device device_)
   {
     final float cpu = device_.getCpu();
     final float disk = device_.getDisk();
@@ -148,7 +177,8 @@ public class TextPanel
     _temperatureThreshold.setColor(temperature);
   }
 
-  void addData(final GPS gps_)
+  @Override
+  public void handleData(final GPS gps_)
   {
     if (gps_.isValidLocation())
     {
@@ -174,28 +204,7 @@ public class TextPanel
     {
       final float speed = (float) gps_.getSpeed();
       _speed.setText(Formatter.formatSpeed(speed));
+      _speedThreshold.setColor(speed);
     }
   }
-
-  Node getPanel()
-  {
-    return _vbox;
-  }
-
-  public int getTimeDifferenceInSeconds(final DateTime time_)
-  {
-    if (time_ == null)
-    {
-      return 60;
-    }
-    final int nowSeconds = (int) ((new DateTime(UTC).getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
-    final int timeSeconds = (int) ((time_.getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
-    if (nowSeconds < timeSeconds)
-    {
-      return 60;
-    }
-    return nowSeconds - timeSeconds;
-  }
-
-
 }

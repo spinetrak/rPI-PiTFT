@@ -30,14 +30,16 @@ import javafx.scene.shape.Polyline;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Formatter;
+import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.location.GPSService;
 import net.spinetrak.rpitft.data.location.MapService;
 
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
-class GPSLocationView
+class GPSLocationView implements GPSListener
 {
   private final static int HEIGHT = 200;
   private final CompassView _compass = new CompassView();
@@ -51,6 +53,7 @@ class GPSLocationView
 
   GPSLocationView()
   {
+    Dispatcher.getInstance().addListener(_compass);
     _pane.setPrefSize(MIN_WIDTH, HEIGHT);
     _pane.setMinWidth(MIN_WIDTH);
     _pane.setMinHeight(HEIGHT);
@@ -62,14 +65,17 @@ class GPSLocationView
     _lowerRight.setTextAlignment(TextAlignment.RIGHT);
     _distance.setFont(Font.font(12.0));
     _pane.getChildren().add(_compass.getPane());
+    Dispatcher.getInstance().addListener(this);
   }
 
-  void addData(final GPS gps_)
+  Pane getPane()
   {
-    if (gps_.isValidMovement())
-    {
-      _compass.addData(gps_);
-    }
+    return _pane;
+  }
+
+  @Override
+  public void handleData(final GPS gps_)
+  {
     if (gps_.isValidLocation())
     {
       _gpsService.addGPS(gps_);
@@ -92,10 +98,4 @@ class GPSLocationView
                                  track, _compass.getPane());
     }
   }
-
-  Pane getPane()
-  {
-    return _pane;
-  }
-
 }

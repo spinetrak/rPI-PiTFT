@@ -27,7 +27,6 @@ package net.spinetrak.rpitft.data;
 import javafx.animation.AnimationTimer;
 import net.spinetrak.rpitft.data.location.NmeaLogger;
 import net.spinetrak.rpitft.data.raspberry.DeviceClient;
-import net.spinetrak.rpitft.ui.Main;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,14 +61,14 @@ public class Queue
 
   }
 
-  public void start(final Main main_)
+  public void start(final Dispatcher dispatcher_)
   {
     new AnimationTimer()
     {
       @Override
       public void handle(final long now_)
       {
-        main_.addDataToSeries(_deviceClient.getQueue(), _nmeaLogger.getQueue());
+        dispatcher_.addDataToSeries(_deviceClient.getQueue(), _nmeaLogger.getQueue());
       }
     }.start();
   }

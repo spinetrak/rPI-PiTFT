@@ -29,6 +29,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
+import net.spinetrak.rpitft.data.Dispatcher;
+import net.spinetrak.rpitft.data.listeners.DeviceListener;
+import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.ui.Threshold;
@@ -36,7 +39,7 @@ import net.spinetrak.rpitft.ui.Threshold;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TabPanel
+public class TabPanel implements GPSListener, DeviceListener
 {
   private final SingleLineChart _altitudeChart;
   private final SingleLineChart _cpuChart;
@@ -113,34 +116,25 @@ public class TabPanel
 
     _mainPanel = new VBox(_textPanel.getPanel(), _tabPane);
 
+    Dispatcher.getInstance().addListener((GPSListener) this);
+    Dispatcher.getInstance().addListener((DeviceListener) this);
   }
 
-
-  public void addData(final GPS gps_)
+  public Node getPanel()
   {
-    _textPanel.addData(gps_);
+    return _mainPanel;
+  }
 
-    //gauges are cpu hogs
-    if (_gaugesTab.isSelected())
-    {
-      _gaugesView.addData(gps_);
-    }
-
-    _gpsLocationView.addData(gps_);
-
+  @Override
+  public void handleData(final GPS gps_)
+  {
     _altitudeChart.addData(gps_.getAltitude());
     _speedChart.addData((float) gps_.getSpeed());
   }
 
-  public void addData(final Device device_)
+  @Override
+  public void handleData(final Device device_)
   {
-    _textPanel.addData(device_);
-
-    if (_gaugesTab.isSelected())
-    {
-      _gaugesView.addData(device_);
-    }
-
     final float cpu = device_.getCpu();
     _cpuChart.addData(cpu);
     _cpuThreshold.setColor(cpu);
@@ -152,11 +146,6 @@ public class TabPanel
     float temperature = device_.getTemperature();
     _temperatureChart.addData(temperature);
     _temperatureThreshold.setColor(temperature);
-  }
-
-  public Node getPanel()
-  {
-    return _mainPanel;
   }
 
   private class TransitionTabs implements Runnable

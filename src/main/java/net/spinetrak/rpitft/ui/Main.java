@@ -24,61 +24,30 @@
 
 package net.spinetrak.rpitft.ui;
 
-import com.pi4j.system.NetworkInfo;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.sf.marineapi.nmea.parser.SentenceFactory;
+import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Queue;
-import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.parser.TXTParser;
-import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
 import net.spinetrak.rpitft.ui.center.TabPanel;
-
-import java.io.IOException;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_HEIGHT;
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
 public class Main extends Application
 {
+  private final Dispatcher _dispatcher = Dispatcher.getInstance();
   private ButtonPanel _buttonPanel;
   private TabPanel _tabPanel;
 
   public static void main(String[] args_)
   {
     launch(args_);
-  }
-
-  public void addDataToSeries(//final ConcurrentLinkedQueue<Power> powerQueue_,
-                              final ConcurrentLinkedQueue<Device> deviceQueue_,
-                              final ConcurrentLinkedQueue<GPS> gpsQueue_)
-  {
-    while (!deviceQueue_.isEmpty())
-    {
-      final Device device = deviceQueue_.remove();
-      _tabPanel.addData(device);
-      try
-      {
-        final String[] addresses = NetworkInfo.getIPAddresses();
-        final String address = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
-        _buttonPanel.getStatusText().setText(
-          "[" + NetworkInfo.getHostname() + "/" + address + "/" + NetworkInfo.getFQDN() + "]  ");
-      }
-      catch (final IOException | InterruptedException ex_)
-      {
-        _buttonPanel.getStatusText().setText("[" + ex_.getMessage() + "]  ");
-      }
-    }
-    while (!gpsQueue_.isEmpty())
-    {
-      final GPS gps = gpsQueue_.remove();
-      _tabPanel.addData(gps);
-    }
   }
 
 
@@ -89,7 +58,8 @@ public class Main extends Application
     stage_.show();
     final boolean mockdata = Boolean.valueOf(System.getProperty("mockdata"));
     final Queue queue = new Queue(mockdata);
-    queue.start(this);
+
+    queue.start(_dispatcher);
   }
 
   private void init(final Stage stage_)

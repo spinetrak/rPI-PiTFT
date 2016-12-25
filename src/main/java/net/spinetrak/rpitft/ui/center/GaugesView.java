@@ -34,10 +34,13 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import net.spinetrak.rpitft.data.Dispatcher;
+import net.spinetrak.rpitft.data.listeners.DeviceListener;
+import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.raspberry.Device;
 
-class GaugesView
+class GaugesView implements GPSListener, DeviceListener
 {
   private final int SIZE = 82;
   private final Gauge _altitude;
@@ -88,9 +91,27 @@ class GaugesView
     _panel.getChildren().add(directionBox);
     _panel.getChildren().add(speedBox);
     _panel.getChildren().add(trackpointsBox);
+    Dispatcher.getInstance().addListener((GPSListener) this);
+    Dispatcher.getInstance().addListener((DeviceListener) this);
   }
 
-  void addData(final GPS gps_)
+
+  Node getPanel()
+  {
+    return _panel;
+  }
+
+  @Override
+  public void handleData(final Device device_)
+  {
+    _cpu.setValue(device_.getCpu());
+    _disk.setValue(device_.getDisk());
+    _mem.setValue(device_.getMemory());
+    _temp.setValue(device_.getTemperature());
+  }
+
+  @Override
+  public void handleData(final GPS gps_)
   {
     if (gps_.isValidLocation())
     {
@@ -102,19 +123,6 @@ class GaugesView
       _speed.setValue(gps_.getSpeed());
       _direction.setValue(gps_.getCourse());
     }
-  }
-
-  void addData(final Device device_)
-  {
-    _cpu.setValue(device_.getCpu());
-    _disk.setValue(device_.getDisk());
-    _mem.setValue(device_.getMemory());
-    _temp.setValue(device_.getTemperature());
-  }
-
-  Node getPanel()
-  {
-    return _panel;
   }
 
   private VBox getTopicBox(final String text_, final Color color_, final Gauge gauge_)

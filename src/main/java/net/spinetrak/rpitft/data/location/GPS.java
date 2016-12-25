@@ -27,11 +27,12 @@ package net.spinetrak.rpitft.data.location;
 import net.sf.marineapi.nmea.sentence.GGASentence;
 import net.sf.marineapi.nmea.sentence.RMCSentence;
 import net.sf.marineapi.nmea.util.GpsFixQuality;
+import net.spinetrak.rpitft.data.DataEvent;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-public class GPS
+public class GPS implements DataEvent
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private float _altitude;

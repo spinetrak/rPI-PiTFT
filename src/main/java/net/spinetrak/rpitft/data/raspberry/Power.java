@@ -25,13 +25,14 @@
 package net.spinetrak.rpitft.data.raspberry;
 
 import net.spinetrak.rpitft.command.Result;
+import net.spinetrak.rpitft.data.DataEvent;
 import net.spinetrak.rpitft.data.streams.SingleLineStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static net.spinetrak.rpitft.command.Commands.POWER_STATUS;
 
-public class Power
+class Power implements DataEvent
 {
   private final static String BATTERY = "B";
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.raspberry.Power");

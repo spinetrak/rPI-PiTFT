@@ -33,12 +33,14 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Formatter;
+import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.location.GPS;
 
 import java.util.Locale;
 
-class CompassView
+class CompassView implements GPSListener
 {
   private final Gauge _compass;
   private final VBox _compassBox;
@@ -55,20 +57,22 @@ class CompassView
     _compassBox.setSpacing(2);
     _compassBox.setPadding(new Insets(1));
     _compassBox.setPrefSize(100, 180);
+    Dispatcher.getInstance().addListener(this);
   }
 
-  void addData(final GPS gps_)
+  Node getPane()
+  {
+    return _compassBox;
+  }
+
+  @Override
+  public void handleData(final GPS gps_)
   {
     if (gps_.isValidMovement())
     {
       _compass.setValue(gps_.getCourse());
       _speed.setText(Formatter.formatSpeed(gps_.getSpeed()));
     }
-  }
-
-  Node getPane()
-  {
-    return _compassBox;
   }
 
   private Gauge initCompass(final Label compassValue_)
