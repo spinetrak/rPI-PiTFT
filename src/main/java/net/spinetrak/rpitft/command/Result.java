@@ -24,7 +24,7 @@
 
 package net.spinetrak.rpitft.command;
 
-import net.spinetrak.rpitft.data.streams.Stream;
+import net.spinetrak.rpitft.data.streams.command.Stream;
 
 public class Result
 {

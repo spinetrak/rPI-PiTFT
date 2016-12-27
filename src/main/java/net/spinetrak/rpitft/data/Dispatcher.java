@@ -24,30 +24,56 @@
 
 package net.spinetrak.rpitft.data;
 
+import javafx.animation.AnimationTimer;
 import net.spinetrak.rpitft.data.listeners.DeviceListener;
 import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.listeners.NetworkListener;
 import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.location.NmeaLogger;
 import net.spinetrak.rpitft.data.raspberry.Device;
+import net.spinetrak.rpitft.data.raspberry.DeviceClient;
 import net.spinetrak.rpitft.data.raspberry.Network;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Dispatcher
 {
-  private static Dispatcher _instance = new Dispatcher();
+  private final static Dispatcher _instance = new Dispatcher();
   private List<DeviceListener> _deviceListeners = new ArrayList<>();
   private List<GPSListener> _gpsListeners = new ArrayList<>();
   private List<NetworkListener> _networkListeners = new ArrayList<>();
 
   private Dispatcher()
   {
-
+    final DispatcherQueue queue = new DispatcherQueue();
+    queue.start();
   }
 
-  void addDataToSeries(//final ConcurrentLinkedQueue<Power> powerQueue_,
+  public static Dispatcher getInstance()
+  {
+    return _instance;
+  }
+
+  public void addListener(final DeviceListener listener_)
+  {
+    _deviceListeners.add(listener_);
+  }
+
+  public void addListener(final NetworkListener listener_)
+  {
+    _networkListeners.add(listener_);
+  }
+
+  public void addListener(final GPSListener listener_)
+  {
+    _gpsListeners.add(listener_);
+  }
+
+  private void addDataToSeries(
                        final ConcurrentLinkedQueue<Device> deviceQueue_,
                        final ConcurrentLinkedQueue<GPS> gpsQueue_)
   {
@@ -75,23 +101,38 @@ public class Dispatcher
     }
   }
 
-  public static Dispatcher getInstance()
+  private static class DispatcherQueue
   {
-    return _instance;
-  }
+    private final DeviceClient _deviceClient;
+    private final ExecutorService _executor;
+    private final NmeaLogger _nmeaLogger;
 
-  public void addListener(final DeviceListener listener_)
-  {
-    _deviceListeners.add(listener_);
-  }
 
-  public void addListener(final NetworkListener listener_)
-  {
-    _networkListeners.add(listener_);
-  }
+    DispatcherQueue()
+    {
+      _executor = Executors.newCachedThreadPool(runnable_ -> {
+        final Thread thread = new Thread(runnable_);
+        thread.setDaemon(true);
+        return thread;
+      });
 
-  public void addListener(final GPSListener listener_)
-  {
-    _gpsListeners.add(listener_);
+      _deviceClient = new DeviceClient(_executor);
+      _executor.execute(_deviceClient);
+
+      _nmeaLogger = new NmeaLogger();
+
+    }
+
+    void start()
+    {
+      new AnimationTimer()
+      {
+        @Override
+        public void handle(final long now_)
+        {
+          Dispatcher.getInstance().addDataToSeries(_deviceClient.getQueue(), _nmeaLogger.getQueue());
+        }
+      }.start();
+    }
   }
 }

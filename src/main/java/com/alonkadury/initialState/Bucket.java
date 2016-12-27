@@ -22,37 +22,37 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.raspberry;
+package com.alonkadury.initialState;
 
-import com.pi4j.system.NetworkInfo;
-
-import java.io.IOException;
-
-public class Network
+public class Bucket implements Events
 {
-  private final String _status;
+  private final static String BUCKET_API_URL = API_BASEURL + "buckets";
+  private String bucketKey;
+  private String bucketName;
 
-  public Network()
+  public Bucket(String bucketKey)
   {
-    String status = "[]";
-    try
-    {
-      final String[] addresses = NetworkInfo.getIPAddresses();
-      final String address = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
-      status = "[" + NetworkInfo.getHostname() + "/" + address + "/" + NetworkInfo.getFQDN() + "]";
-    }
-    catch (final IOException | InterruptedException ex_)
-    {
-      status = "[" + ex_.getMessage() + "]";
-    }
-    finally
-    {
-      _status = status;
-    }
+    this(bucketKey, null);
   }
 
-  public String getStatus()
+  public Bucket(String bucketKey, String friendlyName)
   {
-    return _status;
+    this.bucketKey = bucketKey;
+    this.bucketName = friendlyName;
+  }
+
+  public String getEndpoint()
+  {
+    return BUCKET_API_URL;
+  }
+
+  public String getFriendlyName()
+  {
+    return bucketName;
+  }
+
+  public String getKey()
+  {
+    return bucketKey;
   }
 }

@@ -1,6 +1,7 @@
 # rPI-PiTFT
 
 A simple read-only JavaFX user interface for using an RPi3 as a GPS data logger (in NMEA format) in the car.
+Now also logs to [Initial State] (https://initialstate.com/).
 
 Hardware Components:
 - [Raspberry Pi 3 Model B] (https://www.raspberrypi.org/products/raspberry-pi-3-model-b/)
@@ -14,6 +15,7 @@ Software Components:
 - [rxtx] (https://github.com/rxtx/rxtx)
 - [Pi4J] (http://pi4j.com/)
 - [Medusa] (https://github.com/HanSolo/Medusa)
+- [initialState-java] (https://github.com/kadualon/initialState-java)
 
 What does it do?
 - displays various JavaFX linecharts and gauges in a tab panel for various data points and series
@@ -21,9 +23,10 @@ What does it do?
   - RPi3 cpu / disk / memory / temperature
   - GPS location (latitude, longitude, altitude)
   - GPS movement (speed, direction)
-- writes NMEA log of GGA and RMC sentences
-- creates GPX file from current NMEA log on command
-- backs up NMEA log on command
+- writes local NMEA log of GGA and RMC sentences
+- creates local GPX file from current NMEA log on command
+- backs up local NMEA log on command
+- if there is an internet connection, sends all data averaged every few seconds to Initial State for data visualization in the cloud
  
 
 

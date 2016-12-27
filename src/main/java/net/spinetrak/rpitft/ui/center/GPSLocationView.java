@@ -89,7 +89,7 @@ class GPSLocationView implements GPSListener
       _lowerRight.setText(minLatY + "\n" + maxLonX);
       _upperLeft.setText(maxLatY + "\n" + minLonX);
       _upperRight.setText(maxLatY + "\n" + maxLonX);
-      _distance.setText(Formatter.formatDistance(mapService.getDistance()));
+      _distance.setText(Formatter.formatDistance(mapService.getDistance(), true));
       final Polyline track = mapService.getPolyline();
       track.setStroke(Color.RED);
       track.setStrokeWidth(2.0);

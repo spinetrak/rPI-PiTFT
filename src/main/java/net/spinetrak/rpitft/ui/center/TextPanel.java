@@ -164,16 +164,16 @@ public class TextPanel implements GPSListener, DeviceListener
     final float temperature = device_.getTemperature();
     final float memory = device_.getMemory();
 
-    _cpu.setText(Formatter.formatCPU(cpu));
+    _cpu.setText(Formatter.formatCPU(cpu, true));
     _cpuThreshold.setColor(cpu);
 
-    _disk.setText(Formatter.formatHD(disk));
+    _disk.setText(Formatter.formatHD(disk, true));
     _diskThreshold.setColor(disk);
 
-    _memory.setText(Formatter.formatMEM(memory));
+    _memory.setText(Formatter.formatMEM(memory, true));
     _memoryThreshold.setColor(memory);
 
-    _temperature.setText(Formatter.formatTemperature(temperature));
+    _temperature.setText(Formatter.formatTemperature(temperature, true));
     _temperatureThreshold.setColor(temperature);
   }
 
@@ -195,7 +195,7 @@ public class TextPanel implements GPSListener, DeviceListener
       _timeThreshold.setColor(getTimeDifferenceInSeconds(time));
       _latitude.setText(formatLatitude(latitude));
       _longitude.setText(formatLongitude(longitude));
-      _altitude.setText(Formatter.formatAltitude(altitude));
+      _altitude.setText(Formatter.formatAltitude(altitude, true));
       _trackPoints.setText(Formatter.formatTrackpoints(trackpoints));
       _trackpointsThreshold.setColor(trackpoints);
     }
@@ -203,7 +203,7 @@ public class TextPanel implements GPSListener, DeviceListener
     if (gps_.isValidMovement())
     {
       final float speed = (float) gps_.getSpeed();
-      _speed.setText(Formatter.formatSpeed(speed));
+      _speed.setText(Formatter.formatSpeed(speed, true));
       _speedThreshold.setColor(speed);
     }
   }

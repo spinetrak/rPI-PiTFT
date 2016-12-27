@@ -30,18 +30,19 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.sf.marineapi.nmea.parser.SentenceFactory;
-import net.spinetrak.rpitft.data.Dispatcher;
-import net.spinetrak.rpitft.data.Queue;
 import net.spinetrak.rpitft.data.parser.TXTParser;
+import net.spinetrak.rpitft.data.streams.logger.InitialStateStream;
 import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
 import net.spinetrak.rpitft.ui.center.TabPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_HEIGHT;
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
 public class Main extends Application
 {
-  private final Dispatcher _dispatcher = Dispatcher.getInstance();
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.ui.Main");
   private ButtonPanel _buttonPanel;
   private TabPanel _tabPanel;
 
@@ -56,10 +57,10 @@ public class Main extends Application
   {
     init(stage_);
     stage_.show();
-    final boolean mockdata = Boolean.valueOf(System.getProperty("mockdata"));
-    final Queue queue = new Queue(mockdata);
 
-    queue.start(_dispatcher);
+    final InitialStateStream iss = new InitialStateStream();
+    LOGGER.info(iss.toString());
+
   }
 
   private void init(final Stage stage_)

@@ -71,7 +71,7 @@ class CompassView implements GPSListener
     if (gps_.isValidMovement())
     {
       _compass.setValue(gps_.getCourse());
-      _speed.setText(Formatter.formatSpeed(gps_.getSpeed()));
+      _speed.setText(Formatter.formatSpeed(gps_.getSpeed(), true));
     }
   }
 

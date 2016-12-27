@@ -22,16 +22,11 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.streams;
+package com.alonkadury.initialState;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-
-public class SingleLineStream extends ByteArrayOutputStream implements Stream
+interface Events
 {
-  @Override
-  public OutputStream getStream()
-  {
-    return this;
-  }
+  String API_BASEURL = "https://groker.initialstate.com/api/";
+
+  String getEndpoint();
 }

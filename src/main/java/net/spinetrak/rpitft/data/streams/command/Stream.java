@@ -22,8 +22,11 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data;
+package net.spinetrak.rpitft.data.streams.command;
 
-public interface DataEvent
+import java.io.OutputStream;
+
+public interface Stream
 {
+  OutputStream getStream();
 }

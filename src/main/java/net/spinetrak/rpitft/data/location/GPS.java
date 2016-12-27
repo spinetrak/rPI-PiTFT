@@ -24,19 +24,20 @@
 
 package net.spinetrak.rpitft.data.location;
 
+import com.alonkadury.initialState.Data;
 import net.sf.marineapi.nmea.sentence.GGASentence;
 import net.sf.marineapi.nmea.sentence.RMCSentence;
 import net.sf.marineapi.nmea.util.GpsFixQuality;
-import net.spinetrak.rpitft.data.DataEvent;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-public class GPS implements DataEvent
+public class GPS
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private float _altitude;
   private double _course;
+  private Data[] _data;
   private GpsFixQuality _fix;
   private float _latitude;
   private float _longitude;
@@ -45,6 +46,7 @@ public class GPS implements DataEvent
   private int _trackpoints;
   private boolean _validLocation;
   private boolean _validMovement;
+
   private GPS()
   {
 

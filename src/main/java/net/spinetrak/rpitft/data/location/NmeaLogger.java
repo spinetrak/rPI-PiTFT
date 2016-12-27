@@ -35,6 +35,7 @@ import net.sf.marineapi.nmea.sentence.RMCSentence;
 import net.sf.marineapi.nmea.sentence.SentenceValidator;
 import net.sf.marineapi.nmea.util.FaaMode;
 import net.sf.marineapi.nmea.util.GpsFixQuality;
+import net.spinetrak.rpitft.data.streams.logger.LocalFileStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,15 +49,16 @@ public class NmeaLogger
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.location.NmeaLogger");
   private static final String OUTFILE = "/home/pi/tracks/nmea.txt";
   private static int COUNTER;
+  private final LocalFileStream _localFileStream;
   private final ConcurrentLinkedQueue<GPS> _queue = new ConcurrentLinkedQueue<>();
   private InputStream _inputStream;
-  private PrintStream _printStream;
+  //private PrintStream _printStream;
   private SentenceReader _sentenceReader;
 
-  public NmeaLogger(final boolean mockdata_)
+  public NmeaLogger()
   {
-    initOutput(OUTFILE);
-    initInput(mockdata_);
+    _localFileStream = new LocalFileStream(OUTFILE);
+    initInput();
   }
 
   public ConcurrentLinkedQueue<GPS> getQueue()
@@ -87,15 +89,16 @@ public class NmeaLogger
     return sp;
   }
 
-  private void initInput(final boolean mock_)
+  private void initInput()
   {
+    final boolean mock = Boolean.valueOf(System.getProperty("mockdata"));
     try
     {
       final SerialPort sp = getSerialPort();
 
       if (sp != null)
       {
-        if (mock_)
+        if (mock)
         {
           _inputStream = new FileInputStream(new File("/home/pi/tracks/nmea_test.txt"));
         }
@@ -106,6 +109,7 @@ public class NmeaLogger
         _sentenceReader = new SentenceReader(_inputStream);
         _sentenceReader.addSentenceListener(new GGAListener());
         _sentenceReader.addSentenceListener(new RMCListener());
+        _sentenceReader.addSentenceListener(_localFileStream);
         _sentenceReader.start();
       }
     }
@@ -133,32 +137,6 @@ public class NmeaLogger
     }
   }
 
-  private void initOutput(final String outputFile_)
-  {
-    try
-    {
-      _printStream = new PrintStream(
-        new BufferedOutputStream(new FileOutputStream(outputFile_, true)),
-        false,
-        "US-ASCII");
-    }
-    catch (final UnsupportedEncodingException | FileNotFoundException ex_)
-    {
-      ex_.printStackTrace();
-      LOGGER.error(ex_.getMessage());
-      IOUtils.closeQuietly(_printStream);
-      _printStream = null;
-    }
-    finally
-    {
-      if (_printStream != null)
-      {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-          IOUtils.closeQuietly(_printStream);
-        }));
-      }
-    }
-  }
 
   private boolean isValid(final InputStream is_) throws IOException
   {
@@ -199,8 +177,6 @@ public class NmeaLogger
       if (GpsFixQuality.INVALID != fix)
       {
         COUNTER++;
-        _printStream.println(gga_.toSentence());
-        _printStream.flush();
         _queue.add(GPS.fromGGASentence(gga_, COUNTER));
       }
     }
@@ -214,8 +190,6 @@ public class NmeaLogger
       final FaaMode mode = rmc_.getMode();
       if (FaaMode.NONE != mode)
       {
-        _printStream.println(rmc_.toSentence());
-        _printStream.flush();
         _queue.add(GPS.fromRMCSentence(rmc_));
       }
     }

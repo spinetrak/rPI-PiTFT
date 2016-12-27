@@ -22,37 +22,16 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.raspberry;
+package net.spinetrak.rpitft.data.streams.command;
 
-import com.pi4j.system.NetworkInfo;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
-import java.io.IOException;
-
-public class Network
+public class SingleLineStream extends ByteArrayOutputStream implements Stream
 {
-  private final String _status;
-
-  public Network()
+  @Override
+  public OutputStream getStream()
   {
-    String status = "[]";
-    try
-    {
-      final String[] addresses = NetworkInfo.getIPAddresses();
-      final String address = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
-      status = "[" + NetworkInfo.getHostname() + "/" + address + "/" + NetworkInfo.getFQDN() + "]";
-    }
-    catch (final IOException | InterruptedException ex_)
-    {
-      status = "[" + ex_.getMessage() + "]";
-    }
-    finally
-    {
-      _status = status;
-    }
-  }
-
-  public String getStatus()
-  {
-    return _status;
+    return this;
   }
 }

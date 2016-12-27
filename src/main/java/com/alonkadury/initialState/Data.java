@@ -22,11 +22,39 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.streams;
+package com.alonkadury.initialState;
 
-import java.io.OutputStream;
-
-public interface Stream
+public class Data<T> implements Events
 {
-  OutputStream getStream();
+  private final static String DATA_API_URL = API_BASEURL + "events";
+  private String iso8601;
+  private String key;
+  private T value;
+
+  public Data(String key, T value, String iso8601Time)
+  {
+    this.key = key;
+    this.value = value;
+    this.iso8601 = iso8601Time;
+  }
+
+  public Data(String key, T value)
+  {
+    this(key, value, null);
+  }
+
+  public String getEndpoint()
+  {
+    return DATA_API_URL;
+  }
+
+  @Override
+  public String toString()
+  {
+    return "Data{" +
+      "key='" + key + '\'' +
+      ", value=" + value +
+      ", iso8601='" + iso8601 + '\'' +
+      "}\n";
+  }
 }

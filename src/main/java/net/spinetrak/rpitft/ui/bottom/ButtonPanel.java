@@ -36,7 +36,7 @@ import javafx.scene.text.Text;
 import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.listeners.NetworkListener;
 import net.spinetrak.rpitft.data.raspberry.Network;
-import net.spinetrak.rpitft.data.streams.SingleLineStream;
+import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
 
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
