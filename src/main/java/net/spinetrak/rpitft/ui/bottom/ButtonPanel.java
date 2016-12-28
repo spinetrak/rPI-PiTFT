@@ -52,14 +52,9 @@ public class ButtonPanel implements NetworkListener
     _bottom.setPadding(new Insets(1));
     _bottom.setSpacing(1);
     _bottom.setAlignment(Pos.CENTER_RIGHT);
-    //_bottom.setPrefSize(MIN_WIDTH / 2, MIN_BOTTOM_HEIGHT);
-    //_bottom.setMinHeight(MIN_BOTTOM_HEIGHT);
 
-
-    HBox statusPanel = new HBox();
+    final HBox statusPanel = new HBox();
     statusPanel.setAlignment(Pos.CENTER_LEFT);
-    //statusPanel.setPrefSize(MIN_WIDTH / 2, MIN_BOTTOM_HEIGHT);
-    //statusPanel.setMinHeight(MIN_BOTTOM_HEIGHT);
     _statusText = new Text("");
     statusPanel.getChildren().add(_statusText);
     _bottom.getChildren().add(statusPanel);
@@ -98,15 +93,11 @@ public class ButtonPanel implements NetworkListener
     return _bottom;
   }
 
-  public Text getStatusText()
-  {
-    return _statusText;
-  }
 
   @Override
   public void handleData(final Network network_)
   {
-    _statusText.setText(network_.getStatus());
+    _statusText.setText(network_.getMessage());
   }
 
   private Button getExitButton()

@@ -27,32 +27,56 @@ package net.spinetrak.rpitft.data.raspberry;
 import com.pi4j.system.NetworkInfo;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class Network
 {
-  private final String _status;
+  private final String _message;
+  private boolean _isUp;
 
   public Network()
   {
-    String status = "[]";
+    _isUp = getInternetAccessInfo();
+    _message = getLocalNetworkInfo();
+  }
+
+  public String getMessage()
+  {
+    return _message;
+  }
+
+  public boolean isUp()
+  {
+    return _isUp;
+  }
+
+  private boolean getInternetAccessInfo()
+  {
+    try
+    {
+      return InetAddress.getByName("8.8.8.8").isReachable(1000);
+    }
+    catch (final IOException ex_)
+    {
+      //ignore
+    }
+    return true;
+  }
+
+  private String getLocalNetworkInfo()
+  {
+    final String isUp = _isUp ? "UP" : "DOWN";
+    String status;
     try
     {
       final String[] addresses = NetworkInfo.getIPAddresses();
       final String address = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
-      status = "[" + NetworkInfo.getHostname() + "/" + address + "/" + NetworkInfo.getFQDN() + "]";
+      status = "[" + isUp + "/" + address + "]";
     }
     catch (final IOException | InterruptedException ex_)
     {
-      status = "[" + ex_.getMessage() + "]";
+      status = "[" + isUp + "/" + ex_.getMessage() + "]";
     }
-    finally
-    {
-      _status = status;
-    }
-  }
-
-  public String getStatus()
-  {
-    return _status;
+    return status;
   }
 }

@@ -27,32 +27,32 @@ package com.alonkadury.initialState;
 public class Bucket implements Events
 {
   private final static String BUCKET_API_URL = API_BASEURL + "buckets";
-  private String bucketKey;
-  private String bucketName;
+  private final String _bucketKey;
+  private final String _bucketName;
 
-  public Bucket(String bucketKey)
+  public Bucket(final String bucketKey_)
   {
-    this(bucketKey, null);
+    this(bucketKey_, null);
   }
 
-  public Bucket(String bucketKey, String friendlyName)
+  public Bucket(final String bucketKey_, final String friendlyName_)
   {
-    this.bucketKey = bucketKey;
-    this.bucketName = friendlyName;
+    _bucketKey = bucketKey_;
+    _bucketName = friendlyName_;
+  }
+
+  String getFriendlyName()
+  {
+    return _bucketName;
+  }
+
+  String getKey()
+  {
+    return _bucketKey;
   }
 
   public String getEndpoint()
   {
     return BUCKET_API_URL;
-  }
-
-  public String getFriendlyName()
-  {
-    return bucketName;
-  }
-
-  public String getKey()
-  {
-    return bucketKey;
   }
 }

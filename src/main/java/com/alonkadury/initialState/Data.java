@@ -27,15 +27,15 @@ package com.alonkadury.initialState;
 public class Data<T> implements Events
 {
   private final static String DATA_API_URL = API_BASEURL + "events";
-  private String iso8601;
-  private String key;
-  private T value;
+  private final String iso8601;
+  private final String key;
+  private final T value;
 
-  public Data(String key, T value, String iso8601Time)
+  public Data(final String key_, final T value_, final String iso8601Time_)
   {
-    this.key = key;
-    this.value = value;
-    this.iso8601 = iso8601Time;
+    this.key = key_;
+    this.value = value_;
+    this.iso8601 = iso8601Time_;
   }
 
   public Data(String key, T value)

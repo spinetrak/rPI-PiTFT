@@ -25,145 +25,67 @@
 package com.alonkadury.initialState;
 
 import com.google.gson.Gson;
+import net.spinetrak.rpitft.data.Dispatcher;
+import net.spinetrak.rpitft.data.listeners.NetworkListener;
+import net.spinetrak.rpitft.data.raspberry.Network;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class API
+public class API implements NetworkListener
 {
-  private final static String BUCKET_KEY = "X-IS-BucketKey";
-  private String accessKey;
-  private ExecutorService executor;
-  private Gson gson; // thread safe according to docs
+  private final String _accessKey;
+  private final ExecutorService _executor;
+  private final Gson _gson; // thread safe according to docs
+  private boolean _networkIsUp = false;
 
-  public API(String accessKey)
+  public API(final String accessKey_)
   {
-    this(accessKey, 0);
+    this(accessKey_, 2);
   }
 
-  public API(String accessKey, int threadExecuterSize)
+  public API(final String accessKey_, int threadExecuterSize_)
   {
-    this.accessKey = accessKey;
-    if (threadExecuterSize > 0)
+    _accessKey = accessKey_;
+    _executor = Executors.newFixedThreadPool(threadExecuterSize_);
+    _gson = new Gson();
+    Dispatcher.getInstance().addListener(this);
+  }
+
+  public void createBucket(final Bucket bucket_)
+  {
+    if (_networkIsUp)
     {
-      executor = Executors.newFixedThreadPool(5);
+      _executor.execute(new EventTask(_accessKey, bucket_.getEndpoint(), null, _gson.toJson(bucket_)));
     }
-    else
+  }
+
+  public void createBulkData(final Bucket bucket_, final Data[] bulkData_)
+  {
+    if (_networkIsUp)
     {
-      executor = new SameThreadExecuter();
+      _executor.execute(
+        new EventTask(_accessKey, bulkData_[0].getEndpoint(), bucket_.getKey(), _gson.toJson(bulkData_)));
     }
-
-    gson = new Gson();
   }
 
-  public void createBucket(Bucket bucket)
+  public void createData(final Bucket bucket_, final Data data_)
   {
-    executor.execute(new EventTask(accessKey, bucket.getEndpoint(), null, gson.toJson(bucket)));
+    if (_networkIsUp)
+    {
+      _executor.execute(new EventTask(_accessKey, data_.getEndpoint(), bucket_.getKey(), _gson.toJson(data_)));
+    }
   }
 
-  public void createBulkData(Bucket bucket, Data[] bulkData)
+  @Override
+  public void handleData(final Network network_)
   {
-    HashMap<String, String> hash = new HashMap<String, String>();
-    hash.put(BUCKET_KEY, bucket.getKey());
-    executor.execute(new EventTask(accessKey, bulkData[0].getEndpoint(), hash, gson.toJson(bulkData)));
-  }
-
-  public void createData(Bucket bucket, Data data)
-  {
-    HashMap<String, String> hash = new HashMap<String, String>();
-    hash.put(BUCKET_KEY, bucket.getKey());
-    executor.execute(new EventTask(accessKey, data.getEndpoint(), hash, gson.toJson(data)));
+    _networkIsUp = network_.isUp();
   }
 
   public void terminate()
   {
-    executor.shutdown();
+    _executor.shutdown();
   }
 
-  private class SameThreadExecuter implements ExecutorService
-  {
-
-    @Override
-    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException
-    {
-      return false;
-    }
-
-    @Override
-    public void execute(Runnable command)
-    {
-      command.run();
-    }
-
-    @Override
-    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException
-    {
-      return null;
-    }
-
-    @Override
-    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws
-                                                                                                               InterruptedException
-    {
-      return null;
-    }
-
-    @Override
-    public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException
-    {
-      return null;
-    }
-
-    @Override
-    public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws
-                                                                                                 InterruptedException,
-                                                                                                 ExecutionException,
-                                                                                                 TimeoutException
-    {
-      return null;
-    }
-
-    @Override
-    public boolean isShutdown()
-    {
-      return false;
-    }
-
-    @Override
-    public boolean isTerminated()
-    {
-      return false;
-    }
-
-    @Override
-    public void shutdown()
-    {
-    }
-
-    @Override
-    public List<Runnable> shutdownNow()
-    {
-      return null;
-    }
-
-    @Override
-    public <T> Future<T> submit(Callable<T> task)
-    {
-      return null;
-    }
-
-    @Override
-    public <T> Future<T> submit(Runnable task, T result)
-    {
-      return null;
-    }
-
-    @Override
-    public Future<?> submit(Runnable task)
-    {
-      return null;
-    }
-  }
 }

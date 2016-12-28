@@ -27,90 +27,69 @@ package com.alonkadury.initialState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.DataOutputStream;
-import java.net.URL;
-import java.util.HashMap;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 class EventTask implements Runnable
 {
 
   private final static String ACCEPT_VERSION_KEY = "Accept-Version";
   private final static String ACCEPT_VERSION_VALUE = "~0";
-  private final static String CONTENT_TYPE_KEY = "Content-Type";
-  private final static String CONTENT_TYPE_VALUE = "application/json";
+  private final static String BUCKET_KEY = "X-IS-BucketKey";
   private final static Logger LOGGER = LoggerFactory.getLogger(
     "com.alonkadury.initialState.EventTask");
-  private final static String METHOD_TYPE = "POST";
   private final static String X_ACCESS_KEY = "X-IS-AccessKey";
-  private String accessKey;
-  private String body;
-  private HashMap<String, String> customHeaders;
-  private String endpoint;
+  private final String _accessKey;
+  private final String _body;
+  private final String _bucketKey;
+  private final String _endpoint;
 
-  public EventTask(String accessKey, String endpoint, HashMap<String, String> customHeaders, String body)
+  EventTask(final String accessKey_, final String endpoint_, final String bucketKey_, final String body_)
   {
-    this.accessKey = accessKey;
-    this.endpoint = endpoint;
-    this.customHeaders = customHeaders;
-    this.body = body;
+    _accessKey = accessKey_;
+    _endpoint = endpoint_;
+    _bucketKey = bucketKey_;
+    _body = body_;
   }
 
   @Override
   public void run()
   {
+    post();
+  }
+
+  private void post()
+  {
+    final Client client = ClientBuilder.newClient();
+    final Entity payload = Entity.json(_body);
+
+    final Invocation.Builder builder = client.target(_endpoint)
+      .request(MediaType.APPLICATION_JSON_TYPE)
+      .header(X_ACCESS_KEY, _accessKey)
+      .header(ACCEPT_VERSION_KEY, ACCEPT_VERSION_VALUE);
+    if (_bucketKey != null)
+    {
+      builder.header(BUCKET_KEY, _bucketKey);
+    }
+
     try
     {
-      sendRequest();
+      final Response response = builder.post(payload);
+
+      final int status = response.getStatus();
+      if (status < 200 || status >= 300)
+      {
+        throw new Exception(String.format("InitialState call returned: %d", status));
+      }
     }
-    catch (Exception ex)
+    catch (final Exception ex_)
     {
-      Thread t = Thread.currentThread();
-      t.getUncaughtExceptionHandler().uncaughtException(t, ex);
+      LOGGER.error(ex_.getMessage());
     }
   }
 
-  private void sendRequest() throws Exception
-  {
-    URL url = new URL(endpoint);
-    HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-
-    //add reuqest headers
-    con.setRequestMethod(METHOD_TYPE);
-    con.setRequestProperty(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
-    con.setRequestProperty(X_ACCESS_KEY, accessKey);
-    con.setRequestProperty(ACCEPT_VERSION_KEY, ACCEPT_VERSION_VALUE);
-    if (customHeaders != null)
-    {
-      customHeaders.forEach((k, v) -> con.setRequestProperty(k, v));
-    }
-
-    con.setDoOutput(true);
-    con.setDoInput(true);
-
-    DataOutputStream writer = new DataOutputStream(con.getOutputStream());
-
-    writer.writeBytes(body);
-    writer.flush();
-    writer.close();
-
-
-    int responseCode = con.getResponseCode();
-    con.disconnect();
-
-    if (responseCode < 200 || responseCode >= 300)
-    {
-      throw new Exception(String.format("InitialState call returned: %d", responseCode));
-    }
-
-    //      InputStream is = con.getInputStream();
-    //      BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-    //      String line;
-    //      StringBuffer response = new StringBuffer();
-    //      while((line = reader.readLine()) != null) {
-    //        response.append(line);
-    //        response.append('\r');
-    //      }
-    //      reader.close();
-  }
 }

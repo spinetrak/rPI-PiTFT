@@ -73,6 +73,30 @@ public class Dispatcher
     _gpsListeners.add(listener_);
   }
 
+  public void dispatchEvent(final GPS gps_)
+  {
+    for (final GPSListener listener : _gpsListeners)
+    {
+      listener.handleData(gps_);
+    }
+  }
+
+  public void dispatchEvent(final Device device_)
+  {
+    for (final DeviceListener listener : _deviceListeners)
+    {
+      listener.handleData(device_);
+    }
+  }
+
+  public void dispatchEvent(final Network network_)
+  {
+    for (final NetworkListener listener : _networkListeners)
+    {
+      listener.handleData(network_);
+    }
+  }
+
   private void addDataToSeries(
                        final ConcurrentLinkedQueue<Device> deviceQueue_,
                        final ConcurrentLinkedQueue<GPS> gpsQueue_)
@@ -80,25 +104,16 @@ public class Dispatcher
     while (!deviceQueue_.isEmpty())
     {
       final Device device = deviceQueue_.remove();
-      for (final DeviceListener listener : _deviceListeners)
-      {
-        listener.handleData(device);
-      }
+      dispatchEvent(device);
     }
     while (!gpsQueue_.isEmpty())
     {
       final GPS gps = gpsQueue_.remove();
-      for (final GPSListener listener : _gpsListeners)
-      {
-        listener.handleData(gps);
-      }
+      dispatchEvent(gps);
     }
 
     final Network network = new Network();
-    for (final NetworkListener listener : _networkListeners)
-    {
-      listener.handleData(network);
-    }
+    dispatchEvent(network);
   }
 
   private static class DispatcherQueue
@@ -106,7 +121,6 @@ public class Dispatcher
     private final DeviceClient _deviceClient;
     private final ExecutorService _executor;
     private final NmeaLogger _nmeaLogger;
-
 
     DispatcherQueue()
     {

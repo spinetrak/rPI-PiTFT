@@ -31,7 +31,6 @@ import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.listeners.DeviceListener;
 import net.spinetrak.rpitft.data.listeners.GPSListener;
-import net.spinetrak.rpitft.data.listeners.NetworkListener;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.data.raspberry.Network;
@@ -44,7 +43,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class InitialStateStream implements GPSListener, DeviceListener, NetworkListener
+public class InitialStateStream implements GPSListener, DeviceListener
 {
   private final static Logger LOGGER = LoggerFactory.getLogger(
     "net.spinetrak.rpitft.data.streams.logger.InitialStateStream");
@@ -55,19 +54,22 @@ public class InitialStateStream implements GPSListener, DeviceListener, NetworkL
 
   public InitialStateStream()
   {
-    _bucket = new Bucket("spinetrak-2016-12-26", "spinetrak");
+    _bucket = new Bucket("spinetrak", "spinetrak");
     _account = new API(System.getProperty("initialstatekey"), 5);
     _account.createBucket(_bucket);
 
     Dispatcher.getInstance().addListener((GPSListener) this);
     Dispatcher.getInstance().addListener((DeviceListener) this);
-    Dispatcher.getInstance().addListener((NetworkListener) this);
 
     Runtime.getRuntime().addShutdownHook(new Thread(_account::terminate));
 
     final Publisher publisher = new Publisher();
     final Thread publisherThread = new Thread(publisher);
     publisherThread.start();
+
+    final NetworkChecker networkChecker = new NetworkChecker();
+    final Thread networkCheckerThread = new Thread(networkChecker);
+    networkCheckerThread.start();
   }
 
   @Override
@@ -82,11 +84,6 @@ public class InitialStateStream implements GPSListener, DeviceListener, NetworkL
     _gpsQueue.add(gps_);
   }
 
-  @Override
-  public void handleData(final Network network_)
-  {
-    //
-  }
 
   @Override
   public String toString()
@@ -95,6 +92,24 @@ public class InitialStateStream implements GPSListener, DeviceListener, NetworkL
       "_account=" + _account +
       ", _bucket=" + _bucket +
       '}';
+  }
+
+  private class NetworkChecker implements Runnable
+  {
+    @Override
+    public void run()
+    {
+      try
+      {
+        final Network network = new Network();
+        Dispatcher.getInstance().dispatchEvent(network);
+        Thread.sleep(30000);
+      }
+      catch (final InterruptedException ex_)
+      {
+        LOGGER.error(ex_.getMessage());
+      }
+    }
   }
 
   private class Publisher implements Runnable
@@ -107,7 +122,6 @@ public class InitialStateStream implements GPSListener, DeviceListener, NetworkL
         collectData();
       }
     }
-
 
     private void collectData()
     {
@@ -212,6 +226,21 @@ public class InitialStateStream implements GPSListener, DeviceListener, NetworkL
 
     private void publish(final Data[] data_)
     {
+      _account.createBulkData(_bucket, data_);
+
+      try
+      {
+        synchronized (_account)
+        {
+          _account.wait(10000);
+        }
+      }
+      catch (final InterruptedException ex_)
+      {
+        LOGGER.error(ex_.getMessage());
+      }
+
+      /*
       for (final Data data : data_)
       {
         _account.createData(_bucket, data);
@@ -228,6 +257,7 @@ public class InitialStateStream implements GPSListener, DeviceListener, NetworkL
           LOGGER.error(ex_.getMessage());
         }
       }
+      */
     }
   }
 
