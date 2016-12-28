@@ -54,7 +54,7 @@ public class InitialStateStream implements GPSListener, DeviceListener
 
   public InitialStateStream()
   {
-    _bucket = new Bucket("spinetrak", "spinetrak");
+    _bucket = new Bucket("spinetrak-2016-12-28", "spinetrak");
     _account = new API(System.getProperty("initialstatekey"), 5);
     _account.createBucket(_bucket);
 
