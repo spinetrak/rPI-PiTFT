@@ -91,8 +91,8 @@ class GaugesView implements GPSListener, DeviceListener
     _panel.getChildren().add(directionBox);
     _panel.getChildren().add(speedBox);
     _panel.getChildren().add(trackpointsBox);
-    Dispatcher.getInstance().addListener((GPSListener) this);
-    Dispatcher.getInstance().addListener((DeviceListener) this);
+    Dispatcher.getInstance().addListener(this);
+    Dispatcher.getInstance().addListener(this);
   }
 
 
@@ -102,7 +102,7 @@ class GaugesView implements GPSListener, DeviceListener
   }
 
   @Override
-  public void handleData(final Device device_)
+  public void handleDeviceData(final Device device_)
   {
     _cpu.setValue(device_.getCpu());
     _disk.setValue(device_.getDisk());
@@ -111,7 +111,7 @@ class GaugesView implements GPSListener, DeviceListener
   }
 
   @Override
-  public void handleData(final GPS gps_)
+  public void handleGPSData(final GPS gps_)
   {
     if (gps_.isValidLocation())
     {

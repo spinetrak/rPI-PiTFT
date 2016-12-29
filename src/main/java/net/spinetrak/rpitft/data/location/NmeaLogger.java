@@ -35,6 +35,8 @@ import net.sf.marineapi.nmea.sentence.RMCSentence;
 import net.sf.marineapi.nmea.sentence.SentenceValidator;
 import net.sf.marineapi.nmea.util.FaaMode;
 import net.sf.marineapi.nmea.util.GpsFixQuality;
+import net.spinetrak.rpitft.data.Dispatcher;
+import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.streams.logger.LocalFileStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -42,7 +44,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Enumeration;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class NmeaLogger
 {
@@ -50,46 +51,15 @@ public class NmeaLogger
   private static final String OUTFILE = "/home/pi/tracks/nmea.txt";
   private static int COUNTER;
   private final LocalFileStream _localFileStream;
-  private final ConcurrentLinkedQueue<GPS> _queue = new ConcurrentLinkedQueue<>();
   private InputStream _inputStream;
-  //private PrintStream _printStream;
   private SentenceReader _sentenceReader;
 
   public NmeaLogger()
   {
     _localFileStream = new LocalFileStream(OUTFILE);
-    initInput();
   }
 
-  public ConcurrentLinkedQueue<GPS> getQueue()
-  {
-    return _queue;
-  }
-
-  private SerialPort getSerialPort() throws IOException, PortInUseException, UnsupportedCommOperationException
-  {
-    System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
-    final Enumeration<?> e = CommPortIdentifier.getPortIdentifiers();
-    SerialPort sp = null;
-    while (e.hasMoreElements())
-    {
-      final CommPortIdentifier id = (CommPortIdentifier) e.nextElement();
-      if (id.getPortType() == CommPortIdentifier.PORT_SERIAL)
-      {
-        sp = (SerialPort) id.open("SerialExample", 30);
-        sp.setSerialPortParams(9600, SerialPort.DATABITS_8,
-                               SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-
-        if (isValid(sp.getInputStream()))
-        {
-          break;
-        }
-      }
-    }
-    return sp;
-  }
-
-  private void initInput()
+  public void start()
   {
     final boolean mock = Boolean.valueOf(System.getProperty("mockdata"));
     try
@@ -115,8 +85,11 @@ public class NmeaLogger
     }
     catch (final IOException | PortInUseException | UnsupportedCommOperationException ex_)
     {
+      final String msg = ex_.getMessage();
+      final Network network = new Network(msg);
+      Dispatcher.getInstance().getQueue().add(network);
+      LOGGER.error(msg);
       ex_.printStackTrace();
-      LOGGER.error(ex_.getMessage());
       IOUtils.closeQuietly(_inputStream);
       _inputStream = null;
     }
@@ -137,6 +110,28 @@ public class NmeaLogger
     }
   }
 
+  private SerialPort getSerialPort() throws IOException, PortInUseException, UnsupportedCommOperationException
+  {
+    System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
+    final Enumeration<?> e = CommPortIdentifier.getPortIdentifiers();
+    SerialPort sp = null;
+    while (e.hasMoreElements())
+    {
+      final CommPortIdentifier id = (CommPortIdentifier) e.nextElement();
+      if (id.getPortType() == CommPortIdentifier.PORT_SERIAL)
+      {
+        sp = (SerialPort) id.open("SerialExample", 30);
+        sp.setSerialPortParams(9600, SerialPort.DATABITS_8,
+                               SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+
+        if (isValid(sp.getInputStream()))
+        {
+          break;
+        }
+      }
+    }
+    return sp;
+  }
 
   private boolean isValid(final InputStream is_) throws IOException
   {
@@ -159,8 +154,11 @@ public class NmeaLogger
       }
       catch (final Exception ex_)
       {
+        final String msg = ex_.getMessage();
+        final Network network = new Network(msg);
+        Dispatcher.getInstance().getQueue().add(network);
         ex_.printStackTrace();
-        LOGGER.error(ex_.getMessage());
+        LOGGER.error(msg);
       }
     }
     isr.close();
@@ -177,7 +175,7 @@ public class NmeaLogger
       if (GpsFixQuality.INVALID != fix)
       {
         COUNTER++;
-        _queue.add(GPS.fromGGASentence(gga_, COUNTER));
+        Dispatcher.getInstance().getQueue().add(GPS.fromGGASentence(gga_, COUNTER));
       }
     }
   }
@@ -190,7 +188,7 @@ public class NmeaLogger
       final FaaMode mode = rmc_.getMode();
       if (FaaMode.NONE != mode)
       {
-        _queue.add(GPS.fromRMCSentence(rmc_));
+        Dispatcher.getInstance().getQueue().add(GPS.fromRMCSentence(rmc_));
       }
     }
   }

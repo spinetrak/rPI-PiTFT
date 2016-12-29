@@ -24,26 +24,20 @@
 
 package net.spinetrak.rpitft.data.raspberry;
 
+import net.spinetrak.rpitft.data.Dispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 
 public class DeviceClient implements Runnable
 {
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.raspberry.DeviceClient");
   private final ExecutorService _executor;
-  private final ConcurrentLinkedQueue<Device> _queue = new ConcurrentLinkedQueue<>();
 
   public DeviceClient(final ExecutorService executor_)
   {
     _executor = executor_;
-  }
-
-  public ConcurrentLinkedQueue<Device> getQueue()
-  {
-    return _queue;
   }
 
   public void run()
@@ -53,7 +47,7 @@ public class DeviceClient implements Runnable
       final Device device = new Device();
       if (!device.isHasError())
       {
-        _queue.add(device);
+        Dispatcher.getInstance().getQueue().add(device);
       }
       Thread.sleep(500);
       _executor.execute(this);

@@ -22,11 +22,8 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.listeners;
+package net.spinetrak.rpitft.data.events;
 
-import net.spinetrak.rpitft.data.location.GPS;
-
-public interface GPSListener extends EventListener
+public interface Event
 {
-  void handleGPSData(final GPS gps_);
 }

@@ -25,17 +25,20 @@
 package net.spinetrak.rpitft.data;
 
 import javafx.animation.AnimationTimer;
+import net.spinetrak.rpitft.data.events.Event;
 import net.spinetrak.rpitft.data.listeners.DeviceListener;
+import net.spinetrak.rpitft.data.listeners.EventListener;
 import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.listeners.NetworkListener;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.location.NmeaLogger;
+import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.data.raspberry.DeviceClient;
-import net.spinetrak.rpitft.data.raspberry.Network;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,9 +46,8 @@ import java.util.concurrent.Executors;
 public class Dispatcher
 {
   private final static Dispatcher _instance = new Dispatcher();
-  private List<DeviceListener> _deviceListeners = new ArrayList<>();
-  private List<GPSListener> _gpsListeners = new ArrayList<>();
-  private List<NetworkListener> _networkListeners = new ArrayList<>();
+  private final ConcurrentLinkedQueue<Event> _queue = new ConcurrentLinkedQueue<>();
+  private List<EventListener> _listeners = new ArrayList<>();
 
   private Dispatcher()
   {
@@ -58,62 +60,42 @@ public class Dispatcher
     return _instance;
   }
 
-  public void addListener(final DeviceListener listener_)
+  public void addListener(final EventListener listener_)
   {
-    _deviceListeners.add(listener_);
+    _listeners.add(listener_);
   }
 
-  public void addListener(final NetworkListener listener_)
+  public Queue getQueue()
   {
-    _networkListeners.add(listener_);
+    return _queue;
   }
 
-  public void addListener(final GPSListener listener_)
+  private void dispatchEvent(final Event event_)
   {
-    _gpsListeners.add(listener_);
-  }
-
-  public void dispatchEvent(final GPS gps_)
-  {
-    for (final GPSListener listener : _gpsListeners)
+    for (final EventListener listener : _listeners)
     {
-      listener.handleData(gps_);
+      if (event_ instanceof Device && listener instanceof DeviceListener)
+      {
+        ((DeviceListener) listener).handleDeviceData((Device) event_);
+      }
+      if (event_ instanceof GPS && listener instanceof GPSListener)
+      {
+        ((GPSListener) listener).handleGPSData((GPS) event_);
+      }
+      if (event_ instanceof Network && listener instanceof NetworkListener)
+      {
+        ((NetworkListener) listener).handleNetworkData((Network) event_);
+      }
     }
   }
 
-  public void dispatchEvent(final Device device_)
+  private void processQueue()
   {
-    for (final DeviceListener listener : _deviceListeners)
+    while (!_queue.isEmpty())
     {
-      listener.handleData(device_);
+      final Event event = _queue.remove();
+      dispatchEvent(event);
     }
-  }
-
-  public void dispatchEvent(final Network network_)
-  {
-    for (final NetworkListener listener : _networkListeners)
-    {
-      listener.handleData(network_);
-    }
-  }
-
-  private void addDataToSeries(
-                       final ConcurrentLinkedQueue<Device> deviceQueue_,
-                       final ConcurrentLinkedQueue<GPS> gpsQueue_)
-  {
-    while (!deviceQueue_.isEmpty())
-    {
-      final Device device = deviceQueue_.remove();
-      dispatchEvent(device);
-    }
-    while (!gpsQueue_.isEmpty())
-    {
-      final GPS gps = gpsQueue_.remove();
-      dispatchEvent(gps);
-    }
-
-    final Network network = new Network();
-    dispatchEvent(network);
   }
 
   private static class DispatcherQueue
@@ -134,7 +116,7 @@ public class Dispatcher
       _executor.execute(_deviceClient);
 
       _nmeaLogger = new NmeaLogger();
-
+      _nmeaLogger.start();
     }
 
     void start()
@@ -144,7 +126,7 @@ public class Dispatcher
         @Override
         public void handle(final long now_)
         {
-          Dispatcher.getInstance().addDataToSeries(_deviceClient.getQueue(), _nmeaLogger.getQueue());
+          Dispatcher.getInstance().processQueue();
         }
       }.start();
     }

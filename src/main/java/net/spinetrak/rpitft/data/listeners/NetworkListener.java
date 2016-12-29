@@ -24,9 +24,9 @@
 
 package net.spinetrak.rpitft.data.listeners;
 
-import net.spinetrak.rpitft.data.raspberry.Network;
+import net.spinetrak.rpitft.data.network.Network;
 
-public interface NetworkListener
+public interface NetworkListener extends EventListener
 {
-  void handleData(final Network network_);
+  void handleNetworkData(final Network network_);
 }

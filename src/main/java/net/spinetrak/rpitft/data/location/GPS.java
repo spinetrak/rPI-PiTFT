@@ -28,11 +28,12 @@ import com.alonkadury.initialState.Data;
 import net.sf.marineapi.nmea.sentence.GGASentence;
 import net.sf.marineapi.nmea.sentence.RMCSentence;
 import net.sf.marineapi.nmea.util.GpsFixQuality;
+import net.spinetrak.rpitft.data.events.Event;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-public class GPS
+public class GPS implements Event
 {
   public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("HH:mm:ss");
   private float _altitude;

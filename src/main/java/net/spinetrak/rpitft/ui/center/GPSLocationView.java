@@ -74,7 +74,7 @@ class GPSLocationView implements GPSListener
   }
 
   @Override
-  public void handleData(final GPS gps_)
+  public void handleGPSData(final GPS gps_)
   {
     if (gps_.isValidLocation())
     {

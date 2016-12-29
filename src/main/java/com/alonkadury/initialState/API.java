@@ -27,7 +27,7 @@ package com.alonkadury.initialState;
 import com.google.gson.Gson;
 import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.listeners.NetworkListener;
-import net.spinetrak.rpitft.data.raspberry.Network;
+import net.spinetrak.rpitft.data.network.Network;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -78,7 +78,7 @@ public class API implements NetworkListener
   }
 
   @Override
-  public void handleData(final Network network_)
+  public void handleNetworkData(final Network network_)
   {
     _networkIsUp = network_.isUp();
   }

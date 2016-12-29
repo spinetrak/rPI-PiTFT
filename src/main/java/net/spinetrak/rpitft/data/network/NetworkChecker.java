@@ -22,61 +22,32 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.raspberry;
+package net.spinetrak.rpitft.data.network;
 
-import com.pi4j.system.NetworkInfo;
+import net.spinetrak.rpitft.data.Dispatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.InetAddress;
-
-public class Network
+public class NetworkChecker implements Runnable
 {
-  private final String _message;
-  private boolean _isUp;
+  private final static Logger LOGGER = LoggerFactory.getLogger(
+    "net.spinetrak.rpitft.data.netweok.NetworkChecker");
 
-  public Network()
+  @Override
+  public void run()
   {
-    _isUp = getInternetAccessInfo();
-    _message = getLocalNetworkInfo();
-  }
-
-  public String getMessage()
-  {
-    return _message;
-  }
-
-  public boolean isUp()
-  {
-    return _isUp;
-  }
-
-  private boolean getInternetAccessInfo()
-  {
-    try
+    while (true)
     {
-      return InetAddress.getByName("8.8.8.8").isReachable(1000);
+      try
+      {
+        final Network network = new Network();
+        Dispatcher.getInstance().getQueue().add(network);
+        Thread.sleep(15000);
+      }
+      catch (final InterruptedException ex_)
+      {
+        LOGGER.error(ex_.getMessage());
+      }
     }
-    catch (final IOException ex_)
-    {
-      //ignore
-    }
-    return true;
-  }
-
-  private String getLocalNetworkInfo()
-  {
-    final String isUp = _isUp ? "UP" : "DOWN";
-    String status;
-    try
-    {
-      final String[] addresses = NetworkInfo.getIPAddresses();
-      final String address = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
-      status = "[" + isUp + "/" + address + "]";
-    }
-    catch (final IOException | InterruptedException ex_)
-    {
-      status = "[" + isUp + "/" + ex_.getMessage() + "]";
-    }
-    return status;
   }
 }

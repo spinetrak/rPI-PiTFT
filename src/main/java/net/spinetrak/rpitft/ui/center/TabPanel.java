@@ -116,8 +116,8 @@ public class TabPanel implements GPSListener, DeviceListener
 
     _mainPanel = new VBox(_textPanel.getPanel(), _tabPane);
 
-    Dispatcher.getInstance().addListener((GPSListener) this);
-    Dispatcher.getInstance().addListener((DeviceListener) this);
+    Dispatcher.getInstance().addListener(this);
+    Dispatcher.getInstance().addListener(this);
   }
 
   public Node getPanel()
@@ -126,14 +126,7 @@ public class TabPanel implements GPSListener, DeviceListener
   }
 
   @Override
-  public void handleData(final GPS gps_)
-  {
-    _altitudeChart.addData(gps_.getAltitude());
-    _speedChart.addData((float) gps_.getSpeed());
-  }
-
-  @Override
-  public void handleData(final Device device_)
+  public void handleDeviceData(final Device device_)
   {
     final float cpu = device_.getCpu();
     _cpuChart.addData(cpu);
@@ -146,6 +139,13 @@ public class TabPanel implements GPSListener, DeviceListener
     float temperature = device_.getTemperature();
     _temperatureChart.addData(temperature);
     _temperatureThreshold.setColor(temperature);
+  }
+
+  @Override
+  public void handleGPSData(final GPS gps_)
+  {
+    _altitudeChart.addData(gps_.getAltitude());
+    _speedChart.addData((float) gps_.getSpeed());
   }
 
   private class TransitionTabs implements Runnable

@@ -24,6 +24,8 @@
 
 package com.alonkadury.initialState;
 
+import net.spinetrak.rpitft.data.Dispatcher;
+import net.spinetrak.rpitft.data.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +90,10 @@ class EventTask implements Runnable
     }
     catch (final Exception ex_)
     {
-      LOGGER.error(ex_.getMessage());
+      final String msg = ex_.getMessage();
+      final Network network = new Network(msg);
+      Dispatcher.getInstance().getQueue().add(network);
+      LOGGER.error(msg);
     }
   }
 

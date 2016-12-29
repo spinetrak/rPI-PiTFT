@@ -115,8 +115,8 @@ public class TextPanel implements GPSListener, DeviceListener
     _vbox.setSpacing(1);
     _vbox.setPadding(new Insets(1));
 
-    Dispatcher.getInstance().addListener((GPSListener) this);
-    Dispatcher.getInstance().addListener((DeviceListener) this);
+    Dispatcher.getInstance().addListener(this);
+    Dispatcher.getInstance().addListener(this);
   }
 
   /*
@@ -157,7 +157,7 @@ public class TextPanel implements GPSListener, DeviceListener
 
 
   @Override
-  public void handleData(final Device device_)
+  public void handleDeviceData(final Device device_)
   {
     final float cpu = device_.getCpu();
     final float disk = device_.getDisk();
@@ -178,7 +178,7 @@ public class TextPanel implements GPSListener, DeviceListener
   }
 
   @Override
-  public void handleData(final GPS gps_)
+  public void handleGPSData(final GPS gps_)
   {
     if (gps_.isValidLocation())
     {

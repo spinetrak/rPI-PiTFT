@@ -66,7 +66,7 @@ class CompassView implements GPSListener
   }
 
   @Override
-  public void handleData(final GPS gps_)
+  public void handleGPSData(final GPS gps_)
   {
     if (gps_.isValidMovement())
     {

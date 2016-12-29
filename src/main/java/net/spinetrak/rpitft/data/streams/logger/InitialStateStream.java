@@ -29,11 +29,12 @@ import com.alonkadury.initialState.Bucket;
 import com.alonkadury.initialState.Data;
 import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Formatter;
+import net.spinetrak.rpitft.data.events.Event;
 import net.spinetrak.rpitft.data.listeners.DeviceListener;
 import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.network.NetworkChecker;
 import net.spinetrak.rpitft.data.raspberry.Device;
-import net.spinetrak.rpitft.data.raspberry.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +50,7 @@ public class InitialStateStream implements GPSListener, DeviceListener
     "net.spinetrak.rpitft.data.streams.logger.InitialStateStream");
   final private API _account;
   final private Bucket _bucket;
-  private final LinkedBlockingQueue<Device> _deviceQueue = new LinkedBlockingQueue<>();
-  private final LinkedBlockingQueue<GPS> _gpsQueue = new LinkedBlockingQueue<>();
+  private final LinkedBlockingQueue<Event> _queue = new LinkedBlockingQueue<>();
 
   public InitialStateStream()
   {
@@ -58,8 +58,8 @@ public class InitialStateStream implements GPSListener, DeviceListener
     _account = new API(System.getProperty("initialstatekey"), 5);
     _account.createBucket(_bucket);
 
-    Dispatcher.getInstance().addListener((GPSListener) this);
-    Dispatcher.getInstance().addListener((DeviceListener) this);
+    Dispatcher.getInstance().addListener(this);
+    Dispatcher.getInstance().addListener(this);
 
     Runtime.getRuntime().addShutdownHook(new Thread(_account::terminate));
 
@@ -73,15 +73,15 @@ public class InitialStateStream implements GPSListener, DeviceListener
   }
 
   @Override
-  public void handleData(final Device device_)
+  public void handleDeviceData(final Device device_)
   {
-    _deviceQueue.add(device_);
+    _queue.add(device_);
   }
 
   @Override
-  public void handleData(final GPS gps_)
+  public void handleGPSData(final GPS gps_)
   {
-    _gpsQueue.add(gps_);
+    _queue.add(gps_);
   }
 
 
@@ -92,24 +92,6 @@ public class InitialStateStream implements GPSListener, DeviceListener
       "_account=" + _account +
       ", _bucket=" + _bucket +
       '}';
-  }
-
-  private class NetworkChecker implements Runnable
-  {
-    @Override
-    public void run()
-    {
-      try
-      {
-        final Network network = new Network();
-        Dispatcher.getInstance().dispatchEvent(network);
-        Thread.sleep(30000);
-      }
-      catch (final InterruptedException ex_)
-      {
-        LOGGER.error(ex_.getMessage());
-      }
-    }
   }
 
   private class Publisher implements Runnable
@@ -125,71 +107,56 @@ public class InitialStateStream implements GPSListener, DeviceListener
 
     private void collectData()
     {
-      final List<GPS> gpsData = new ArrayList<>();
-      final List<Device> deviceData = new ArrayList<>();
-
-      while (!_gpsQueue.isEmpty())
+      final List<Event> data = new ArrayList<>();
+      while (!_queue.isEmpty())
       {
-        final GPS gps = _gpsQueue.remove();
-        gpsData.add(gps);
-      }
-      while (!_deviceQueue.isEmpty())
-      {
-        final Device device = _deviceQueue.remove();
-        deviceData.add(device);
+        final Event event = _queue.remove();
+        data.add(event);
       }
 
-      final Data[] avgData = getAverage(gpsData, deviceData);
+      final Data[] avgData = getAverages(data);
+
       if (avgData != null)
       {
         publish(avgData);
       }
     }
 
-    private Data[] getAverage(final List<GPS> gpsData_, final List<Device> deviceData_)
+    private List<Data<java.io.Serializable>> getAverageDeviceData(final List<Event> deviceData_,
+                                                                  final String timestamp_)
     {
-      final List<Data<Serializable>> data = new ArrayList<>();
-      final String iso8601 = Formatter.formatISO8601Timestamp(new Date());
-      getAverageGPSData(gpsData_, data, iso8601);
-
-      getAverageDeviceData(deviceData_, data, iso8601);
-
-      if (data.size() > 0)
-      {
-        return data.toArray(new Data[data.size()]);
-      }
-      return null;
-    }
-
-    private void getAverageDeviceData(final List<Device> deviceData_, final List<Data<java.io.Serializable>> data_,
-                                      final String timestamp_)
-    {
+      final List<Data<java.io.Serializable>> data = new ArrayList<>();
       float cpu = 0.0f;
       float disk = 0.0f;
       float mem = 0.0f;
       float temp = 0.0f;
       int devices = 0;
 
-      for (final Device device : deviceData_)
+      for (final Event event : deviceData_)
       {
-        cpu += device.getCpu();
-        disk += device.getDisk();
-        mem += device.getMemory();
-        temp += device.getTemperature();
-        devices++;
+        if (event instanceof Device)
+        {
+          final Device device = (Device) event;
+          cpu += device.getCpu();
+          disk += device.getDisk();
+          mem += device.getMemory();
+          temp += device.getTemperature();
+          devices++;
+        }
       }
       if (devices > 0)
       {
-        data_.add(new Data<>("CPU", Formatter.round(cpu / devices, 2), timestamp_));
-        data_.add(new Data<>("Disk", Formatter.round(disk / devices, 2), timestamp_));
-        data_.add(new Data<>("Memory", Formatter.round(mem / devices, 2), timestamp_));
-        data_.add(new Data<>("Temperature", Formatter.round(temp / devices, 2), timestamp_));
+        data.add(new Data<>("CPU", Formatter.round(cpu / devices, 2), timestamp_));
+        data.add(new Data<>("Disk", Formatter.round(disk / devices, 2), timestamp_));
+        data.add(new Data<>("Memory", Formatter.round(mem / devices, 2), timestamp_));
+        data.add(new Data<>("Temperature", Formatter.round(temp / devices, 2), timestamp_));
       }
+      return data;
     }
 
-    private void getAverageGPSData(final List<GPS> gpsData_, final List<Data<Serializable>> data_,
-                                   final String timestamp_)
+    private List<Data<java.io.Serializable>> getAverageGPSData(final List<Event> gpsData_, final String timestamp_)
     {
+      final List<Data<java.io.Serializable>> data = new ArrayList<>();
       float lat = 0.0f;
       float lon = 0.0f;
       float alt = 0.0f;
@@ -197,31 +164,51 @@ public class InitialStateStream implements GPSListener, DeviceListener
       int locations = 0;
       int movements = 0;
 
-      for (final GPS gps : gpsData_)
+      for (final Event event : gpsData_)
       {
-        if (gps.isValidLocation())
+        if (event instanceof GPS)
         {
-          lat += gps.getLatitude();
-          lon += gps.getLongitude();
-          alt += gps.getAltitude();
-          locations++;
-        }
-        if (gps.isValidMovement())
-        {
-          speed += gps.getSpeed();
-          movements++;
+          final GPS gps = (GPS) event;
+          if (gps.isValidLocation())
+          {
+            lat += gps.getLatitude();
+            lon += gps.getLongitude();
+            alt += gps.getAltitude();
+            locations++;
+          }
+          if (gps.isValidMovement())
+          {
+            speed += gps.getSpeed();
+            movements++;
+          }
         }
       }
 
       if (locations > 0)
       {
-        data_.add(new Data<>("Altitude", Formatter.round(alt / locations, 2), timestamp_));
-        data_.add(new Data<>("Location", lat / locations + "," + lon / locations, timestamp_));
+        data.add(new Data<>("Altitude", Formatter.round(alt / locations, 2), timestamp_));
+        data.add(new Data<>("Location", lat / locations + "," + lon / locations, timestamp_));
       }
       if (movements > 0)
       {
-        data_.add(new Data<>("Speed", Formatter.round(speed / movements, 2), timestamp_));
+        data.add(new Data<>("Speed", Formatter.round(speed / movements, 2), timestamp_));
       }
+      return data;
+    }
+
+    private Data[] getAverages(final List<Event> data_)
+    {
+      final List<Data<Serializable>> data = new ArrayList<>();
+      final String iso8601 = Formatter.formatISO8601Timestamp(new Date());
+
+      data.addAll(getAverageGPSData(data_, iso8601));
+      data.addAll(getAverageDeviceData(data_, iso8601));
+
+      if (data.size() > 0)
+      {
+        return data.toArray(new Data[data.size()]);
+      }
+      return null;
     }
 
     private void publish(final Data[] data_)
@@ -232,7 +219,7 @@ public class InitialStateStream implements GPSListener, DeviceListener
       {
         synchronized (_account)
         {
-          _account.wait(10000);
+          _account.wait(6000);
         }
       }
       catch (final InterruptedException ex_)

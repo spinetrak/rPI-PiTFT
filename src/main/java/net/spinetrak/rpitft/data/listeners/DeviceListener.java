@@ -26,7 +26,7 @@ package net.spinetrak.rpitft.data.listeners;
 
 import net.spinetrak.rpitft.data.raspberry.Device;
 
-public interface DeviceListener
+public interface DeviceListener extends EventListener
 {
-  void handleData(final Device device_);
+  void handleDeviceData(final Device device_);
 }

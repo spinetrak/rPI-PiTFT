@@ -35,7 +35,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.listeners.NetworkListener;
-import net.spinetrak.rpitft.data.raspberry.Network;
+import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
 
 import static javafx.application.Platform.exit;
@@ -95,7 +95,7 @@ public class ButtonPanel implements NetworkListener
 
 
   @Override
-  public void handleData(final Network network_)
+  public void handleNetworkData(final Network network_)
   {
     _statusText.setText(network_.getMessage());
   }
