@@ -28,7 +28,6 @@ import com.pi4j.system.NetworkInfo;
 import net.spinetrak.rpitft.data.events.Event;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 public class Network implements Event
 {
@@ -83,9 +82,11 @@ public class Network implements Event
   {
     try
     {
-      return InetAddress.getByName("8.8.8.8").isReachable(1000);
+      final Process process = Runtime.getRuntime().exec("ping -c 1 www.google.com");
+      int returnVal = process.waitFor();
+      return (returnVal == 0);
     }
-    catch (final IOException ex_)
+    catch (final IOException | InterruptedException ex_)
     {
       //ignore
     }
