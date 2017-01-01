@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -97,7 +97,7 @@ public class TabPanel implements GPSListener, DeviceListener
     _tabPane = new TabPane();
     _tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-    _tabPane.getTabs().addAll(_gaugesTab, cpuTab, memTab, temTab, mapTab, altTab, speedTab);
+    _tabPane.getTabs().addAll(_gaugesTab, cpuTab, memTab, temTab, altTab, speedTab, mapTab);
 
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
@@ -144,8 +144,14 @@ public class TabPanel implements GPSListener, DeviceListener
   @Override
   public void handleGPSData(final GPS gps_)
   {
-    _altitudeChart.addData(gps_.getAltitude());
-    _speedChart.addData((float) gps_.getSpeed());
+    if (gps_.isValidLocation())
+    {
+      _altitudeChart.addData(gps_.getAltitude());
+    }
+    if (gps_.isValidMovement())
+    {
+      _speedChart.addData((float) gps_.getSpeed());
+    }
   }
 
   private class TransitionTabs implements Runnable

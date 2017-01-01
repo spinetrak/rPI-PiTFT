@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,10 +74,6 @@ public class TextPanel implements GPSListener, DeviceListener
     deviceData = new FlowPane(Orientation.HORIZONTAL);
     deviceData.setPadding(new Insets(1));
 
-    _time = new Text("[hh:mm:ss]");
-    gpsData.getChildren().add(_time);
-    _timeThreshold = new Threshold(_time, 60, 30);
-
     _latitude = new Text("[xxxx.xxx N]");
     gpsData.getChildren().add(_latitude);
 
@@ -94,6 +90,10 @@ public class TextPanel implements GPSListener, DeviceListener
     _speed = new Text("[xxx.xx km/h]");
     gpsData.getChildren().add(_speed);
     _speedThreshold = new Threshold(_speed, 160, 140);
+
+    _time = new Text("[hh:mm:ss]");
+    deviceData.getChildren().add(_time);
+    _timeThreshold = new Threshold(_time, 60, 30);
 
     _temperature = new Text("[xx.x C°]");
     deviceData.getChildren().add(_temperature);
