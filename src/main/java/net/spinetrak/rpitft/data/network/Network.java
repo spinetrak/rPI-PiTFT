@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -82,7 +82,7 @@ public class Network implements Event
   {
     try
     {
-      final Process process = Runtime.getRuntime().exec("ping -c 1 www.google.com");
+      final Process process = Runtime.getRuntime().exec("nc -w 1 -z google.com 80");
       int returnVal = process.waitFor();
       return (returnVal == 0);
     }
