@@ -38,6 +38,7 @@ import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.listeners.NetworkListener;
 import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
+import net.spinetrak.rpitft.data.streams.logger.InitialStateStream;
 
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
@@ -46,6 +47,7 @@ public class ButtonPanel implements NetworkListener
 {
   private final HBox _bottom;
   private final Text _statusText;
+  private Button _streamToggleButton;
 
   public ButtonPanel()
   {
@@ -56,9 +58,16 @@ public class ButtonPanel implements NetworkListener
 
     final HBox statusPanel = new HBox();
     statusPanel.setAlignment(Pos.CENTER_LEFT);
+
     _statusText = new Text("");
     statusPanel.getChildren().add(_statusText);
+
     _bottom.getChildren().add(statusPanel);
+
+    final Button stream = getStreamToggleButton();
+    stream.setPrefSize(15, 15);
+    stream.setMaxHeight(15);
+    _bottom.getChildren().add(stream);
 
     final Button exit = getExitButton();
     exit.setPrefSize(15, 15);
@@ -93,7 +102,6 @@ public class ButtonPanel implements NetworkListener
   {
     return _bottom;
   }
-
 
   @Override
   public void handleNetworkData(final Network network_)
@@ -159,7 +167,6 @@ public class ButtonPanel implements NetworkListener
     return nmea;
   }
 
-
   private Button getRestartButton()
   {
     final Image restartImg = new Image(getClass().getResourceAsStream("/restart.png"));
@@ -188,5 +195,27 @@ public class ButtonPanel implements NetworkListener
       }
     });
     return shutdown;
+  }
+
+  private Button getStreamToggleButton()
+  {
+    final Image streamOnImg = new Image(getClass().getResourceAsStream("/streamOn.png"));
+    final Image streamOffImg = new Image(getClass().getResourceAsStream("/streamOff.png"));
+    final Button stream = new Button();
+
+    final boolean onStart = InitialStateStream.getInstance().isStreamingEnabled();
+    stream.setGraphic(new ImageView((onStart) ? streamOnImg : streamOffImg));
+
+    stream.setOnKeyPressed(event_ -> {
+      if (event_.getCode().equals(KeyCode.ENTER))
+      {
+        final boolean onNow = InitialStateStream.getInstance().isStreamingEnabled();
+        InitialStateStream.getInstance().setStreamingEnabled(!onNow);
+        final boolean onThen = InitialStateStream.getInstance().isStreamingEnabled();
+        stream.setGraphic(new ImageView((onThen) ? streamOnImg : streamOffImg));
+        stream.getGraphic();
+      }
+    });
+    return stream;
   }
 }

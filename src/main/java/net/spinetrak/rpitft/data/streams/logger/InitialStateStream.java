@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,11 +48,13 @@ public class InitialStateStream implements GPSListener, DeviceListener
 {
   private final static Logger LOGGER = LoggerFactory.getLogger(
     "net.spinetrak.rpitft.data.streams.logger.InitialStateStream");
+  private static InitialStateStream _instance;
   final private API _account;
   final private Bucket _bucket;
   private final LinkedBlockingQueue<Event> _queue = new LinkedBlockingQueue<>();
+  private boolean _isStreamingEnabled = true;
 
-  public InitialStateStream()
+  private InitialStateStream()
   {
     _bucket = new Bucket("spinetrak-2016-12-28", "spinetrak");
     _account = new API(System.getProperty("initialstatekey"), 5);
@@ -72,6 +74,15 @@ public class InitialStateStream implements GPSListener, DeviceListener
     networkCheckerThread.start();
   }
 
+  public static InitialStateStream getInstance()
+  {
+    if (_instance == null)
+    {
+      _instance = new InitialStateStream();
+    }
+    return _instance;
+  }
+
   @Override
   public void handleDeviceData(final Device device_)
   {
@@ -84,6 +95,15 @@ public class InitialStateStream implements GPSListener, DeviceListener
     _queue.add(gps_);
   }
 
+  public boolean isStreamingEnabled()
+  {
+    return _isStreamingEnabled;
+  }
+
+  public void setStreamingEnabled(final boolean streamingEnabled_)
+  {
+    _isStreamingEnabled = streamingEnabled_;
+  }
 
   @Override
   public String toString()
@@ -114,11 +134,18 @@ public class InitialStateStream implements GPSListener, DeviceListener
         data.add(event);
       }
 
-      final Data[] avgData = getAverages(data);
-
-      if (avgData != null)
+      if (_isStreamingEnabled)
       {
-        publish(avgData);
+        final Data[] avgData = getAverages(data);
+
+        if (avgData != null)
+        {
+          publish(avgData);
+        }
+      }
+      else
+      {
+        data.clear();
       }
     }
 
@@ -226,25 +253,6 @@ public class InitialStateStream implements GPSListener, DeviceListener
       {
         LOGGER.error(ex_.getMessage());
       }
-
-      /*
-      for (final Data data : data_)
-      {
-        _account.createData(_bucket, data);
-
-        try
-        {
-          synchronized (_account)
-          {
-            _account.wait(1300);
-          }
-        }
-        catch (final InterruptedException ex_)
-        {
-          LOGGER.error(ex_.getMessage());
-        }
-      }
-      */
     }
   }
 
