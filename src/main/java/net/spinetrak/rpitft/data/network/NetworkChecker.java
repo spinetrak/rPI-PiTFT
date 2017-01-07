@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ public class NetworkChecker implements Runnable
     {
       try
       {
-        final Network network = new Network();
+        final Network network = new Network(null);
         Dispatcher.getInstance().getQueue().add(network);
         Thread.sleep(15000);
       }

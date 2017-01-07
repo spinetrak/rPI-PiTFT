@@ -106,16 +106,29 @@ public class ButtonPanel implements NetworkListener
   @Override
   public void handleNetworkData(final Network network_)
   {
+    final StringBuilder statusText = new StringBuilder();
+
+    final Network.Hotspot hotspot = network_.getHotspot();
+    if (hotspot.isConnected())
+    {
+      statusText.append(Formatter.formatHotspot(hotspot.getBatteryPercent(), hotspot.getTotalDataVolume()));
+    }
+
+
     final String status = network_.getMessage();
     final boolean isUp = network_.isUp();
     if (status.length() > 30)
     {
-      _statusText.setText(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
+      //_statusText.setText(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
+      statusText.append(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
     }
     else
     {
-      _statusText.setText(Formatter.formatNetwork(status, isUp));
+      //_statusText.setText(Formatter.formatNetwork(status, isUp));
+      statusText.append(Formatter.formatNetwork(status, isUp));
     }
+
+    _statusText.setText(statusText.toString());
   }
 
   private Button getExitButton()

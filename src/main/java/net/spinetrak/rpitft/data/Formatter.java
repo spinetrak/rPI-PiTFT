@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.data;
 
+import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -53,6 +54,11 @@ public class Formatter
   public static String formatHD(final float disk_, final boolean with_)
   {
     return with_ ? String.format("[%.2f%% hd]", disk_) : String.format("%.2f", disk_);
+  }
+
+  public static String formatHotspot(final float batteryPercent_, final long totalDataVolume_)
+  {
+    return "[" + String.format("%.2f%%", batteryPercent_) + "|" + formatBytes(totalDataVolume_) + "]";
   }
 
   public static String formatISO8601Timestamp(final Date date_)
@@ -102,5 +108,10 @@ public class Formatter
     BigDecimal bd = new BigDecimal(Float.toString(number_));
     bd = bd.setScale(decimalPlaces_, BigDecimal.ROUND_HALF_UP);
     return bd.floatValue();
+  }
+
+  private static String formatBytes(final long totalDataVolume_)
+  {
+    return FileUtils.byteCountToDisplaySize(totalDataVolume_);
   }
 }

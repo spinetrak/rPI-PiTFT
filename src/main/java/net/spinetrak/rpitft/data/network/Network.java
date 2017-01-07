@@ -31,19 +31,20 @@ import java.io.IOException;
 
 public class Network implements Event
 {
+  private final Hotspot _hotspot;
+  private final boolean _isUp;
   private final String _message;
-  private boolean _isUp;
-
-  Network()
-  {
-    _isUp = isInternetReachable();
-    _message = getLocalNetworkInfo();
-  }
 
   public Network(final String message_)
   {
     _isUp = isInternetReachable();
-    _message = message_;
+    _message = (null == message_) ? getLocalNetworkInfo() : message_;
+    _hotspot = new Hotspot();
+  }
+
+  public Hotspot getHotspot()
+  {
+    return _hotspot;
   }
 
   public String getMessage()
@@ -55,7 +56,6 @@ public class Network implements Event
   {
     return _isUp;
   }
-
 
   private String getLocalNetworkInfo()
   {
@@ -85,5 +85,59 @@ public class Network implements Event
       //ignore
     }
     return false;
+  }
+
+  public class Hotspot
+  {
+    private final float _batteryPercent;
+    private final boolean _isConnected;
+    private final long _totalDataVolume;
+
+    Hotspot()
+    {
+      _isConnected = initReachable();
+      _batteryPercent = _isConnected ? initBattery() : 0.0f;
+      _totalDataVolume = _isConnected ? initDataVolume() : 0;
+    }
+
+    public float getBatteryPercent()
+    {
+      return _batteryPercent;
+    }
+
+    public long getTotalDataVolume()
+    {
+      return _totalDataVolume;
+    }
+
+    public boolean isConnected()
+    {
+      return _isConnected;
+    }
+
+    private float initBattery()
+    {
+      return 0;
+    }
+
+    private long initDataVolume()
+    {
+      return 0;
+    }
+
+    private boolean initReachable()
+    {
+      try
+      {
+        final Process process = Runtime.getRuntime().exec("nc -w 1 -z 192.168.8.1 80");
+        int returnVal = process.waitFor();
+        return (returnVal == 0);
+      }
+      catch (final IOException | InterruptedException ex_)
+      {
+        //ignore
+      }
+      return false;
+    }
   }
 }
