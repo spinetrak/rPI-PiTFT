@@ -24,7 +24,7 @@
 
 package net.spinetrak.rpitft.data.listeners;
 
-import net.spinetrak.rpitft.data.network.Hotspot;
+import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 
 public interface HotspotListener extends EventListener
 {

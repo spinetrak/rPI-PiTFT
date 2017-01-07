@@ -22,60 +22,35 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.network;
+package net.spinetrak.rpitft.data.network.hotspot;
 
-import net.spinetrak.rpitft.data.events.Event;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-import java.io.IOException;
-
-public class Hotspot implements Event
+@JacksonXmlRootElement(localName = "response")
+public class HotspotTraffic
 {
-  private final boolean _isConnected;
-  private HotspotStatus _status = new HotspotStatus();
-  private HotspotTraffic _traffic = new HotspotTraffic();
+  @JacksonXmlProperty
+  private long CurrentConnectTime;
+  @JacksonXmlProperty
+  private long CurrentDownload;
+  @JacksonXmlProperty
+  private long CurrentDownloadRate;
+  @JacksonXmlProperty
+  private long CurrentUpload;
+  @JacksonXmlProperty
+  private long CurrentUploadRate;
+  @JacksonXmlProperty
+  private long TotalConnectTime;
+  @JacksonXmlProperty
+  private long TotalDownload;
+  @JacksonXmlProperty
+  private long TotalUpload;
+  @JacksonXmlProperty
+  private long showtraffic;
 
-  Hotspot()
+  public long getTotalDataVolume()
   {
-    _isConnected = initReachable();
-  }
-
-  void setStatus(final HotspotStatus status_)
-  {
-    _status = status_;
-  }
-
-  void setTraffic(final HotspotTraffic traffic_)
-  {
-    _traffic = traffic_;
-  }
-
-  public HotspotStatus getStatus()
-  {
-    return _status;
-  }
-
-  public HotspotTraffic getTraffic()
-  {
-    return _traffic;
-  }
-
-  public boolean isConnected()
-  {
-    return _isConnected;
-  }
-
-  private boolean initReachable()
-  {
-    try
-    {
-      final Process process = Runtime.getRuntime().exec("nc -w 1 -z 192.168.8.1 80");
-      int returnVal = process.waitFor();
-      return (returnVal == 0);
-    }
-    catch (final IOException | InterruptedException ex_)
-    {
-      //ignore
-    }
-    return false;
+    return TotalDownload + TotalUpload;
   }
 }

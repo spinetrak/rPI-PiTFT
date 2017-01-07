@@ -37,8 +37,8 @@ import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.listeners.HotspotListener;
 import net.spinetrak.rpitft.data.listeners.NetworkListener;
-import net.spinetrak.rpitft.data.network.Hotspot;
 import net.spinetrak.rpitft.data.network.Network;
+import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStream;
 

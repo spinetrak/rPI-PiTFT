@@ -24,7 +24,6 @@
 
 package net.spinetrak.rpitft.data;
 
-import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -56,9 +55,9 @@ public class Formatter
     return with_ ? String.format("[%.2f%% hd]", disk_) : String.format("%.2f", disk_);
   }
 
-  public static String formatHotspot(final float batteryPercent_, final long totalDataVolume_)
+  public static String formatHotspot(final int batteryPercent_, final long totalDataVolume_)
   {
-    return "[" + String.format("%.2f%%", batteryPercent_) + "|" + formatBytes(totalDataVolume_) + "]";
+    return "[" + String.format("%d%%", batteryPercent_) + "|" + formatBytes(totalDataVolume_, true) + "]";
   }
 
   public static String formatISO8601Timestamp(final Date date_)
@@ -110,8 +109,15 @@ public class Formatter
     return bd.floatValue();
   }
 
-  private static String formatBytes(final long totalDataVolume_)
+  private static String formatBytes(final long size_, final boolean si_)
   {
-    return FileUtils.byteCountToDisplaySize(totalDataVolume_);
+    int unit = si_ ? 1000 : 1024;
+    if (size_ < unit)
+    {
+      return size_ + " B";
+    }
+    int exp = (int) (Math.log(size_) / Math.log(unit));
+    String pre = (si_ ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si_ ? "" : "i");
+    return String.format("%.1f %sB", size_ / Math.pow(unit, exp), pre);
   }
 }
