@@ -41,7 +41,6 @@ import org.joda.time.DateTime;
 
 import static net.spinetrak.rpitft.data.Formatter.formatLatitude;
 import static net.spinetrak.rpitft.data.Formatter.formatLongitude;
-import static org.joda.time.DateTimeZone.UTC;
 
 public class TextPanel implements GPSListener, DeviceListener
 {
@@ -146,7 +145,7 @@ public class TextPanel implements GPSListener, DeviceListener
     {
       return 60;
     }
-    final int nowSeconds = (int) ((new DateTime(UTC).getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
+    final int nowSeconds = (int) ((new DateTime().getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
     final int timeSeconds = (int) ((time_.getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
     if (nowSeconds < timeSeconds)
     {

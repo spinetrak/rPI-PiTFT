@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import net.spinetrak.rpitft.data.Dispatcher;
+import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.listeners.NetworkListener;
 import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
@@ -97,7 +98,16 @@ public class ButtonPanel implements NetworkListener
   @Override
   public void handleNetworkData(final Network network_)
   {
-    _statusText.setText(network_.getMessage());
+    final String status = network_.getMessage();
+    final boolean isUp = network_.isUp();
+    if (status.length() > 30)
+    {
+      _statusText.setText(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
+    }
+    else
+    {
+      _statusText.setText(Formatter.formatNetwork(status, isUp));
+    }
   }
 
   private Button getExitButton()

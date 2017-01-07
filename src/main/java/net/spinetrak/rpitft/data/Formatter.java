@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,6 +74,12 @@ public class Formatter
   public static String formatMEM(final float memory_, final boolean with_)
   {
     return with_ ? String.format("[%.2f%% mem]", memory_) : String.format("%.2f", memory_);
+  }
+
+  public static String formatNetwork(final String message_, final boolean isUp_)
+  {
+    final String isUp = isUp_ ? "UP" : "DOWN";
+    return "[" + isUp + "/" + message_ + "]";
   }
 
   public static String formatSpeed(final double speed_, final boolean with_)

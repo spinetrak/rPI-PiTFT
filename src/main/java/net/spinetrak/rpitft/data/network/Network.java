@@ -43,7 +43,7 @@ public class Network implements Event
   public Network(final String message_)
   {
     _isUp = isInternetReachable();
-    _message = formatMessage(message_);
+    _message = message_;
   }
 
   public String getMessage()
@@ -56,11 +56,6 @@ public class Network implements Event
     return _isUp;
   }
 
-  private String formatMessage(final String message_)
-  {
-    final String isUp = _isUp ? "UP" : "DOWN";
-    return "[" + isUp + "/" + message_ + "]";
-  }
 
   private String getLocalNetworkInfo()
   {
@@ -68,12 +63,11 @@ public class Network implements Event
     try
     {
       final String[] addresses = NetworkInfo.getIPAddresses();
-      final String address = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
-      status = formatMessage(address);
+      status = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
     }
     catch (final IOException | InterruptedException ex_)
     {
-      status = formatMessage(ex_.getMessage());
+      status = ex_.getMessage();
     }
     return status;
   }
