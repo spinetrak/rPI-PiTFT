@@ -35,7 +35,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Formatter;
+import net.spinetrak.rpitft.data.listeners.HotspotListener;
 import net.spinetrak.rpitft.data.listeners.NetworkListener;
+import net.spinetrak.rpitft.data.network.Hotspot;
 import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStream;
@@ -43,11 +45,11 @@ import net.spinetrak.rpitft.data.streams.logger.InitialStateStream;
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
 
-public class ButtonPanel implements NetworkListener
+public class ButtonPanel implements NetworkListener, HotspotListener
 {
   private final HBox _bottom;
-  private final Text _statusText;
-  private Button _streamToggleButton;
+  private final Text _hotspotText;
+  private final Text _networkText;
 
   public ButtonPanel()
   {
@@ -59,8 +61,11 @@ public class ButtonPanel implements NetworkListener
     final HBox statusPanel = new HBox();
     statusPanel.setAlignment(Pos.CENTER_LEFT);
 
-    _statusText = new Text("");
-    statusPanel.getChildren().add(_statusText);
+    _hotspotText = new Text("");
+    statusPanel.getChildren().add(_hotspotText);
+
+    _networkText = new Text("");
+    statusPanel.getChildren().add(_networkText);
 
     _bottom.getChildren().add(statusPanel);
 
@@ -104,31 +109,34 @@ public class ButtonPanel implements NetworkListener
   }
 
   @Override
+  public void handleHotspotData(final Hotspot hotspot_)
+  {
+    if (hotspot_.isConnected())
+    {
+      _hotspotText.setText(
+        Formatter.formatHotspot(hotspot_.getStatus().getBatteryPercent(), hotspot_.getTraffic().getTotalDataVolume()));
+    }
+  }
+
+  @Override
   public void handleNetworkData(final Network network_)
   {
     final StringBuilder statusText = new StringBuilder();
-
-    final Network.Hotspot hotspot = network_.getHotspot();
-    if (hotspot.isConnected())
-    {
-      statusText.append(Formatter.formatHotspot(hotspot.getBatteryPercent(), hotspot.getTotalDataVolume()));
-    }
-
 
     final String status = network_.getMessage();
     final boolean isUp = network_.isUp();
     if (status.length() > 30)
     {
-      //_statusText.setText(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
+      //_networkText.setText(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
       statusText.append(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
     }
     else
     {
-      //_statusText.setText(Formatter.formatNetwork(status, isUp));
+      //_networkText.setText(Formatter.formatNetwork(status, isUp));
       statusText.append(Formatter.formatNetwork(status, isUp));
     }
 
-    _statusText.setText(statusText.toString());
+    _networkText.setText(statusText.toString());
   }
 
   private Button getExitButton()

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,10 @@ package net.spinetrak.rpitft.data;
 
 import javafx.animation.AnimationTimer;
 import net.spinetrak.rpitft.data.events.Event;
-import net.spinetrak.rpitft.data.listeners.DeviceListener;
-import net.spinetrak.rpitft.data.listeners.EventListener;
-import net.spinetrak.rpitft.data.listeners.GPSListener;
-import net.spinetrak.rpitft.data.listeners.NetworkListener;
+import net.spinetrak.rpitft.data.listeners.*;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.location.NmeaLogger;
+import net.spinetrak.rpitft.data.network.Hotspot;
 import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.data.raspberry.DeviceClient;
@@ -85,6 +83,10 @@ public class Dispatcher
       if (event_ instanceof Network && listener instanceof NetworkListener)
       {
         ((NetworkListener) listener).handleNetworkData((Network) event_);
+      }
+      if (event_ instanceof Hotspot && listener instanceof HotspotListener)
+      {
+        ((HotspotListener) listener).handleHotspotData((Hotspot) event_);
       }
     }
   }

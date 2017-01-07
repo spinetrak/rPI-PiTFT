@@ -33,6 +33,7 @@ import net.spinetrak.rpitft.data.events.Event;
 import net.spinetrak.rpitft.data.listeners.DeviceListener;
 import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.network.HotspotChecker;
 import net.spinetrak.rpitft.data.network.NetworkChecker;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import org.slf4j.Logger;
@@ -72,6 +73,10 @@ public class InitialStateStream implements GPSListener, DeviceListener
     final NetworkChecker networkChecker = new NetworkChecker();
     final Thread networkCheckerThread = new Thread(networkChecker);
     networkCheckerThread.start();
+
+    final HotspotChecker hotspotChecker = new HotspotChecker();
+    final Thread hotspotCheckerThread = new Thread(hotspotChecker);
+    hotspotCheckerThread.start();
   }
 
   public static InitialStateStream getInstance()

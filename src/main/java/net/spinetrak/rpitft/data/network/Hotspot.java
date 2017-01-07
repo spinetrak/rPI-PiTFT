@@ -24,51 +24,51 @@
 
 package net.spinetrak.rpitft.data.network;
 
-import com.pi4j.system.NetworkInfo;
 import net.spinetrak.rpitft.data.events.Event;
 
 import java.io.IOException;
 
-public class Network implements Event
+public class Hotspot implements Event
 {
-  private final boolean _isUp;
-  private final String _message;
+  private final boolean _isConnected;
+  private HotspotStatus _status = new HotspotStatus();
+  private HotspotTraffic _traffic = new HotspotTraffic();
 
-  public Network(final String message_)
+  Hotspot()
   {
-    _isUp = isInternetReachable();
-    _message = (null == message_) ? getLocalNetworkInfo() : message_;
-  }
-  public String getMessage()
-  {
-    return _message;
+    _isConnected = initReachable();
   }
 
-  public boolean isUp()
+  void setStatus(final HotspotStatus status_)
   {
-    return _isUp;
+    _status = status_;
   }
 
-  private String getLocalNetworkInfo()
+  void setTraffic(final HotspotTraffic traffic_)
   {
-    String status;
+    _traffic = traffic_;
+  }
+
+  public HotspotStatus getStatus()
+  {
+    return _status;
+  }
+
+  public HotspotTraffic getTraffic()
+  {
+    return _traffic;
+  }
+
+  public boolean isConnected()
+  {
+    return _isConnected;
+  }
+
+  private boolean initReachable()
+  {
     try
     {
-      final String[] addresses = NetworkInfo.getIPAddresses();
-      status = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
-    }
-    catch (final IOException | InterruptedException ex_)
-    {
-      status = ex_.getMessage();
-    }
-    return status;
-  }
-
-  private boolean isInternetReachable()
-  {
-    try
-    {
-      final Process process = Runtime.getRuntime().exec("nc -w 1 -z google.com 80");
+      final Process process = Runtime.getRuntime().exec("nc -w 1 -z 192.168.8.1 80");
       int returnVal = process.waitFor();
       return (returnVal == 0);
     }

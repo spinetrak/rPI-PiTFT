@@ -24,58 +24,33 @@
 
 package net.spinetrak.rpitft.data.network;
 
-import com.pi4j.system.NetworkInfo;
-import net.spinetrak.rpitft.data.events.Event;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-import java.io.IOException;
-
-public class Network implements Event
+@JacksonXmlRootElement(localName = "response")
+public class HotspotTraffic
 {
-  private final boolean _isUp;
-  private final String _message;
+  @JacksonXmlProperty
+  private long CurrentConnectTime;
+  @JacksonXmlProperty
+  private long CurrentDownload;
+  @JacksonXmlProperty
+  private long CurrentDownloadRate;
+  @JacksonXmlProperty
+  private long CurrentUpload;
+  @JacksonXmlProperty
+  private long CurrentUploadRate;
+  @JacksonXmlProperty
+  private long TotalConnectTime;
+  @JacksonXmlProperty
+  private long TotalDownload;
+  @JacksonXmlProperty
+  private long TotalUpload;
+  @JacksonXmlProperty
+  private long showtraffic;
 
-  public Network(final String message_)
+  public long getTotalDataVolume()
   {
-    _isUp = isInternetReachable();
-    _message = (null == message_) ? getLocalNetworkInfo() : message_;
-  }
-  public String getMessage()
-  {
-    return _message;
-  }
-
-  public boolean isUp()
-  {
-    return _isUp;
-  }
-
-  private String getLocalNetworkInfo()
-  {
-    String status;
-    try
-    {
-      final String[] addresses = NetworkInfo.getIPAddresses();
-      status = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
-    }
-    catch (final IOException | InterruptedException ex_)
-    {
-      status = ex_.getMessage();
-    }
-    return status;
-  }
-
-  private boolean isInternetReachable()
-  {
-    try
-    {
-      final Process process = Runtime.getRuntime().exec("nc -w 1 -z google.com 80");
-      int returnVal = process.waitFor();
-      return (returnVal == 0);
-    }
-    catch (final IOException | InterruptedException ex_)
-    {
-      //ignore
-    }
-    return false;
+    return TotalDownload + TotalUpload;
   }
 }
