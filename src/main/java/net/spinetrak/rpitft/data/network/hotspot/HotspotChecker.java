@@ -73,7 +73,7 @@ public class HotspotChecker implements Runnable
       hotspot.setStatus(status);
 
       Dispatcher.getInstance().getQueue().add(hotspot);
-      Thread.sleep(15000);
+      Thread.sleep(5000);
     }
     catch (final InterruptedException | IOException ex_)
     {
