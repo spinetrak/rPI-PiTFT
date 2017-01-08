@@ -65,7 +65,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
     _hotspotText = new Text("");
     statusPanel.getChildren().add(_hotspotText);
-    _batteryThreshold = new Threshold(_hotspotText, 20, 16);
+    _batteryThreshold = new Threshold(_hotspotText, 16, 20);
 
     _networkText = new Text("");
     statusPanel.getChildren().add(_networkText);
