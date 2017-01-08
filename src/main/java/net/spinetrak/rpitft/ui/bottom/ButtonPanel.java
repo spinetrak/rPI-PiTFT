@@ -52,6 +52,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
   private final HBox _bottom;
   private final Text _hotspotText;
   private final Text _networkText;
+  private final Threshold _networkThreshold;
 
   public ButtonPanel()
   {
@@ -69,6 +70,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
     _networkText = new Text("");
     statusPanel.getChildren().add(_networkText);
+    _networkThreshold = new Threshold(_networkText, 100, 50);
 
     _bottom.getChildren().add(statusPanel);
 
@@ -133,7 +135,8 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
     final String status = network_.getMessage();
     final boolean isUp = network_.isUp();
-    if (status.length() > 30)
+    final int statusLength = status.length();
+    if (statusLength > 30)
     {
       statusText.append(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
     }
@@ -142,6 +145,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
       statusText.append(Formatter.formatNetwork(status, isUp));
     }
 
+    _networkThreshold.setColor(isUp ? (statusLength > 30 ? 70 : 0) : 100);
     _networkText.setText(statusText.toString());
   }
 
