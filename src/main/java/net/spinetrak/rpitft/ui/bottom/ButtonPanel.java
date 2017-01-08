@@ -41,12 +41,14 @@ import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStream;
+import net.spinetrak.rpitft.ui.Threshold;
 
 import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
 
 public class ButtonPanel implements NetworkListener, HotspotListener
 {
+  private final Threshold _batteryThreshold;
   private final HBox _bottom;
   private final Text _hotspotText;
   private final Text _networkText;
@@ -63,6 +65,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
     _hotspotText = new Text("");
     statusPanel.getChildren().add(_hotspotText);
+    _batteryThreshold = new Threshold(_hotspotText, 20, 16);
 
     _networkText = new Text("");
     statusPanel.getChildren().add(_networkText);
@@ -113,8 +116,13 @@ public class ButtonPanel implements NetworkListener, HotspotListener
   {
     if (hotspot_.isConnected())
     {
-      _hotspotText.setText(
-        Formatter.formatHotspot(hotspot_.getStatus().getBatteryPercent(), hotspot_.getTraffic().getTotalDataVolume()));
+      final int percent = hotspot_.getStatus().getBatteryPercent();
+      _batteryThreshold.setColor(percent);
+      if (percent <= 15)
+      {
+        exit();
+      }
+      _hotspotText.setText(Formatter.formatHotspot(percent, hotspot_.getTraffic().getTotalDataVolume()));
     }
   }
 
@@ -127,12 +135,10 @@ public class ButtonPanel implements NetworkListener, HotspotListener
     final boolean isUp = network_.isUp();
     if (status.length() > 30)
     {
-      //_networkText.setText(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
       statusText.append(Formatter.formatNetwork(status.substring(0, 28).concat("..."), isUp));
     }
     else
     {
-      //_networkText.setText(Formatter.formatNetwork(status, isUp));
       statusText.append(Formatter.formatNetwork(status, isUp));
     }
 
@@ -149,7 +155,6 @@ public class ButtonPanel implements NetworkListener, HotspotListener
       if (event_.getCode().equals(KeyCode.ENTER))
       {
         exit();
-        System.exit(0);
       }
     });
     return exit;
@@ -182,7 +187,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
         GPX_NEW.execute(new SingleLineStream());
         NMEA_BACKUP.execute(new SingleLineStream());
         RESTART.execute(new SingleLineStream());
-        System.exit(0);
+        exit();
       }
     });
     return nmea;
@@ -197,7 +202,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
       if (event_.getCode().equals(KeyCode.ENTER))
       {
         RESTART.execute(new SingleLineStream());
-        System.exit(0);
+        exit();
       }
     });
     return restart;
@@ -212,7 +217,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
       if (event_.getCode().equals(KeyCode.ENTER))
       {
         SHUTDOWN.execute(new SingleLineStream());
-        System.exit(0);
+        exit();
       }
     });
     return shutdown;
