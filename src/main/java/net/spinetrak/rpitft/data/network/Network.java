@@ -55,7 +55,7 @@ public class Network implements Event
     try
     {
       final String[] addresses = NetworkInfo.getIPAddresses();
-      status = addresses != null ? addresses[0] : NetworkInfo.getIPAddress();
+      status = ((addresses != null) && (addresses.length >= 1)) ? addresses[0] : NetworkInfo.getIPAddress();
     }
     catch (final IOException | InterruptedException ex_)
     {
