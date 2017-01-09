@@ -32,18 +32,24 @@ import javafx.scene.layout.VBox;
 import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.listeners.DeviceListener;
 import net.spinetrak.rpitft.data.listeners.GPSListener;
+import net.spinetrak.rpitft.data.listeners.HotspotListener;
 import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.ui.Threshold;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TabPanel implements GPSListener, DeviceListener
+public class TabPanel implements GPSListener, DeviceListener, HotspotListener
 {
   private final SingleLineChart _altitudeChart;
+  private final SingleLineChart _batteryChart;
+  private final Threshold _batteryThreshold;
   private final SingleLineChart _cpuChart;
   private final Threshold _cpuThreshold;
+  private final SingleLineChart _dataVolumeChart;
+  private final Threshold _dataVolumeThreshold;
   private final ExecutorService _executor;
   private final Tab _gaugesTab;
   private final GaugesView _gaugesView;
@@ -66,32 +72,42 @@ public class TabPanel implements GPSListener, DeviceListener
     _gaugesView = new GaugesView();
     _gaugesTab.setContent(_gaugesView.getPanel());
 
-    final Tab altTab = new Tab("altitude");
-    _altitudeChart = new SingleLineChart();
-    altTab.setContent(_altitudeChart.getChart());
-
     final Tab cpuTab = new Tab("cpu");
     _cpuChart = new SingleLineChart();
     cpuTab.setContent(_cpuChart.getChart());
     _cpuThreshold = new Threshold(_cpuChart.getChart(), 90, 80);
 
-    final Tab memTab = new Tab("memory");
+    final Tab memTab = new Tab("mem");
     _memoryChart = new SingleLineChart();
     memTab.setContent(_memoryChart.getChart());
     _memoryThreshold = new Threshold(_memoryChart.getChart(), 90, 80);
 
-    final Tab temTab = new Tab("temperature");
+    final Tab temTab = new Tab("tmp");
     _temperatureChart = new SingleLineChart();
     temTab.setContent(_temperatureChart.getChart());
     _temperatureThreshold = new Threshold(_temperatureChart.getChart(), 85, 75);
 
-    final Tab mapTab = new Tab("location");
-    _gpsLocationView = new GPSLocationView();
-    mapTab.setContent(_gpsLocationView.getPane());
+    final Tab batTab = new Tab("bat");
+    _batteryChart = new SingleLineChart();
+    batTab.setContent(_batteryChart.getChart());
+    _batteryThreshold = new Threshold(_batteryChart.getChart(), 25, 30);
 
-    final Tab speedTab = new Tab("speed");
+    final Tab datTab = new Tab("dat");
+    _dataVolumeChart = new SingleLineChart();
+    batTab.setContent(_dataVolumeChart.getChart());
+    _dataVolumeThreshold = new Threshold(_dataVolumeChart.getChart(), 25, 30);
+
+    final Tab altTab = new Tab("alt");
+    _altitudeChart = new SingleLineChart();
+    altTab.setContent(_altitudeChart.getChart());
+
+    final Tab speedTab = new Tab("kmh");
     _speedChart = new SingleLineChart();
     speedTab.setContent(_speedChart.getChart());
+
+    final Tab mapTab = new Tab("loc");
+    _gpsLocationView = new GPSLocationView();
+    mapTab.setContent(_gpsLocationView.getPane());
 
 
     _tabPane = new TabPane();
@@ -152,6 +168,18 @@ public class TabPanel implements GPSListener, DeviceListener
     {
       _speedChart.addData((float) gps_.getSpeed());
     }
+  }
+
+  @Override
+  public void handleHotspotData(final Hotspot hotspot_)
+  {
+    final int battery = hotspot_.getStatus().getBatteryPercent();
+    _batteryChart.addData(battery);
+    _batteryThreshold.setColor(battery);
+
+    final long dataVolume = hotspot_.getTraffic().getTotalDataVolume();
+    _dataVolumeChart.addData(dataVolume);
+    _dataVolumeThreshold.setColor(dataVolume);
   }
 
   private class TransitionTabs implements Runnable

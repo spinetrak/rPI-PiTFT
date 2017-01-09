@@ -32,8 +32,10 @@ import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.events.Event;
 import net.spinetrak.rpitft.data.listeners.DeviceListener;
 import net.spinetrak.rpitft.data.listeners.GPSListener;
+import net.spinetrak.rpitft.data.listeners.HotspotListener;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.network.NetworkChecker;
+import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.network.hotspot.HotspotChecker;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import org.slf4j.Logger;
@@ -45,7 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class InitialStateStream implements GPSListener, DeviceListener
+public class InitialStateStream implements GPSListener, DeviceListener, HotspotListener
 {
   private final static Logger LOGGER = LoggerFactory.getLogger(
     "net.spinetrak.rpitft.data.streams.logger.InitialStateStream");
@@ -100,6 +102,12 @@ public class InitialStateStream implements GPSListener, DeviceListener
     _queue.add(gps_);
   }
 
+  @Override
+  public void handleHotspotData(final Hotspot hotspot_)
+  {
+    _queue.add(hotspot_);
+  }
+
   public boolean isStreamingEnabled()
   {
     return _isStreamingEnabled;
@@ -141,7 +149,7 @@ public class InitialStateStream implements GPSListener, DeviceListener
 
       if (_isStreamingEnabled)
       {
-        final Data[] avgData = getAverages(data);
+        final Data[] avgData = getAverage(data);
 
         if (avgData != null)
         {
@@ -152,6 +160,22 @@ public class InitialStateStream implements GPSListener, DeviceListener
       {
         data.clear();
       }
+    }
+
+    private Data[] getAverage(final List<Event> data_)
+    {
+      final List<Data<Serializable>> data = new ArrayList<>();
+      final String iso8601 = Formatter.formatISO8601Timestamp(new Date());
+
+      data.addAll(getAverageGPSData(data_, iso8601));
+      data.addAll(getAverageDeviceData(data_, iso8601));
+      data.addAll(getAverageHotspotData(data_, iso8601));
+
+      if (data.size() > 0)
+      {
+        return data.toArray(new Data[data.size()]);
+      }
+      return null;
     }
 
     private List<Data<java.io.Serializable>> getAverageDeviceData(final List<Event> deviceData_,
@@ -228,19 +252,30 @@ public class InitialStateStream implements GPSListener, DeviceListener
       return data;
     }
 
-    private Data[] getAverages(final List<Event> data_)
+    private List<Data<java.io.Serializable>> getAverageHotspotData(final List<Event> hotspotData_,
+                                                                   final String timestamp_)
     {
-      final List<Data<Serializable>> data = new ArrayList<>();
-      final String iso8601 = Formatter.formatISO8601Timestamp(new Date());
+      final List<Data<java.io.Serializable>> data = new ArrayList<>();
+      float batteryPercent = 0.0f;
+      float dataVolume = 0.0f;
+      int hotspots = 0;
 
-      data.addAll(getAverageGPSData(data_, iso8601));
-      data.addAll(getAverageDeviceData(data_, iso8601));
-
-      if (data.size() > 0)
+      for (final Event event : hotspotData_)
       {
-        return data.toArray(new Data[data.size()]);
+        if (event instanceof Hotspot)
+        {
+          final Hotspot hotspot = (Hotspot) event;
+          batteryPercent += hotspot.getStatus().getBatteryPercent();
+          dataVolume += hotspot.getTraffic().getTotalDataVolume();
+          hotspots++;
+        }
       }
-      return null;
+      if (hotspots > 0)
+      {
+        data.add(new Data<>("HotspotBattery", Formatter.round(batteryPercent / hotspots, 2), timestamp_));
+        data.add(new Data<>("HotspotData", Formatter.round(dataVolume / hotspots, 2), timestamp_));
+      }
+      return data;
     }
 
     private void publish(final Data[] data_)

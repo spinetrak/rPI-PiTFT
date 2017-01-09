@@ -66,7 +66,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
     _hotspotText = new Text("");
     statusPanel.getChildren().add(_hotspotText);
-    _batteryThreshold = new Threshold(_hotspotText, 16, 20);
+    _batteryThreshold = new Threshold(_hotspotText, 25, 30);
 
     _networkText = new Text("");
     statusPanel.getChildren().add(_networkText);
@@ -120,10 +120,6 @@ public class ButtonPanel implements NetworkListener, HotspotListener
     {
       final int percent = hotspot_.getStatus().getBatteryPercent();
       _batteryThreshold.setColor(percent);
-      if (percent <= 15)
-      {
-        exit();
-      }
       _hotspotText.setText(Formatter.formatHotspot(percent, hotspot_.getTraffic().getTotalDataVolume()));
     }
   }

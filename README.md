@@ -7,6 +7,7 @@ Hardware Components:
 - [Raspberry Pi 3 Model B] (https://www.raspberrypi.org/products/raspberry-pi-3-model-b/)
 - [3.5" PiTFT] (https://learn.adafruit.com/running-opengl-based-games-and-emulators-on-adafruit-pitft-displays/3-dot-5-pitft)
 - ~~[S.USV] (http://www.s-usv.de/index_en.php)~~ (currently broken, temporarly disabled)
+- [Huawei E5770 4G Hotspot] (http://consumer.huawei.com/en/mobile-broadband/mobile-wifi/features/e5770-en.htm)
 - [GPS] (http://www.navilock.de/produkte/G_62523/merkmale.html?setLanguage=en)
 
 Software Components:
@@ -21,12 +22,14 @@ What does it do?
 - displays various JavaFX linecharts and gauges in a tab panel for various data points and series
   - ~~S.USV backup battery status in a JavaFX linechart~~ 
   - RPi3 cpu / disk / memory / temperature
+  - Hotspot battery status and data volume
   - GPS location (latitude, longitude, altitude)
   - GPS movement (speed, direction)
+- if there is an internet connection, sends all data averaged every few seconds to Initial State for data visualization in the cloud
 - writes local NMEA log of GGA and RMC sentences
 - creates local GPX file from current NMEA log on command
 - backs up local NMEA log on command
-- if there is an internet connection, sends all data averaged every few seconds to Initial State for data visualization in the cloud
+
  
 
 
