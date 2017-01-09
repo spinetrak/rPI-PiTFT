@@ -94,7 +94,7 @@ public class TabPanel implements GPSListener, DeviceListener, HotspotListener
 
     final Tab datTab = new Tab("dat");
     _dataVolumeChart = new SingleLineChart();
-    batTab.setContent(_dataVolumeChart.getChart());
+    datTab.setContent(_dataVolumeChart.getChart());
     _dataVolumeThreshold = new Threshold(_dataVolumeChart.getChart(), 25, 30);
 
     final Tab altTab = new Tab("alt");
@@ -113,7 +113,7 @@ public class TabPanel implements GPSListener, DeviceListener, HotspotListener
     _tabPane = new TabPane();
     _tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-    _tabPane.getTabs().addAll(_gaugesTab, cpuTab, memTab, temTab, altTab, speedTab, mapTab);
+    _tabPane.getTabs().addAll(_gaugesTab, cpuTab, memTab, temTab, batTab, datTab, altTab, speedTab, mapTab);
 
     _executor = Executors.newCachedThreadPool(runnable_ -> {
       final Thread thread = new Thread(runnable_);
