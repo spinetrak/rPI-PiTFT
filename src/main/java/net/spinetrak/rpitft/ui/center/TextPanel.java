@@ -65,6 +65,7 @@ public class TextPanel implements GPSListener, DeviceListener
   private final Text _trackPoints;
   private final Threshold _trackpointsThreshold;
   private final VBox _vbox;
+  private DateTime _lastGPSTimestamp = null;
 
   public TextPanel()
   {
@@ -166,6 +167,11 @@ public class TextPanel implements GPSListener, DeviceListener
 
     _temperature.setText(Formatter.formatTemperature(temperature, true));
     _temperatureThreshold.setColor(temperature);
+
+    /**
+     * check last GPS timestamp in this thread
+     */
+    _timeThreshold.setColor(getTimeDifferenceInSeconds(_lastGPSTimestamp));
   }
 
   @Override
@@ -174,6 +180,8 @@ public class TextPanel implements GPSListener, DeviceListener
     if (gps_.isValidLocation())
     {
       final DateTime time = gps_.getTime();
+      _lastGPSTimestamp = time;
+
       final float latitude = gps_.getLatitude();
       final float longitude = gps_.getLongitude();
       final float altitude = gps_.getAltitude();
@@ -183,7 +191,6 @@ public class TextPanel implements GPSListener, DeviceListener
       {
         _time.setText(String.format("[%s]", time.toString(GPS.DTF)));
       }
-      _timeThreshold.setColor(getTimeDifferenceInSeconds(time));
       _latitude.setText(formatLatitude(latitude));
       _longitude.setText(formatLongitude(longitude));
       _altitude.setText(Formatter.formatAltitude(altitude, true));
