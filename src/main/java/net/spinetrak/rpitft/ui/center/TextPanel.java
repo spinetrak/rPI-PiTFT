@@ -134,12 +134,10 @@ public class TextPanel implements GPSListener, DeviceListener
     {
       return 60;
     }
-    LOGGER.error("GPS time: " + time_.toString());
 
     final int nowSeconds = (int) ((new DateTime().getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
     final int timeSeconds = (int) ((time_.getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
 
-    LOGGER.error("now: " + nowSeconds + "; gps: " + timeSeconds);
     if (nowSeconds < timeSeconds)
     {
       return 60;
