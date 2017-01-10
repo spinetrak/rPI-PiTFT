@@ -38,12 +38,15 @@ import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.ui.Threshold;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static net.spinetrak.rpitft.data.Formatter.formatLatitude;
 import static net.spinetrak.rpitft.data.Formatter.formatLongitude;
 
 public class TextPanel implements GPSListener, DeviceListener
 {
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.ui.center.TextPanel");
   private final Text _altitude;
   private final Text _cpu;
   private final Threshold _cpuThreshold;
@@ -118,21 +121,6 @@ public class TextPanel implements GPSListener, DeviceListener
     Dispatcher.getInstance().addListener(this);
   }
 
-  /*
-  void addData(final Power power_)
-  {
-
-    final float capacity = power_.getCapacity();
-    final float power = power_.getPower();
-
-    _batteryCapacity.setText(String.format("[%.2f%% bat]", capacity));
-    _batteryCapacityThreshold.setColor(capacity);
-
-    _batteryPower.setText(String.format("[%.2f mA]", power));
-    _batteryPowerThreshold.setColor(power);
-  }
-  */
-
 
   Node getPanel()
   {
@@ -145,8 +133,12 @@ public class TextPanel implements GPSListener, DeviceListener
     {
       return 60;
     }
+    LOGGER.error("GPS time: " + time_.toString());
+
     final int nowSeconds = (int) ((new DateTime().getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
     final int timeSeconds = (int) ((time_.getMillis() % (24 * 60 * 60 * 1000L)) / 1000);
+
+    LOGGER.error("now: " + nowSeconds + "; gps: " + timeSeconds);
     if (nowSeconds < timeSeconds)
     {
       return 60;
