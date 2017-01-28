@@ -41,9 +41,9 @@ import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStream;
+import net.spinetrak.rpitft.ui.Main;
 import net.spinetrak.rpitft.ui.Threshold;
 
-import static javafx.application.Platform.exit;
 import static net.spinetrak.rpitft.command.Commands.*;
 
 public class ButtonPanel implements NetworkListener, HotspotListener
@@ -143,6 +143,11 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
     _networkThreshold.setColor(isUp ? (statusLength > 30 ? 70 : 0) : 100);
     _networkText.setText(statusText.toString());
+  }
+
+  private void exit()
+  {
+    Main.exit();
   }
 
   private Button getExitButton()

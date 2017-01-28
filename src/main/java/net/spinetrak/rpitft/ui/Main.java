@@ -25,6 +25,7 @@
 package net.spinetrak.rpitft.ui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -46,11 +47,16 @@ public class Main extends Application
   private ButtonPanel _buttonPanel;
   private TabPanel _tabPanel;
 
+  public static void exit()
+  {
+    Platform.exit();
+    Runtime.getRuntime().exit(0);
+  }
+
   public static void main(String[] args_)
   {
     launch(args_);
   }
-
 
   @Override
   public void start(final Stage stage_)
