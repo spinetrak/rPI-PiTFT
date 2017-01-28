@@ -43,14 +43,20 @@ public class HotspotChecker implements Runnable
   private final String _login = "http://192.168.8.1/html/home.html";
   private final String _status = "http://192.168.8.1/api/monitoring/status";
   private final String _traffic = "http://192.168.8.1/api/monitoring/traffic-statistics";
+  private boolean _stopped = false;
 
   @Override
   public void run()
   {
-    while (true)
+    while (!_stopped)
     {
       get();
     }
+  }
+
+  public void stop()
+  {
+    _stopped = true;
   }
 
   private void get()

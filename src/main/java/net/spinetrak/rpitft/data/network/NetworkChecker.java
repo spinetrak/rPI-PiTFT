@@ -32,11 +32,12 @@ public class NetworkChecker implements Runnable
 {
   private final static Logger LOGGER = LoggerFactory.getLogger(
     "net.spinetrak.rpitft.data.netweok.NetworkChecker");
+  private boolean _stopped = false;
 
   @Override
   public void run()
   {
-    while (true)
+    while (!_stopped)
     {
       try
       {
@@ -49,5 +50,10 @@ public class NetworkChecker implements Runnable
         LOGGER.error(ex_.getMessage());
       }
     }
+  }
+
+  public void stop()
+  {
+    _stopped = true;
   }
 }

@@ -49,7 +49,9 @@ public class Main extends Application
 
   public static void exit()
   {
+    LOGGER.info("Exiting...");
     Platform.exit();
+    LOGGER.info("Platform exited.");
     Runtime.getRuntime().exit(0);
   }
 
@@ -66,7 +68,6 @@ public class Main extends Application
 
     final InitialStateStream iss = InitialStateStream.getInstance();
     LOGGER.info(iss.toString());
-
   }
 
   private void init(final Stage stage_)

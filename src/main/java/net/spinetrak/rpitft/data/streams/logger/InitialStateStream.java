@@ -66,8 +66,6 @@ public class InitialStateStream implements GPSListener, DeviceListener, HotspotL
     Dispatcher.getInstance().addListener(this);
     Dispatcher.getInstance().addListener(this);
 
-    Runtime.getRuntime().addShutdownHook(new Thread(_account::terminate));
-
     final Publisher publisher = new Publisher();
     final Thread publisherThread = new Thread(publisher);
     publisherThread.start();
@@ -79,6 +77,20 @@ public class InitialStateStream implements GPSListener, DeviceListener, HotspotL
     final HotspotChecker hotspotChecker = new HotspotChecker();
     final Thread hotspotCheckerThread = new Thread(hotspotChecker);
     hotspotCheckerThread.start();
+
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      _account.terminate();
+      LOGGER.info("Account terminated.");
+
+      publisher.stop();
+      LOGGER.info("Publisher stopped.");
+
+      networkChecker.stop();
+      LOGGER.info("Network checker stopped.");
+
+      hotspotChecker.stop();
+      LOGGER.info("Hotspot checker stopped.");
+    }));
   }
 
   public static InitialStateStream getInstance()
@@ -129,10 +141,17 @@ public class InitialStateStream implements GPSListener, DeviceListener, HotspotL
 
   private class Publisher implements Runnable
   {
+    private boolean _stopped = false;
+
+    void stop()
+    {
+      _stopped = true;
+    }
+
     @Override
     public void run()
     {
-      while (true)
+      while (!_stopped)
       {
         collectData();
       }
