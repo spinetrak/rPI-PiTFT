@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,14 @@
     -fx-tick-label-font-size: 10px;
 }
 
+
 .tab .tab-label {
     -fx-text-fill: -fx-text-base-color;
     -fx-font-size: 12px;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:selected > .tab-container > .tab-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: red;
 }
