@@ -68,11 +68,11 @@ public class Main extends Application
     stage_.show();
 
     final InitialStateStreamLogger iss = InitialStateStreamLogger.getInstance();
-    LOGGER.info(iss.toString());
+    LOGGER.info("Started logging to " + iss.toString());
 
     final NmeaFileLogger nmeaLogger = new NmeaFileLogger();
     nmeaLogger.start();
-    LOGGER.info("Started logging to file. ");
+    LOGGER.info("Started logging to file.");
   }
 
   private void init(final Stage stage_)
