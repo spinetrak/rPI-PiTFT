@@ -30,6 +30,7 @@ import net.spinetrak.rpitft.data.Dispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
@@ -81,7 +82,7 @@ public class HotspotChecker implements Runnable
       Dispatcher.getInstance().getQueue().add(hotspot);
       Thread.sleep(5000);
     }
-    catch (final InterruptedException | IOException ex_)
+    catch (final InterruptedException | IOException | ProcessingException ex_)
     {
       LOGGER.error(ex_.getMessage());
     }
