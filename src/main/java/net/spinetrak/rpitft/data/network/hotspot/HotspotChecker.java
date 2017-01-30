@@ -64,9 +64,9 @@ public class HotspotChecker implements Runnable
   {
     try
     {
-    final Map<String, NewCookie> cookies = ClientBuilder.newClient().target(_login).request().get().getCookies();
+      final Map<String, NewCookie> cookies = ClientBuilder.newClient().target(_login).request().get().getCookies();
 
-    final ObjectMapper xmlMapper = new XmlMapper();
+      final ObjectMapper xmlMapper = new XmlMapper();
 
       final Hotspot hotspot = new Hotspot();
       final HotspotTraffic traffic = xmlMapper.readValue(
