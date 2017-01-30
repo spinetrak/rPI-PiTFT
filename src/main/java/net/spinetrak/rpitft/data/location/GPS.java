@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ public class GPS implements Event
 
   }
 
-  static GPS fromGGASentence(final GGASentence gga_, final int counter_)
+  public static GPS fromGGASentence(final GGASentence gga_, final int counter_)
   {
     final GPS gps = new GPS();
     gps._time = new DateTime(gga_.getTime().getMilliseconds());
@@ -67,7 +67,7 @@ public class GPS implements Event
     return gps;
   }
 
-  static GPS fromRMCSentence(final RMCSentence rmc_)
+  public static GPS fromRMCSentence(final RMCSentence rmc_)
   {
     final GPS gps = new GPS();
     gps._speed = rmc_.getSpeed() * 1.852;      //knots -> km/h

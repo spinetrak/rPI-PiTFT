@@ -22,22 +22,25 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.location;
+package net.spinetrak.rpitft.data.streams.logger;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 import net.sf.marineapi.nmea.event.AbstractSentenceListener;
+import net.sf.marineapi.nmea.event.SentenceEvent;
+import net.sf.marineapi.nmea.event.SentenceListener;
 import net.sf.marineapi.nmea.io.SentenceReader;
 import net.sf.marineapi.nmea.sentence.GGASentence;
 import net.sf.marineapi.nmea.sentence.RMCSentence;
+import net.sf.marineapi.nmea.sentence.Sentence;
 import net.sf.marineapi.nmea.sentence.SentenceValidator;
 import net.sf.marineapi.nmea.util.FaaMode;
 import net.sf.marineapi.nmea.util.GpsFixQuality;
 import net.spinetrak.rpitft.data.Dispatcher;
+import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.network.Network;
-import net.spinetrak.rpitft.data.streams.logger.LocalFileStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,19 +48,20 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.Enumeration;
 
-public class NmeaLogger
+public class NmeaFileLogger
 {
-  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.location.NmeaLogger");
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.streams.logger.NmeaLogger");
   private static final String OUTFILE = "/home/pi/tracks/nmea.txt";
   private static int COUNTER;
   private final LocalFileStream _localFileStream;
   private InputStream _inputStream;
   private SentenceReader _sentenceReader;
 
-  public NmeaLogger()
+  public NmeaFileLogger()
   {
     _localFileStream = new LocalFileStream(OUTFILE);
   }
+
 
   public void start()
   {
@@ -166,6 +170,76 @@ public class NmeaLogger
     isr.close();
     buf.close();
     return valid;
+  }
+
+  private static class LocalFileStream implements SentenceListener
+  {
+    private PrintStream _printStream;
+
+    LocalFileStream(final String outputFile_)
+    {
+      try
+      {
+        _printStream = new PrintStream(
+          new BufferedOutputStream(new FileOutputStream(outputFile_, true)),
+          false,
+          "US-ASCII");
+      }
+      catch (final UnsupportedEncodingException | FileNotFoundException ex_)
+      {
+        ex_.printStackTrace();
+        LOGGER.error(ex_.getMessage());
+        IOUtils.closeQuietly(_printStream);
+        _printStream = null;
+      }
+      finally
+      {
+        if (_printStream != null)
+        {
+          Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            IOUtils.closeQuietly(_printStream);
+            LOGGER.info("Print stream closed.");
+          }));
+        }
+      }
+    }
+
+    @Override
+    public void readingPaused()
+    {
+      _printStream.flush();
+    }
+
+    @Override
+    public void readingStarted()
+    {
+      //ignore
+    }
+
+    @Override
+    public void readingStopped()
+    {
+      _printStream.flush();
+    }
+
+    @Override
+    public void sentenceRead(final SentenceEvent sentenceEvent_)
+    {
+      final Sentence sentence = sentenceEvent_.getSentence();
+      if (sentence instanceof GGASentence)
+      {
+        final GGASentence gga = (GGASentence) sentence;
+        _printStream.println(gga.toSentence());
+        _printStream.flush();
+      }
+
+      if (sentence instanceof RMCSentence)
+      {
+        final RMCSentence rmc = (RMCSentence) sentence;
+        _printStream.println(rmc.toSentence());
+        _printStream.flush();
+      }
+    }
   }
 
   private class GGAListener extends AbstractSentenceListener<GGASentence>

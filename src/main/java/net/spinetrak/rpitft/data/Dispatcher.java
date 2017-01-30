@@ -28,7 +28,6 @@ import javafx.animation.AnimationTimer;
 import net.spinetrak.rpitft.data.events.Event;
 import net.spinetrak.rpitft.data.listeners.*;
 import net.spinetrak.rpitft.data.location.GPS;
-import net.spinetrak.rpitft.data.location.NmeaLogger;
 import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.raspberry.Device;
@@ -104,7 +103,7 @@ public class Dispatcher
   {
     private final DeviceClient _deviceClient;
     private final ExecutorService _executor;
-    private final NmeaLogger _nmeaLogger;
+
 
     DispatcherQueue()
     {
@@ -116,9 +115,6 @@ public class Dispatcher
 
       _deviceClient = new DeviceClient(_executor);
       _executor.execute(_deviceClient);
-
-      _nmeaLogger = new NmeaLogger();
-      _nmeaLogger.start();
     }
 
     void start()

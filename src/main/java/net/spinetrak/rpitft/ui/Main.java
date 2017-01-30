@@ -32,7 +32,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.sf.marineapi.nmea.parser.SentenceFactory;
 import net.spinetrak.rpitft.data.parser.TXTParser;
-import net.spinetrak.rpitft.data.streams.logger.InitialStateStream;
+import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
+import net.spinetrak.rpitft.data.streams.logger.NmeaFileLogger;
 import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
 import net.spinetrak.rpitft.ui.center.TabPanel;
 import org.slf4j.Logger;
@@ -66,8 +67,12 @@ public class Main extends Application
     init(stage_);
     stage_.show();
 
-    final InitialStateStream iss = InitialStateStream.getInstance();
+    final InitialStateStreamLogger iss = InitialStateStreamLogger.getInstance();
     LOGGER.info(iss.toString());
+
+    final NmeaFileLogger nmeaLogger = new NmeaFileLogger();
+    nmeaLogger.start();
+    LOGGER.info("Started logging to file. ");
   }
 
   private void init(final Stage stage_)

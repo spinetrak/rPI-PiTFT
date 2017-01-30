@@ -40,7 +40,7 @@ import net.spinetrak.rpitft.data.listeners.NetworkListener;
 import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
-import net.spinetrak.rpitft.data.streams.logger.InitialStateStream;
+import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
 import net.spinetrak.rpitft.ui.Main;
 import net.spinetrak.rpitft.ui.Threshold;
 
@@ -234,15 +234,15 @@ public class ButtonPanel implements NetworkListener, HotspotListener
     final Image streamOffImg = new Image(getClass().getResourceAsStream("/streamOff.png"));
     final Button stream = new Button();
 
-    final boolean onStart = InitialStateStream.getInstance().isStreamingEnabled();
+    final boolean onStart = InitialStateStreamLogger.getInstance().isStreamingEnabled();
     stream.setGraphic(new ImageView((onStart) ? streamOnImg : streamOffImg));
 
     stream.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        final boolean onNow = InitialStateStream.getInstance().isStreamingEnabled();
-        InitialStateStream.getInstance().setStreamingEnabled(!onNow);
-        final boolean onThen = InitialStateStream.getInstance().isStreamingEnabled();
+        final boolean onNow = InitialStateStreamLogger.getInstance().isStreamingEnabled();
+        InitialStateStreamLogger.getInstance().setStreamingEnabled(!onNow);
+        final boolean onThen = InitialStateStreamLogger.getInstance().isStreamingEnabled();
         stream.setGraphic(new ImageView((onThen) ? streamOnImg : streamOffImg));
         stream.getGraphic();
       }

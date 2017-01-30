@@ -47,23 +47,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class InitialStateStream implements GPSListener, DeviceListener, HotspotListener
+public class InitialStateStreamLogger implements GPSListener, DeviceListener, HotspotListener
 {
   private final static Logger LOGGER = LoggerFactory.getLogger(
     "net.spinetrak.rpitft.data.streams.logger.InitialStateStream");
-  private static InitialStateStream _instance;
+  private static InitialStateStreamLogger _instance;
   final private API _account;
   final private Bucket _bucket;
   private final LinkedBlockingQueue<Event> _queue = new LinkedBlockingQueue<>();
   private boolean _isStreamingEnabled = true;
 
-  private InitialStateStream()
+  private InitialStateStreamLogger()
   {
     _bucket = new Bucket("spinetrak-2016-12-28", "spinetrak");
     _account = new API(System.getProperty("initialstatekey"), 5);
     _account.createBucket(_bucket);
 
-    Dispatcher.getInstance().addListener(this);
     Dispatcher.getInstance().addListener(this);
 
     final Publisher publisher = new Publisher();
@@ -93,11 +92,11 @@ public class InitialStateStream implements GPSListener, DeviceListener, HotspotL
     }));
   }
 
-  public static InitialStateStream getInstance()
+  public static InitialStateStreamLogger getInstance()
   {
     if (_instance == null)
     {
-      _instance = new InitialStateStream();
+      _instance = new InitialStateStreamLogger();
     }
     return _instance;
   }
