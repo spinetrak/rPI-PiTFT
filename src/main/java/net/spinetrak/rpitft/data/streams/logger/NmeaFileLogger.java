@@ -53,15 +53,24 @@ public class NmeaFileLogger
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.streams.logger.NmeaLogger");
   private static final String OUTFILE = "/home/pi/tracks/nmea.txt";
   private static int COUNTER;
+  private static NmeaFileLogger _instance = null;
   private final LocalFileStream _localFileStream;
   private InputStream _inputStream;
   private SentenceReader _sentenceReader;
 
-  public NmeaFileLogger()
+  private NmeaFileLogger()
   {
     _localFileStream = new LocalFileStream(OUTFILE);
   }
 
+  public static NmeaFileLogger getInstance()
+  {
+    if (_instance == null)
+    {
+      _instance = new NmeaFileLogger();
+    }
+    return _instance;
+  }
 
   public void start()
   {

@@ -83,7 +83,7 @@ public class Main extends Application
     final InitialStateStreamLogger iss = InitialStateStreamLogger.getInstance();
     LOGGER.info("Started logging to " + iss.toString());
 
-    final NmeaFileLogger nmeaLogger = new NmeaFileLogger();
+    final NmeaFileLogger nmeaLogger = NmeaFileLogger.getInstance();
     nmeaLogger.start();
     LOGGER.info("Started logging to file.");
   }
