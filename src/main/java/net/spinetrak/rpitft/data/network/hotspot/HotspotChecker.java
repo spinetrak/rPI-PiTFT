@@ -51,7 +51,7 @@ public class HotspotChecker implements Runnable
   {
     while (!_stopped)
     {
-      get();
+      checkHotspot();
     }
   }
 
@@ -60,7 +60,7 @@ public class HotspotChecker implements Runnable
     _stopped = true;
   }
 
-  private void get()
+  private void checkHotspot()
   {
     try
     {

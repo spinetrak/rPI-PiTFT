@@ -24,6 +24,7 @@
 
 package net.spinetrak.rpitft.ui;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -31,6 +32,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.sf.marineapi.nmea.parser.SentenceFactory;
+import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.parser.TXTParser;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
 import net.spinetrak.rpitft.data.streams.logger.NmeaFileLogger;
@@ -66,6 +68,17 @@ public class Main extends Application
   {
     init(stage_);
     stage_.show();
+
+    final AnimationTimer animationTimer = new AnimationTimer()
+    {
+      @Override
+      public void handle(final long now_)
+      {
+        Dispatcher.getInstance().processQueue();
+      }
+    };
+    animationTimer.start();
+    LOGGER.info("Animation timer started " + animationTimer.toString());
 
     final InitialStateStreamLogger iss = InitialStateStreamLogger.getInstance();
     LOGGER.info("Started logging to " + iss.toString());

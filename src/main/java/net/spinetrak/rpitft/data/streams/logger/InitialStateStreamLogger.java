@@ -38,6 +38,7 @@ import net.spinetrak.rpitft.data.network.NetworkChecker;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.network.hotspot.HotspotChecker;
 import net.spinetrak.rpitft.data.raspberry.Device;
+import net.spinetrak.rpitft.data.raspberry.DeviceChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +78,10 @@ public class InitialStateStreamLogger implements GPSListener, DeviceListener, Ho
     final Thread hotspotCheckerThread = new Thread(hotspotChecker);
     hotspotCheckerThread.start();
 
+    final DeviceChecker deviceChecker = new DeviceChecker();
+    final Thread deviceCheckerThread = new Thread(deviceChecker);
+    deviceCheckerThread.start();
+
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       _account.terminate();
       LOGGER.info("Account terminated.");
@@ -89,6 +94,9 @@ public class InitialStateStreamLogger implements GPSListener, DeviceListener, Ho
 
       hotspotChecker.stop();
       LOGGER.info("Hotspot checker stopped.");
+
+      deviceChecker.stop();
+      LOGGER.info("Device checker stopped.");
     }));
   }
 

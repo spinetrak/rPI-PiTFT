@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,19 +28,30 @@ import net.spinetrak.rpitft.data.Dispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-
-public class DeviceClient implements Runnable
+public class DeviceChecker implements Runnable
 {
   private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.data.raspberry.DeviceClient");
-  private final ExecutorService _executor;
+  private boolean _stopped = false;
 
-  public DeviceClient(final ExecutorService executor_)
+  public DeviceChecker()
   {
-    _executor = executor_;
+
   }
 
   public void run()
+  {
+    while (!_stopped)
+    {
+      checkDevice();
+    }
+  }
+
+  public void stop()
+  {
+    _stopped = true;
+  }
+
+  private void checkDevice()
   {
     try
     {
@@ -50,7 +61,6 @@ public class DeviceClient implements Runnable
         Dispatcher.getInstance().getQueue().add(device);
       }
       Thread.sleep(500);
-      _executor.execute(this);
     }
     catch (final InterruptedException ex_)
     {

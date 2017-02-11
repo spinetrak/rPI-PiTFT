@@ -39,21 +39,26 @@ public class NetworkChecker implements Runnable
   {
     while (!_stopped)
     {
-      try
-      {
-        final Network network = new Network(null);
-        Dispatcher.getInstance().getQueue().add(network);
-        Thread.sleep(15000);
-      }
-      catch (final InterruptedException ex_)
-      {
-        LOGGER.error(ex_.getMessage());
-      }
+      checkNetwork();
     }
   }
 
   public void stop()
   {
     _stopped = true;
+  }
+
+  private void checkNetwork()
+  {
+    try
+    {
+      final Network network = new Network(null);
+      Dispatcher.getInstance().getQueue().add(network);
+      Thread.sleep(15000);
+    }
+    catch (final InterruptedException ex_)
+    {
+      LOGGER.error(ex_.getMessage());
+    }
   }
 }

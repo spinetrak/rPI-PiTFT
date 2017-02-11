@@ -24,21 +24,17 @@
 
 package net.spinetrak.rpitft.data;
 
-import javafx.animation.AnimationTimer;
 import net.spinetrak.rpitft.data.events.Event;
 import net.spinetrak.rpitft.data.listeners.*;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.raspberry.Device;
-import net.spinetrak.rpitft.data.raspberry.DeviceClient;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Dispatcher
 {
@@ -48,8 +44,6 @@ public class Dispatcher
 
   private Dispatcher()
   {
-    final DispatcherQueue queue = new DispatcherQueue();
-    queue.start();
   }
 
   public static Dispatcher getInstance()
@@ -65,6 +59,15 @@ public class Dispatcher
   public Queue getQueue()
   {
     return _queue;
+  }
+
+  public void processQueue()
+  {
+    while (!_queue.isEmpty())
+    {
+      final Event event = _queue.remove();
+      dispatchEvent(event);
+    }
   }
 
   private void dispatchEvent(final Event event_)
@@ -87,46 +90,6 @@ public class Dispatcher
       {
         ((HotspotListener) listener).handleHotspotData((Hotspot) event_);
       }
-    }
-  }
-
-  private void processQueue()
-  {
-    while (!_queue.isEmpty())
-    {
-      final Event event = _queue.remove();
-      dispatchEvent(event);
-    }
-  }
-
-  private static class DispatcherQueue
-  {
-    private final DeviceClient _deviceClient;
-    private final ExecutorService _executor;
-
-
-    DispatcherQueue()
-    {
-      _executor = Executors.newCachedThreadPool(runnable_ -> {
-        final Thread thread = new Thread(runnable_);
-        thread.setDaemon(true);
-        return thread;
-      });
-
-      _deviceClient = new DeviceClient(_executor);
-      _executor.execute(_deviceClient);
-    }
-
-    void start()
-    {
-      new AnimationTimer()
-      {
-        @Override
-        public void handle(final long now_)
-        {
-          Dispatcher.getInstance().processQueue();
-        }
-      }.start();
     }
   }
 }
