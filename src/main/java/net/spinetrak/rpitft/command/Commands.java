@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,16 +28,6 @@ import net.spinetrak.rpitft.data.streams.command.Stream;
 
 public enum Commands
 {
-  POWER_STATUS()
-    {
-      private final Command _command = new Command("/power.sh");
-
-      @Override
-      public Result execute(final Stream stream_)
-      {
-        return _command.execute(stream_);
-      }
-    },
   GPX_NEW()
     {
       private final Command _command = new Command("/gpx.sh");

@@ -33,6 +33,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.listeners.HotspotListener;
@@ -43,11 +44,14 @@ import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
 import net.spinetrak.rpitft.ui.Main;
 import net.spinetrak.rpitft.ui.Threshold;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static net.spinetrak.rpitft.command.Commands.*;
 
 public class ButtonPanel implements NetworkListener, HotspotListener
 {
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.ui.bottom.ButtonPanel");
   private final Threshold _batteryThreshold;
   private final HBox _bottom;
   private final Text _hotspotText;
@@ -174,7 +178,8 @@ public class ButtonPanel implements NetworkListener, HotspotListener
     gpx.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        GPX_NEW.execute(new SingleLineStream());
+        final Result result = GPX_NEW.execute(new SingleLineStream());
+        LOGGER.info("GPX result: " + result.resultAsString());
       }
     });
     return gpx;
@@ -189,9 +194,12 @@ public class ButtonPanel implements NetworkListener, HotspotListener
     nmea.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        GPX_NEW.execute(new SingleLineStream());
-        NMEA_BACKUP.execute(new SingleLineStream());
-        RESTART.execute(new SingleLineStream());
+        final Result gpxCmd = GPX_NEW.execute(new SingleLineStream());
+        LOGGER.info("GPX result: " + gpxCmd.resultAsString());
+        final Result nmeaCmd = NMEA_BACKUP.execute(new SingleLineStream());
+        LOGGER.info("NMEA result: " + nmeaCmd.resultAsString());
+        final Result restartCmd = RESTART.execute(new SingleLineStream());
+        LOGGER.info("RESTART result: " + restartCmd.resultAsString());
         exit();
       }
     });
@@ -206,7 +214,8 @@ public class ButtonPanel implements NetworkListener, HotspotListener
     restart.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        RESTART.execute(new SingleLineStream());
+        final Result restartCmd = RESTART.execute(new SingleLineStream());
+        LOGGER.info("RESTART result: " + restartCmd.resultAsString());
         exit();
       }
     });
@@ -221,7 +230,8 @@ public class ButtonPanel implements NetworkListener, HotspotListener
     shutdown.setOnKeyPressed(event_ -> {
       if (event_.getCode().equals(KeyCode.ENTER))
       {
-        SHUTDOWN.execute(new SingleLineStream());
+        final Result shutdownCmd = SHUTDOWN.execute(new SingleLineStream());
+        LOGGER.info("SHUTDOWN result: " + shutdownCmd.resultAsString());
         exit();
       }
     });
