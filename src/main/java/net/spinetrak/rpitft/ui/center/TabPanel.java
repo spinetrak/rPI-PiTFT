@@ -37,6 +37,7 @@ import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.raspberry.Device;
 import net.spinetrak.rpitft.ui.Threshold;
+import net.spinetrak.rpitft.ui.center.map.GPSLocationView;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

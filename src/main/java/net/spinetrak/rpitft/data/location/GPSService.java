@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,16 +33,6 @@ public class GPSService
 
   private final List<GPS> _gpsCoordinates = new ArrayList<>();
 
-  GPS getFinish()
-  {
-    return _gpsCoordinates.get(_gpsCoordinates.size() - 1);
-  }
-
-  GPS getStart()
-  {
-    return _gpsCoordinates.get(0);
-  }
-
   public void addGPS(final GPS gps_)
   {
     if (gps_.isValidLocation())
@@ -55,9 +45,19 @@ public class GPSService
     }
   }
 
+  public GPS getFinish()
+  {
+    return _gpsCoordinates.get(_gpsCoordinates.size() - 1);
+  }
+
   public List<GPS> getGPS()
   {
     return _gpsCoordinates;
+  }
+
+  public GPS getStart()
+  {
+    return _gpsCoordinates.get(0);
   }
 
 }

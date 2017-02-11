@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.ui.center;
+package net.spinetrak.rpitft.ui.center.map;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -35,11 +35,10 @@ import net.spinetrak.rpitft.data.Formatter;
 import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.location.GPSService;
-import net.spinetrak.rpitft.data.location.MapService;
 
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
-class GPSLocationView implements GPSListener
+public class GPSLocationView implements GPSListener
 {
   private final static int HEIGHT = 200;
   private final CompassView _compass = new CompassView();
@@ -51,7 +50,7 @@ class GPSLocationView implements GPSListener
   private final Text _upperLeft = new Text(4, 15, "[90.0000]\n[-180.0000]");
   private final Text _upperRight = new Text(MIN_WIDTH - 65, 15, "[90.0000]\n[180.0000]");
 
-  GPSLocationView()
+  public GPSLocationView()
   {
     Dispatcher.getInstance().addListener(_compass);
     _pane.setPrefSize(MIN_WIDTH, HEIGHT);
@@ -68,7 +67,7 @@ class GPSLocationView implements GPSListener
     Dispatcher.getInstance().addListener(this);
   }
 
-  Pane getPane()
+  public Pane getPane()
   {
     return _pane;
   }

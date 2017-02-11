@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,17 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.location;
+package net.spinetrak.rpitft.ui.center.map;
 
 import javafx.scene.shape.Polyline;
+import net.spinetrak.rpitft.data.location.GPS;
+import net.spinetrak.rpitft.data.location.GPSService;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MapService
+class MapService
 {
   // CHANGE THIS: image height in pixel
   private static final int IMAGE_HEIGHT_IN_PX = 200;
@@ -49,12 +51,12 @@ public class MapService
   private float _minLatY = -200.0f;
   private float _minLonX = -200.0f;
 
-  public MapService(final GPSService gpsService_)
+  MapService(final GPSService gpsService_)
   {
     _gpsService = gpsService_;
   }
 
-  public double getDistance()
+  double getDistance()
   {
     final GPS start = _gpsService.getStart();
     final GPS finish = _gpsService.getFinish();
@@ -71,32 +73,32 @@ public class MapService
     return 6367 * c;
   }
 
-  public float getMaxLatY()
+  float getMaxLatY()
   {
     return _maxLatY;
   }
 
-  public float getMaxLonX()
+  float getMaxLonX()
   {
     return _maxLonX;
   }
 
-  public float getMinLatY()
+  float getMinLatY()
   {
     return _minLatY;
   }
 
-  public float getMinLonX()
+  float getMinLonX()
   {
     return _minLonX;
   }
 
-  public Polyline getPolyline()
+  Polyline getPolyline()
   {
     return _polyline;
   }
 
-  public void makeMap()
+  void makeMap()
   {
     // min and max coordinates, used in the computation below
     final Point2D.Double minXY = new Point2D.Double(-1, -1);
