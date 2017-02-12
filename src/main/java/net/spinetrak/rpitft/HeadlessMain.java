@@ -47,6 +47,7 @@ package net.spinetrak.rpitft;/*
  */
 
 import net.spinetrak.rpitft.data.EventChecker;
+import net.spinetrak.rpitft.data.listeners.WebSocketListener;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
 import net.spinetrak.rpitft.data.streams.logger.NmeaFileLogger;
 import org.slf4j.Logger;
@@ -60,6 +61,10 @@ public class HeadlessMain
   {
     if (1 == args_.length && "-headless".equals(args_[0].toLowerCase()))
     {
+      WebSocketListener webSocketListener = new WebSocketListener();
+      webSocketListener.start();
+      LOGGER.info("WebSocketListener started: " + webSocketListener);
+
       final HeadlessTimer headlessTimer = new HeadlessTimer();
       final Thread headlessTimerThread = new Thread(headlessTimer);
       headlessTimerThread.start();

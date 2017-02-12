@@ -31,16 +31,16 @@ import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.raspberry.Device;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Dispatcher
 {
   private final static Dispatcher _instance = new Dispatcher();
   private final ConcurrentLinkedQueue<Event> _queue = new ConcurrentLinkedQueue<>();
-  private List<EventListener> _listeners = new ArrayList<>();
+  private List<EventListener> _listeners = new CopyOnWriteArrayList<>();
 
   private Dispatcher()
   {
