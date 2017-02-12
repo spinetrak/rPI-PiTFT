@@ -47,11 +47,13 @@ package net.spinetrak.rpitft;/*
  */
 
 import net.spinetrak.rpitft.data.EventChecker;
-import net.spinetrak.rpitft.data.listeners.WebSocketListener;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
 import net.spinetrak.rpitft.data.streams.logger.NmeaFileLogger;
+import net.spinetrak.rpitft.websocket.RPIWebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class HeadlessMain
 {
@@ -61,9 +63,27 @@ public class HeadlessMain
   {
     if (1 == args_.length && "-headless".equals(args_[0].toLowerCase()))
     {
-      WebSocketListener webSocketListener = new WebSocketListener();
-      webSocketListener.start();
-      LOGGER.info("WebSocketListener started: " + webSocketListener);
+      try
+      {
+        final RPIWebSocketServer rpiWebSocketServer = RPIWebSocketServer.getInstance();
+        LOGGER.info("RPIWebSocketServer started: " + rpiWebSocketServer);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+          try
+          {
+            rpiWebSocketServer.stop();
+            LOGGER.info("RPI WebSocketServer stopped.");
+          }
+          catch (final IOException | InterruptedException ex_)
+          {
+            LOGGER.error(ex_.getMessage());
+          }
+        }));
+      }
+      catch (final IOException | InterruptedException ex_)
+      {
+        LOGGER.error(ex_.getMessage());
+      }
 
       final HeadlessTimer headlessTimer = new HeadlessTimer();
       final Thread headlessTimerThread = new Thread(headlessTimer);
