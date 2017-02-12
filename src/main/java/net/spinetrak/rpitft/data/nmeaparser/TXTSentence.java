@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +22,10 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.data.parser;
+package net.spinetrak.rpitft.data.nmeaparser;
 
-import net.sf.marineapi.nmea.parser.SentenceParser;
-import net.sf.marineapi.nmea.sentence.TalkerId;
+import net.sf.marineapi.nmea.sentence.Sentence;
 
-public class TXTParser extends SentenceParser implements TXTSentence
+interface TXTSentence extends Sentence
 {
-  public TXTParser(final String nmea_)
-  {
-    super(nmea_, "TXT");
-  }
-
-  public TXTParser(final TalkerId id_)
-  {
-    super(id_, "TXT", 5);
-  }
 }

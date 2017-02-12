@@ -33,7 +33,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.sf.marineapi.nmea.parser.SentenceFactory;
 import net.spinetrak.rpitft.data.Dispatcher;
-import net.spinetrak.rpitft.data.parser.TXTParser;
+import net.spinetrak.rpitft.data.EventChecker;
+import net.spinetrak.rpitft.data.nmeaparser.TXTParser;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
 import net.spinetrak.rpitft.data.streams.logger.NmeaFileLogger;
 import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
@@ -78,7 +79,12 @@ public class Main extends Application
       }
     };
     animationTimer.start();
-    LOGGER.info("Animation timer started " + animationTimer.toString());
+    LOGGER.info("Animation timer started.");
+
+    final EventChecker eventChecker = EventChecker.getInstance();
+    eventChecker.start();
+    LOGGER.info("Event checker started.");
+
 
     final InitialStateStreamLogger iss = InitialStateStreamLogger.getInstance();
     LOGGER.info("Started logging to " + iss.toString());
@@ -86,12 +92,13 @@ public class Main extends Application
     final NmeaFileLogger nmeaLogger = NmeaFileLogger.getInstance();
     nmeaLogger.start();
     LOGGER.info("Started logging to file.");
+
+    SentenceFactory.getInstance().registerParser("TXT", TXTParser.class);
+    LOGGER.info("TXT parser registered.");
   }
 
   private void init(final Stage stage_)
   {
-    SentenceFactory.getInstance().registerParser("TXT", TXTParser.class);
-
     _tabPanel = new TabPanel();
     _buttonPanel = new ButtonPanel();
 

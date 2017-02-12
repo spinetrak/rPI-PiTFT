@@ -34,11 +34,8 @@ import net.spinetrak.rpitft.data.listeners.DeviceListener;
 import net.spinetrak.rpitft.data.listeners.GPSListener;
 import net.spinetrak.rpitft.data.listeners.HotspotListener;
 import net.spinetrak.rpitft.data.location.GPS;
-import net.spinetrak.rpitft.data.network.NetworkChecker;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
-import net.spinetrak.rpitft.data.network.hotspot.HotspotChecker;
 import net.spinetrak.rpitft.data.raspberry.Device;
-import net.spinetrak.rpitft.data.raspberry.DeviceChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,24 +60,14 @@ public class InitialStateStreamLogger implements GPSListener, DeviceListener, Ho
     _bucket = new Bucket("spinetrak-2016-12-28", "spinetrak");
     _account = new API(System.getProperty("initialstatekey"), 5);
     _account.createBucket(_bucket);
+    LOGGER.info("Bucket created: " + _bucket.getEndpoint());
 
     Dispatcher.getInstance().addListener(this);
 
     final Publisher publisher = new Publisher();
     final Thread publisherThread = new Thread(publisher);
     publisherThread.start();
-
-    final NetworkChecker networkChecker = new NetworkChecker();
-    final Thread networkCheckerThread = new Thread(networkChecker);
-    networkCheckerThread.start();
-
-    final HotspotChecker hotspotChecker = new HotspotChecker();
-    final Thread hotspotCheckerThread = new Thread(hotspotChecker);
-    hotspotCheckerThread.start();
-
-    final DeviceChecker deviceChecker = new DeviceChecker();
-    final Thread deviceCheckerThread = new Thread(deviceChecker);
-    deviceCheckerThread.start();
+    LOGGER.info("Publisher started.");
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       _account.terminate();
@@ -88,15 +75,6 @@ public class InitialStateStreamLogger implements GPSListener, DeviceListener, Ho
 
       publisher.stop();
       LOGGER.info("Publisher stopped.");
-
-      networkChecker.stop();
-      LOGGER.info("Network checker stopped.");
-
-      hotspotChecker.stop();
-      LOGGER.info("Hotspot checker stopped.");
-
-      deviceChecker.stop();
-      LOGGER.info("Device checker stopped.");
     }));
   }
 
