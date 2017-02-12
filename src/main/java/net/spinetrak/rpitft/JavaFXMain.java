@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.ui;
+package net.spinetrak.rpitft;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -31,12 +31,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import net.sf.marineapi.nmea.parser.SentenceFactory;
 import net.spinetrak.rpitft.data.Dispatcher;
-import net.spinetrak.rpitft.data.EventChecker;
-import net.spinetrak.rpitft.data.nmeaparser.TXTParser;
-import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
-import net.spinetrak.rpitft.data.streams.logger.NmeaFileLogger;
 import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
 import net.spinetrak.rpitft.ui.center.TabPanel;
 import org.slf4j.Logger;
@@ -45,9 +40,9 @@ import org.slf4j.LoggerFactory;
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_HEIGHT;
 import static net.spinetrak.rpitft.ui.center.Charts.MIN_WIDTH;
 
-public class Main extends Application
+public class JavaFXMain extends Application
 {
-  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.ui.Main");
+  private final static Logger LOGGER = LoggerFactory.getLogger("net.spinetrak.rpitft.JavaFXMain");
   private ButtonPanel _buttonPanel;
   private TabPanel _tabPanel;
 
@@ -59,7 +54,7 @@ public class Main extends Application
     Runtime.getRuntime().exit(0);
   }
 
-  public static void main(String[] args_)
+  public static void main(final String[] args_)
   {
     launch(args_);
   }
@@ -80,21 +75,6 @@ public class Main extends Application
     };
     animationTimer.start();
     LOGGER.info("Animation timer started.");
-
-    final EventChecker eventChecker = EventChecker.getInstance();
-    eventChecker.start();
-    LOGGER.info("Event checker started.");
-
-
-    final InitialStateStreamLogger iss = InitialStateStreamLogger.getInstance();
-    LOGGER.info("Started logging to " + iss.toString());
-
-    final NmeaFileLogger nmeaLogger = NmeaFileLogger.getInstance();
-    nmeaLogger.start();
-    LOGGER.info("Started logging to file.");
-
-    SentenceFactory.getInstance().registerParser("TXT", TXTParser.class);
-    LOGGER.info("TXT parser registered.");
   }
 
   private void init(final Stage stage_)

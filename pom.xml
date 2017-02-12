@@ -56,7 +56,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>net.spinetrak.rpitft.ui.Main</mainClass>
+                    <mainClass>net.spinetrak.rpitft.JavaFXMain</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -64,7 +64,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>net.spinetrak.rpitft.ui.Main</mainClass>
+                            <mainClass>net.spinetrak.rpitft.JavaFXMain</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

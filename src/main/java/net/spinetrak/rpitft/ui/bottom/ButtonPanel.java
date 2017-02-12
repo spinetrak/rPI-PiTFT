@@ -33,6 +33,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import net.spinetrak.rpitft.JavaFXMain;
 import net.spinetrak.rpitft.command.Result;
 import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.Formatter;
@@ -42,7 +43,6 @@ import net.spinetrak.rpitft.data.network.Network;
 import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.streams.command.SingleLineStream;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
-import net.spinetrak.rpitft.ui.Main;
 import net.spinetrak.rpitft.ui.Threshold;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +151,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
   private void exit()
   {
-    Main.exit();
+    JavaFXMain.exit();
   }
 
   private Button getExitButton()
