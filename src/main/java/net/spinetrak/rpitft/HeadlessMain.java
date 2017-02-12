@@ -46,9 +46,7 @@ package net.spinetrak.rpitft;/*
  * SOFTWARE.
  */
 
-import net.sf.marineapi.nmea.parser.SentenceFactory;
 import net.spinetrak.rpitft.data.EventChecker;
-import net.spinetrak.rpitft.data.nmeaparser.TXTParser;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
 import net.spinetrak.rpitft.data.streams.logger.NmeaFileLogger;
 import org.slf4j.Logger;
@@ -81,8 +79,5 @@ public class HeadlessMain
     final NmeaFileLogger nmeaLogger = NmeaFileLogger.getInstance();
     nmeaLogger.start();
     LOGGER.info("Started logging to file.");
-
-    SentenceFactory.getInstance().registerParser("TXT", TXTParser.class);
-    LOGGER.info("TXT parser registered.");
   }
 }

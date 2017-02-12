@@ -32,6 +32,7 @@ import net.sf.marineapi.nmea.event.AbstractSentenceListener;
 import net.sf.marineapi.nmea.event.SentenceEvent;
 import net.sf.marineapi.nmea.event.SentenceListener;
 import net.sf.marineapi.nmea.io.SentenceReader;
+import net.sf.marineapi.nmea.parser.SentenceFactory;
 import net.sf.marineapi.nmea.sentence.GGASentence;
 import net.sf.marineapi.nmea.sentence.RMCSentence;
 import net.sf.marineapi.nmea.sentence.Sentence;
@@ -41,6 +42,7 @@ import net.sf.marineapi.nmea.util.GpsFixQuality;
 import net.spinetrak.rpitft.data.Dispatcher;
 import net.spinetrak.rpitft.data.location.GPS;
 import net.spinetrak.rpitft.data.network.Network;
+import net.spinetrak.rpitft.data.nmeaparser.TXTParser;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +62,9 @@ public class NmeaFileLogger
 
   private NmeaFileLogger()
   {
+    SentenceFactory.getInstance().registerParser("TXT", TXTParser.class);
+    LOGGER.info("TXT parser registered.");
+
     _localFileStream = new LocalFileStream(OUTFILE);
   }
 
