@@ -49,7 +49,8 @@ package net.spinetrak.rpitft;/*
 import net.spinetrak.rpitft.data.EventChecker;
 import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
 import net.spinetrak.rpitft.data.streams.logger.NmeaFileLogger;
-import net.spinetrak.rpitft.websocket.RPIWebSocketServer;
+import net.spinetrak.rpitft.web.RPIWebHttpServer;
+import net.spinetrak.rpitft.web.RPIWebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +65,14 @@ public class HeadlessMain
     LOGGER.info("Starting headless.");
     try
     {
+      RPIWebHttpServer.start();
+      LOGGER.info("RPIWebHttpServer started.");
+
+      Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+        RPIWebHttpServer.stop();
+        LOGGER.info("RPIWebHttpServer stopped.");
+      }));
+
       final RPIWebSocketServer rpiWebSocketServer = RPIWebSocketServer.getInstance();
       LOGGER.info("RPIWebSocketServer started: " + rpiWebSocketServer);
 

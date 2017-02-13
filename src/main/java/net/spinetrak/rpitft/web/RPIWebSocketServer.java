@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.spinetrak.rpitft.websocket;
+package net.spinetrak.rpitft.web;
 
 import com.google.gson.Gson;
 import net.spinetrak.rpitft.data.Dispatcher;
