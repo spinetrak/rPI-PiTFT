@@ -61,39 +61,38 @@ public class HeadlessMain
 
   public static void main(final String[] args_)
   {
-    if (1 == args_.length && "-headless".equals(args_[0].toLowerCase()))
+    LOGGER.info("Starting headless.");
+    try
     {
-      try
-      {
-        final RPIWebSocketServer rpiWebSocketServer = RPIWebSocketServer.getInstance();
-        LOGGER.info("RPIWebSocketServer started: " + rpiWebSocketServer);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-          try
-          {
-            rpiWebSocketServer.stop();
-            LOGGER.info("RPI WebSocketServer stopped.");
-          }
-          catch (final IOException | InterruptedException ex_)
-          {
-            LOGGER.error(ex_.getMessage());
-          }
-        }));
-      }
-      catch (final IOException | InterruptedException ex_)
-      {
-        LOGGER.error(ex_.getMessage());
-      }
-
-      final HeadlessTimer headlessTimer = new HeadlessTimer();
-      final Thread headlessTimerThread = new Thread(headlessTimer);
-      headlessTimerThread.start();
+      final RPIWebSocketServer rpiWebSocketServer = RPIWebSocketServer.getInstance();
+      LOGGER.info("RPIWebSocketServer started: " + rpiWebSocketServer);
 
       Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-        headlessTimer.stop();
-        LOGGER.info("Headless timer stopped.");
+        try
+        {
+          rpiWebSocketServer.stop();
+          LOGGER.info("RPI WebSocketServer stopped.");
+        }
+        catch (final IOException | InterruptedException ex_)
+        {
+          LOGGER.error(ex_.getMessage());
+        }
       }));
     }
+    catch (final IOException | InterruptedException ex_)
+    {
+      LOGGER.error(ex_.getMessage());
+    }
+
+    final HeadlessTimer headlessTimer = new HeadlessTimer();
+    final Thread headlessTimerThread = new Thread(headlessTimer);
+    headlessTimerThread.start();
+
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      headlessTimer.stop();
+      LOGGER.info("Headless timer stopped.");
+    }));
+
     final EventChecker eventChecker = EventChecker.getInstance();
     eventChecker.start();
     LOGGER.info("Event checker started.");

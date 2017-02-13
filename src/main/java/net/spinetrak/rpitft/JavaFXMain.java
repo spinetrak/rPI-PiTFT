@@ -32,6 +32,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.spinetrak.rpitft.data.Dispatcher;
+import net.spinetrak.rpitft.data.EventChecker;
+import net.spinetrak.rpitft.data.streams.logger.InitialStateStreamLogger;
+import net.spinetrak.rpitft.data.streams.logger.NmeaFileLogger;
 import net.spinetrak.rpitft.ui.bottom.ButtonPanel;
 import net.spinetrak.rpitft.ui.center.TabPanel;
 import org.slf4j.Logger;
@@ -56,6 +59,7 @@ public class JavaFXMain extends Application
 
   public static void main(final String[] args_)
   {
+    LOGGER.info("Starting JavaFX.");
     launch(args_);
   }
 
@@ -64,6 +68,17 @@ public class JavaFXMain extends Application
   {
     init(stage_);
     stage_.show();
+
+    final EventChecker eventChecker = EventChecker.getInstance();
+    eventChecker.start();
+    LOGGER.info("Event checker started.");
+
+    final InitialStateStreamLogger iss = InitialStateStreamLogger.getInstance();
+    LOGGER.info("Started logging to " + iss.toString());
+
+    final NmeaFileLogger nmeaLogger = NmeaFileLogger.getInstance();
+    nmeaLogger.start();
+    LOGGER.info("Started logging to file.");
 
     final AnimationTimer animationTimer = new AnimationTimer()
     {
