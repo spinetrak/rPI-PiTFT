@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,10 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
@@ -78,7 +75,15 @@ class Command
     final String VAR_TMP = "/var/tmp";
     InputStream scriptIn = null;
     OutputStream scriptOut = null;
-    final String script = VAR_TMP + script_;
+    final File script = new File(VAR_TMP + script_);
+    final String dir = script.getParent();
+    if (null != dir)
+    {
+      if (!new File(dir).mkdirs())
+      {
+        LOGGER.error("Unable to create dirs for " + dir);
+      }
+    }
     try
     {
       scriptIn = Command.class.getResourceAsStream(script_);
@@ -94,7 +99,7 @@ class Command
       perms.add(PosixFilePermission.OWNER_WRITE);
       perms.add(PosixFilePermission.GROUP_WRITE);
 
-      Files.setPosixFilePermissions(Paths.get(script), perms);
+      Files.setPosixFilePermissions(Paths.get(script.getAbsolutePath()), perms);
     }
     catch (final IOException ex_)
     {
@@ -125,6 +130,6 @@ class Command
         }
       }
     }
-    return script;
+    return script.getAbsolutePath();
   }
 }

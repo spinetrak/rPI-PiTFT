@@ -30,7 +30,7 @@ public enum Commands
 {
   GPX_NEW()
     {
-      private final Command _command = new Command("/gpx.sh");
+      private final Command _command = new Command("/scripts/gpx.sh");
 
       @Override
       public Result execute(final Stream stream_)
@@ -40,7 +40,7 @@ public enum Commands
     },
   NMEA_BACKUP()
     {
-      private final Command _command = new Command("/nmea_backup.sh");
+      private final Command _command = new Command("/scripts/nmea_backup.sh");
 
       @Override
       public Result execute(final Stream stream_)
@@ -50,7 +50,7 @@ public enum Commands
     },
   SHUTDOWN()
     {
-      private final Command _command = new Command("/shutdown.sh");
+      private final Command _command = new Command("/scripts/shutdown.sh");
 
       @Override
       public Result execute(final Stream stream_)
@@ -60,7 +60,7 @@ public enum Commands
     },
   RESTART()
     {
-      private final Command _command = new Command("/restart.sh");
+      private final Command _command = new Command("/scripts/restart.sh");
 
       @Override
       public Result execute(final Stream stream_)

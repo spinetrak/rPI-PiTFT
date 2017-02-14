@@ -156,7 +156,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
   private Button getExitButton()
   {
-    final Image exitImg = new Image(getClass().getResourceAsStream("/exit.png"));
+    final Image exitImg = new Image(getClass().getResourceAsStream("/imgs/exit.png"));
     final Button exit = new Button();
     exit.setGraphic(new ImageView(exitImg));
 
@@ -171,7 +171,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
   private Button getGPXButton()
   {
-    final Image gpxImg = new Image(getClass().getResourceAsStream("/gpx.png"));
+    final Image gpxImg = new Image(getClass().getResourceAsStream("/imgs/gpx.png"));
     final Button gpx = new Button();
     gpx.setGraphic(new ImageView(gpxImg));
 
@@ -187,7 +187,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
   private Button getNMEAButton()
   {
-    final Image nmeaImg = new Image(getClass().getResourceAsStream("/nmea.png"));
+    final Image nmeaImg = new Image(getClass().getResourceAsStream("/imgs/nmea.png"));
     final Button nmea = new Button();
     nmea.setGraphic(new ImageView(nmeaImg));
 
@@ -208,7 +208,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
   private Button getRestartButton()
   {
-    final Image restartImg = new Image(getClass().getResourceAsStream("/restart.png"));
+    final Image restartImg = new Image(getClass().getResourceAsStream("/imgs/restart.png"));
     final Button restart = new Button();
     restart.setGraphic(new ImageView(restartImg));
     restart.setOnKeyPressed(event_ -> {
@@ -224,7 +224,7 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
   private Button getShutdownButton()
   {
-    final Image shutdownImg = new Image(getClass().getResourceAsStream("/shutdown.png"));
+    final Image shutdownImg = new Image(getClass().getResourceAsStream("/imgs/shutdown.png"));
     final Button shutdown = new Button();
     shutdown.setGraphic(new ImageView(shutdownImg));
     shutdown.setOnKeyPressed(event_ -> {
@@ -240,8 +240,8 @@ public class ButtonPanel implements NetworkListener, HotspotListener
 
   private Button getStreamToggleButton()
   {
-    final Image streamOnImg = new Image(getClass().getResourceAsStream("/streamOn.png"));
-    final Image streamOffImg = new Image(getClass().getResourceAsStream("/streamOff.png"));
+    final Image streamOnImg = new Image(getClass().getResourceAsStream("/imgs/streamOn.png"));
+    final Image streamOffImg = new Image(getClass().getResourceAsStream("/imgs/streamOff.png"));
     final Button stream = new Button();
 
     final boolean onStart = InitialStateStreamLogger.getInstance().isStreamingEnabled();

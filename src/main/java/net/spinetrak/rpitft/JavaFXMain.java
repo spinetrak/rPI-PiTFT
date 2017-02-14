@@ -106,7 +106,7 @@ public class JavaFXMain extends Application
     pane.setMinWidth(MIN_WIDTH);
 
     final Scene scene = new Scene(pane, MIN_WIDTH, MIN_HEIGHT);
-    scene.getStylesheets().add("stylesheet.css");
+    scene.getStylesheets().add("/css/stylesheet.css");
     stage_.setScene(scene);
     stage_.setFullScreen(true);
   }
