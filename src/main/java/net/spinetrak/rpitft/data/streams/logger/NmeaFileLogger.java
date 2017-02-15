@@ -105,7 +105,7 @@ public class NmeaFileLogger
     {
       final String msg = ex_.getMessage();
       final Network network = new Network(msg);
-      Dispatcher.getInstance().getQueue().add(network);
+      Dispatcher.getInstance().dispatch(network);
       LOGGER.error(msg);
       ex_.printStackTrace();
       IOUtils.closeQuietly(_inputStream);
@@ -176,7 +176,7 @@ public class NmeaFileLogger
       {
         final String msg = ex_.getMessage();
         final Network network = new Network(msg);
-        Dispatcher.getInstance().getQueue().add(network);
+        Dispatcher.getInstance().dispatch(network);
         ex_.printStackTrace();
         LOGGER.error(msg);
       }
@@ -265,7 +265,7 @@ public class NmeaFileLogger
       if (GpsFixQuality.INVALID != fix)
       {
         COUNTER++;
-        Dispatcher.getInstance().getQueue().add(GPS.fromGGASentence(gga_, COUNTER));
+        Dispatcher.getInstance().dispatch(GPS.fromGGASentence(gga_, COUNTER));
       }
     }
   }
@@ -278,7 +278,7 @@ public class NmeaFileLogger
       final FaaMode mode = rmc_.getMode();
       if (FaaMode.NONE != mode)
       {
-        Dispatcher.getInstance().getQueue().add(GPS.fromRMCSentence(rmc_));
+        Dispatcher.getInstance().dispatch(GPS.fromRMCSentence(rmc_));
       }
     }
   }

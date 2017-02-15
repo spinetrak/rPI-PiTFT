@@ -32,7 +32,6 @@ import net.spinetrak.rpitft.data.network.hotspot.Hotspot;
 import net.spinetrak.rpitft.data.raspberry.Device;
 
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -56,9 +55,9 @@ public class Dispatcher
     _listeners.add(listener_);
   }
 
-  public Queue getQueue()
+  public void dispatch(final Event event_)
   {
-    return _queue;
+    _queue.add(event_);
   }
 
   public void processQueue()
@@ -66,11 +65,11 @@ public class Dispatcher
     while (!_queue.isEmpty())
     {
       final Event event = _queue.remove();
-      dispatchEvent(event);
+      processEvent(event);
     }
   }
 
-  private void dispatchEvent(final Event event_)
+  private void processEvent(final Event event_)
   {
     for (final EventListener listener : _listeners)
     {

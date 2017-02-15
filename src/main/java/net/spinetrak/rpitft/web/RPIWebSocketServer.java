@@ -97,6 +97,7 @@ public class RPIWebSocketServer extends WebSocketServer implements DeviceListene
     sendToAll(_gson.toJson(network_));
   }
 
+
   @Override
   public void onClose(final WebSocket conn_, int code_, final String reason_, final boolean remote_)
   {

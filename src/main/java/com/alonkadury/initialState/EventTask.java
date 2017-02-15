@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 spinetrak
+ * Copyright (c) 2017 spinetrak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -92,7 +92,7 @@ class EventTask implements Runnable
     {
       final String msg = ex_.getMessage();
       final Network network = new Network(msg);
-      Dispatcher.getInstance().getQueue().add(network);
+      Dispatcher.getInstance().dispatch(network);
       LOGGER.error(msg);
     }
   }

@@ -58,7 +58,7 @@ public class DeviceChecker implements Runnable
       final Device device = new Device();
       if (!device.isHasError())
       {
-        Dispatcher.getInstance().getQueue().add(device);
+        Dispatcher.getInstance().dispatch(device);
       }
       Thread.sleep(500);
     }

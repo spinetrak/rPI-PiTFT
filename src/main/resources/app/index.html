@@ -28,119 +28,190 @@
 <head>
     <title>rPI-PiTFT</title>
     <script type="text/javascript" src="smoothie.js"></script>
+    <script src="http://maps.google.com/maps/api/js"></script>
+    <script src="gmaps.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <style type="text/css">
+        #map {
+            width: 800px;
+            height: 800px;
+        }
+    </style>
 </head>
 <body>
-<div>
+<div class="row">
+    <div class="col-md-12">
     <pre id="messages"></pre>
+    </div>
 </div>
-<h3>CPU</h3>
-<canvas id="cpu" width="800" height="100"></canvas>
-<h3>MEM</h3>
-<canvas id="mem" width="800" height="100"></canvas>
-<h3>TMP</h3>
-<canvas id="tmp" width="800" height="100"></canvas>
+<div class="row">
+    <div class="col-md-6">
+        <h3>CPU</h3>
+        <canvas id="cpu" width="800" height="125"></canvas>
+        <h3>MEM</h3>
+        <canvas id="mem" width="800" height="125"></canvas>
+        <h3>TMP</h3>
+        <canvas id="tmp" width="800" height="125"></canvas>
+        <h3>ALT</h3>
+        <canvas id="alt" width="800" height="125"></canvas>
+        <h3>KMH</h3>
+        <canvas id="kmh" width="800" height="125"></canvas>
+    </div>
+    <div class="col-md-6" id="map"></div>
 
-<script type="text/javascript">
 
-    function init() {
-        startWebSocket();
-    }
+    <script type="text/javascript">
 
-    var cpuLine = new TimeSeries();
-    var memLine = new TimeSeries();
-    var tmpLine = new TimeSeries();
+        function init() {
+            startWebSocket();
+        }
 
-    function startWebSocket() {
-        websocket = new WebSocket("ws://192.168.2.111:8887");
-        websocket.onopen = function (evt) {
-            onOpen(evt)
-        };
-        websocket.onclose = function (evt) {
-            onClose(evt)
-        };
-        websocket.onmessage = function (evt) {
-            onMessage(evt)
-        };
-        websocket.onerror = function (evt) {
-            onError(evt)
-        };
-    }
+        var cpuLine = new TimeSeries();
+        var memLine = new TimeSeries();
+        var tmpLine = new TimeSeries();
+        var altLine = new TimeSeries();
+        var kmhLine = new TimeSeries();
 
-    function onMessage(evt) {
-        var message = evt.data;
-        var obj = JSON.parse(message);
-        for (var [key, value] of Object.entries(obj)) {
-            if ("_cpu" === key) {
-                cpuLine.append(new Date().getTime(), value);
+        var latitude = 53.55415;
+        var longitude = 9.96843;
+
+        var path = [];
+
+
+        function startWebSocket() {
+            websocket = new WebSocket("ws://192.168.2.111:8887");
+            websocket.onopen = function (evt) {
+                onOpen(evt)
+            };
+            websocket.onclose = function (evt) {
+                onClose(evt)
+            };
+            websocket.onmessage = function (evt) {
+                onMessage(evt)
+            };
+            websocket.onerror = function (evt) {
+                onError(evt)
+            };
+        }
+
+        function onMessage(evt) {
+            var message = evt.data;
+            var obj = JSON.parse(message);
+            var newLat;
+            var newLon;
+            for (var [key, value] of Object.entries(obj)) {
+                if ("_cpu" === key) {
+                    cpuLine.append(new Date().getTime(), value);
+                }
+                else if ("_memory" === key) {
+                    memLine.append(new Date().getTime(), value);
+                }
+                else if ("_temperature" === key) {
+                    tmpLine.append(new Date().getTime(), value);
+                }
+                else if ("_altitude" === key && 0.0 !== value) {
+                    altLine.append(new Date().getTime(), value);
+                }
+                else if ("_speed" === key && 0.0 !== value) {
+                    kmhLine.append(new Date().getTime(), value);
+                }
+                else if ("_longitude" === key && 0.0 !== value) {
+                    newLon = value;
+                }
+                else if ("_latitude" === key && 0.0 !== value) {
+                    newLat = value;
+                }
             }
-            else if ("_memory" == key) {
-                memLine.append(new Date().getTime(), value);
+            if (newLat !== undefined && newLon !== undefined && newLat !== latitude && newLon !== longitude) {
+                latitude = newLat;
+                longitude = newLon;
+                updateMap();
             }
-            else if ("_temperature" == key) {
-                tmpLine.append(new Date().getTime(), value);
-            }
-            //console.log(key + ' ' + value);
         }
-        //writeToScreen(evt.data)
-    }
 
-    function onOpen(evt) {
-        writeToScreen("CONNECTED: " + evt.data);
-    }
-
-    function onClose(evt) {
-        writeToScreen("DISCONNECTED: " + evt.data);
-    }
-
-    function onError(evt) {
-        writeToScreen("ERROR: " + evt.data);
-    }
-
-    function writeToScreen(message) {
-        var messages = document.getElementById("messages");
-        messages.style.wordWrap = "break-word";
-        messages.innerHTML = message;
-    }
-
-
-    var cpuChart = new SmoothieChart({
-        grid: {
-            strokeStyle: 'rgb(125, 0, 0)',
-            fillStyle: 'rgb(60, 0, 0)',
-            lineWidth: 1,
-            millisPerLine: 250,
-            verticalSections: 6
+        function onOpen(evt) {
+            writeToScreen("CONNECTED");
         }
-    });
-    cpuChart.addTimeSeries(cpuLine, {strokeStyle: 'rgb(0, 255, 0)', fillStyle: 'rgba(0, 255, 0, 0.4)', lineWidth: 3});
-    cpuChart.streamTo(document.getElementById("cpu"), 1000);
 
-    var memChart = new SmoothieChart({
-        grid: {
-            strokeStyle: 'rgb(125, 0, 0)',
-            fillStyle: 'rgb(60, 0, 0)',
-            lineWidth: 1,
-            millisPerLine: 250,
-            verticalSections: 6
+        function onClose(evt) {
+            writeToScreen("DISCONNECTED");
         }
-    });
-    memChart.addTimeSeries(memLine, {strokeStyle: 'rgb(0, 255, 0)', fillStyle: 'rgba(0, 255, 0, 0.4)', lineWidth: 3});
-    memChart.streamTo(document.getElementById("mem"), 1000);
 
-    var tmpChart = new SmoothieChart({
-        grid: {
-            strokeStyle: 'rgb(125, 0, 0)',
-            fillStyle: 'rgb(60, 0, 0)',
-            lineWidth: 1,
-            millisPerLine: 250,
-            verticalSections: 6
+        function onError(evt) {
+            writeToScreen("ERROR: " + evt.data);
         }
-    });
-    tmpChart.addTimeSeries(tmpLine, {strokeStyle: 'rgb(0, 255, 0)', fillStyle: 'rgba(0, 255, 0, 0.4)', lineWidth: 3});
-    tmpChart.streamTo(document.getElementById("tmp"), 1000);
 
-    window.addEventListener("load", init, false);
+        function writeToScreen(message) {
+            var messages = document.getElementById("messages");
+            messages.style.wordWrap = "break-word";
+            messages.innerHTML = message;
+        }
 
-</script>
+        var defaultStyle = {lineWidth: 2, strokeStyle: '#800000'};
+
+        var defaultChart = {
+            interpolation: 'linear',
+            grid: {fillStyle: '#ffffff', strokeStyle: '#000000', sharpLines: true, verticalSections: 10},
+            labels: {fillStyle: '#800000', fontSize: 20}
+        };
+
+        var cpuChart = new SmoothieChart(defaultChart);
+        cpuChart.addTimeSeries(cpuLine, defaultStyle);
+        cpuChart.streamTo(document.getElementById("cpu"), 1000);
+
+        var memChart = new SmoothieChart(defaultChart);
+        memChart.addTimeSeries(memLine, defaultStyle);
+        memChart.streamTo(document.getElementById("mem"), 1000);
+
+        var tmpChart = new SmoothieChart(defaultChart);
+        tmpChart.addTimeSeries(tmpLine, defaultStyle);
+        tmpChart.streamTo(document.getElementById("tmp"), 1000);
+
+        var altChart = new SmoothieChart(defaultChart);
+        altChart.addTimeSeries(altLine, defaultStyle);
+        altChart.streamTo(document.getElementById("alt"), 1000);
+
+        var kmhChart = new SmoothieChart(defaultChart);
+        kmhChart.addTimeSeries(kmhLine, defaultStyle);
+        kmhChart.streamTo(document.getElementById("kmh"), 1000);
+
+        var map = new GMaps({
+            el: '#map',
+            lat: latitude,
+            lng: longitude,
+            zoom: 17
+        });
+
+
+        function updateMap() {
+            var coordinates = [latitude, longitude];
+            path.push(coordinates);
+            map.setCenter(latitude, longitude);
+            map.drawPolyline({
+                path: path,
+                strokeColor: '#131540',
+                strokeOpacity: 0.6,
+                strokeWeight: 6
+            });
+        }
+
+        window.addEventListener("load", init, false);
+
+    </script>
+</div>
 </body>
 </html>

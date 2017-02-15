@@ -53,7 +53,7 @@ public class NetworkChecker implements Runnable
     try
     {
       final Network network = new Network(null);
-      Dispatcher.getInstance().getQueue().add(network);
+      Dispatcher.getInstance().dispatch(network);
       Thread.sleep(15000);
     }
     catch (final InterruptedException ex_)
