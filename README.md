@@ -16,6 +16,7 @@ Software Components:
 - [Pi4J] (http://pi4j.com/)
 - [Medusa] (https://github.com/HanSolo/Medusa)
 - [initialState-java] (https://github.com/kadualon/initialState-java)
+- [Java-WebSocket] (https://github.com/TooTallNate/Java-WebSocket)
 - [smoothie.js] (http://smoothiecharts.org/)
 - [gmaps.js] (https://hpneo.github.io/gmaps/)
 
