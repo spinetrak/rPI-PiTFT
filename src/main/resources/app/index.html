@@ -53,168 +53,171 @@
     </style>
 </head>
 <body>
-<div class="row">
-    <div class="col-md-12">
-    <pre id="messages"></pre>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <pre id="messages"></pre>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-6">
-        <h3>CPU</h3>
-        <canvas id="cpu" width="800" height="125"></canvas>
-        <h3>MEM</h3>
-        <canvas id="mem" width="800" height="125"></canvas>
-        <h3>TMP</h3>
-        <canvas id="tmp" width="800" height="125"></canvas>
-        <h3>ALT</h3>
-        <canvas id="alt" width="800" height="125"></canvas>
-        <h3>KMH</h3>
-        <canvas id="kmh" width="800" height="125"></canvas>
-    </div>
-    <div class="col-md-6" id="map"></div>
+    <div class="row">
+        <div class="col-md-1">&nbsp;</div>
+        <div class="col-md-5">
+            <h3>CPU</h3>
+            <canvas id="cpu" width="800" height="125"></canvas>
+            <h3>MEM</h3>
+            <canvas id="mem" width="800" height="125"></canvas>
+            <h3>TMP</h3>
+            <canvas id="tmp" width="800" height="125"></canvas>
+            <h3>ALT</h3>
+            <canvas id="alt" width="800" height="125"></canvas>
+            <h3>KMH</h3>
+            <canvas id="kmh" width="800" height="125"></canvas>
+        </div>
+        <div class="col-md-5" id="map"></div>
+        <div class="col-md-1">&nbsp;</div>
 
+        <script type="text/javascript">
 
-    <script type="text/javascript">
-
-        function init() {
-            startWebSocket();
-        }
-
-        var cpuLine = new TimeSeries();
-        var memLine = new TimeSeries();
-        var tmpLine = new TimeSeries();
-        var altLine = new TimeSeries();
-        var kmhLine = new TimeSeries();
-
-        var latitude = 53.55415;
-        var longitude = 9.96843;
-
-        var path = [];
-
-
-        function startWebSocket() {
-            websocket = new WebSocket("ws://192.168.2.111:8887");
-            websocket.onopen = function (evt) {
-                onOpen(evt)
-            };
-            websocket.onclose = function (evt) {
-                onClose(evt)
-            };
-            websocket.onmessage = function (evt) {
-                onMessage(evt)
-            };
-            websocket.onerror = function (evt) {
-                onError(evt)
-            };
-        }
-
-        function onMessage(evt) {
-            var message = evt.data;
-            var obj = JSON.parse(message);
-            var newLat;
-            var newLon;
-
-            Object.keys(obj).forEach(function (key) {
-                var val = obj[key];
-                if ("_cpu" === key) {
-                    cpuLine.append(new Date().getTime(), val);
-                }
-                else if ("_memory" === key) {
-                    memLine.append(new Date().getTime(), val);
-                }
-                else if ("_temperature" === key) {
-                    tmpLine.append(new Date().getTime(), val);
-                }
-                else if ("_altitude" === key && 0.0 !== val) {
-                    altLine.append(new Date().getTime(), val);
-                }
-                else if ("_speed" === key && 0.0 !== val) {
-                    kmhLine.append(new Date().getTime(), val);
-                }
-                else if ("_longitude" === key && 0.0 !== val) {
-                    newLon = val;
-                }
-                else if ("_latitude" === key && 0.0 !== valu) {
-                    newLat = val;
-                }
-            });
-
-            if (newLat !== undefined && newLon !== undefined && newLat !== latitude && newLon !== longitude) {
-                latitude = newLat;
-                longitude = newLon;
-                updateMap();
+            function init() {
+                startWebSocket();
             }
-        }
 
-        function onOpen(evt) {
-            writeToScreen("CONNECTED");
-        }
+            var cpuLine = new TimeSeries();
+            var memLine = new TimeSeries();
+            var tmpLine = new TimeSeries();
+            var altLine = new TimeSeries();
+            var kmhLine = new TimeSeries();
 
-        function onClose(evt) {
-            writeToScreen("DISCONNECTED");
-        }
+            var latitude = 53.55415;
+            var longitude = 9.96843;
 
-        function onError(evt) {
-            writeToScreen("ERROR: " + evt.data);
-        }
-
-        function writeToScreen(message) {
-            var messages = document.getElementById("messages");
-            messages.style.wordWrap = "break-word";
-            messages.innerHTML = message;
-        }
-
-        var defaultStyle = {lineWidth: 2, strokeStyle: '#800000'};
-
-        var defaultChart = {
-            interpolation: 'linear',
-            grid: {fillStyle: '#ffffff', strokeStyle: '#000000', sharpLines: true, verticalSections: 10},
-            labels: {fillStyle: '#800000', fontSize: 20}
-        };
-
-        var cpuChart = new SmoothieChart(defaultChart);
-        cpuChart.addTimeSeries(cpuLine, defaultStyle);
-        cpuChart.streamTo(document.getElementById("cpu"), 1000);
-
-        var memChart = new SmoothieChart(defaultChart);
-        memChart.addTimeSeries(memLine, defaultStyle);
-        memChart.streamTo(document.getElementById("mem"), 1000);
-
-        var tmpChart = new SmoothieChart(defaultChart);
-        tmpChart.addTimeSeries(tmpLine, defaultStyle);
-        tmpChart.streamTo(document.getElementById("tmp"), 1000);
-
-        var altChart = new SmoothieChart(defaultChart);
-        altChart.addTimeSeries(altLine, defaultStyle);
-        altChart.streamTo(document.getElementById("alt"), 1000);
-
-        var kmhChart = new SmoothieChart(defaultChart);
-        kmhChart.addTimeSeries(kmhLine, defaultStyle);
-        kmhChart.streamTo(document.getElementById("kmh"), 1000);
-
-        var map = new GMaps({
-            el: '#map',
-            lat: latitude,
-            lng: longitude,
-            zoom: 17
-        });
+            var path = [];
 
 
-        function updateMap() {
-            var coordinates = [latitude, longitude];
-            path.push(coordinates);
-            map.setCenter(latitude, longitude);
-            map.drawPolyline({
-                path: path,
-                strokeColor: '#131540',
-                strokeOpacity: 0.6,
-                strokeWeight: 6
+            function startWebSocket() {
+                websocket = new WebSocket("ws://192.168.2.111:8887");
+                websocket.onopen = function (evt) {
+                    onOpen(evt)
+                };
+                websocket.onclose = function (evt) {
+                    onClose(evt)
+                };
+                websocket.onmessage = function (evt) {
+                    onMessage(evt)
+                };
+                websocket.onerror = function (evt) {
+                    onError(evt)
+                };
+            }
+
+            function onMessage(evt) {
+                var message = evt.data;
+                var obj = JSON.parse(message);
+                var newLat;
+                var newLon;
+
+                Object.keys(obj).forEach(function (key) {
+                    var val = obj[key];
+                    if ("_cpu" === key) {
+                        cpuLine.append(new Date().getTime(), val);
+                    }
+                    else if ("_memory" === key) {
+                        memLine.append(new Date().getTime(), val);
+                    }
+                    else if ("_temperature" === key) {
+                        tmpLine.append(new Date().getTime(), val);
+                    }
+                    else if ("_altitude" === key && 0.0 !== val) {
+                        altLine.append(new Date().getTime(), val);
+                    }
+                    else if ("_speed" === key && 0.0 !== val) {
+                        kmhLine.append(new Date().getTime(), val);
+                    }
+                    else if ("_longitude" === key && 0.0 !== val) {
+                        newLon = val;
+                    }
+                    else if ("_latitude" === key && 0.0 !== valu) {
+                        newLat = val;
+                    }
+                });
+
+                if (newLat !== undefined && newLon !== undefined && newLat !== latitude && newLon !== longitude) {
+                    latitude = newLat;
+                    longitude = newLon;
+                    updateMap();
+                }
+            }
+
+            function onOpen(evt) {
+                writeToScreen("CONNECTED");
+            }
+
+            function onClose(evt) {
+                writeToScreen("DISCONNECTED");
+            }
+
+            function onError(evt) {
+                writeToScreen("ERROR: " + evt.data);
+            }
+
+            function writeToScreen(message) {
+                var messages = document.getElementById("messages");
+                messages.style.wordWrap = "break-word";
+                messages.innerHTML = message;
+            }
+
+            var defaultStyle = {lineWidth: 2, strokeStyle: '#800000'};
+
+            var defaultChart = {
+                interpolation: 'linear',
+                grid: {fillStyle: '#ffffff', strokeStyle: '#000000', sharpLines: true, verticalSections: 10},
+                labels: {fillStyle: '#800000', fontSize: 20}
+            };
+
+            var cpuChart = new SmoothieChart(defaultChart);
+            cpuChart.addTimeSeries(cpuLine, defaultStyle);
+            cpuChart.streamTo(document.getElementById("cpu"), 1000);
+
+            var memChart = new SmoothieChart(defaultChart);
+            memChart.addTimeSeries(memLine, defaultStyle);
+            memChart.streamTo(document.getElementById("mem"), 1000);
+
+            var tmpChart = new SmoothieChart(defaultChart);
+            tmpChart.addTimeSeries(tmpLine, defaultStyle);
+            tmpChart.streamTo(document.getElementById("tmp"), 1000);
+
+            var altChart = new SmoothieChart(defaultChart);
+            altChart.addTimeSeries(altLine, defaultStyle);
+            altChart.streamTo(document.getElementById("alt"), 1000);
+
+            var kmhChart = new SmoothieChart(defaultChart);
+            kmhChart.addTimeSeries(kmhLine, defaultStyle);
+            kmhChart.streamTo(document.getElementById("kmh"), 1000);
+
+            var map = new GMaps({
+                el: '#map',
+                lat: latitude,
+                lng: longitude,
+                zoom: 17
             });
-        }
 
-        window.addEventListener("load", init, false);
 
-    </script>
+            function updateMap() {
+                var coordinates = [latitude, longitude];
+                path.push(coordinates);
+                map.setCenter(latitude, longitude);
+                map.drawPolyline({
+                    path: path,
+                    strokeColor: '#131540',
+                    strokeOpacity: 0.6,
+                    strokeWeight: 6
+                });
+            }
+
+            window.addEventListener("load", init, false);
+
+        </script>
+    </div>
 </div>
 </body>
 </html>
