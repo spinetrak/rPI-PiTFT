@@ -113,29 +113,32 @@
             var obj = JSON.parse(message);
             var newLat;
             var newLon;
-            for (var [key, value] of Object.entries(obj)) {
+
+            Object.keys(obj).forEach(function (key) {
+                var val = obj[key];
                 if ("_cpu" === key) {
-                    cpuLine.append(new Date().getTime(), value);
+                    cpuLine.append(new Date().getTime(), val);
                 }
                 else if ("_memory" === key) {
-                    memLine.append(new Date().getTime(), value);
+                    memLine.append(new Date().getTime(), val);
                 }
                 else if ("_temperature" === key) {
-                    tmpLine.append(new Date().getTime(), value);
+                    tmpLine.append(new Date().getTime(), val);
                 }
-                else if ("_altitude" === key && 0.0 !== value) {
-                    altLine.append(new Date().getTime(), value);
+                else if ("_altitude" === key && 0.0 !== val) {
+                    altLine.append(new Date().getTime(), val);
                 }
-                else if ("_speed" === key && 0.0 !== value) {
-                    kmhLine.append(new Date().getTime(), value);
+                else if ("_speed" === key && 0.0 !== val) {
+                    kmhLine.append(new Date().getTime(), val);
                 }
-                else if ("_longitude" === key && 0.0 !== value) {
-                    newLon = value;
+                else if ("_longitude" === key && 0.0 !== val) {
+                    newLon = val;
                 }
-                else if ("_latitude" === key && 0.0 !== value) {
-                    newLat = value;
+                else if ("_latitude" === key && 0.0 !== valu) {
+                    newLat = val;
                 }
-            }
+            });
+
             if (newLat !== undefined && newLon !== undefined && newLat !== latitude && newLon !== longitude) {
                 latitude = newLat;
                 longitude = newLon;
