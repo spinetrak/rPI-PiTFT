@@ -1,24 +1,24 @@
 # rPI-PiTFT
 
 A simple read-only JavaFX user interface for using an RPi3 as a GPS data logger (in NMEA format) in the car.
-Now also logs to [Initial State] (https://initialstate.com/).
+Now also logs to [Initial State](https://initialstate.com/).
 
 Hardware Components:
-- [Raspberry Pi 3 Model B] (https://www.raspberrypi.org/products/raspberry-pi-3-model-b/)
-- [3.5" PiTFT] (https://learn.adafruit.com/running-opengl-based-games-and-emulators-on-adafruit-pitft-displays/3-dot-5-pitft)
-- [Huawei E5770 4G Hotspot] (http://consumer.huawei.com/en/mobile-broadband/mobile-wifi/features/e5770-en.htm)
-- [GPS] (http://www.navilock.de/produkte/G_62523/merkmale.html?setLanguage=en)
+- [Raspberry Pi 3 Model B](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/)
+- [3.5" PiTFT](https://learn.adafruit.com/running-opengl-based-games-and-emulators-on-adafruit-pitft-displays/3-dot-5-pitft)
+- [Huawei E5770 4G Hotspot](http://consumer.huawei.com/en/mobile-broadband/mobile-wifi/features/e5770-en.htm)
+- [GPS](http://www.navilock.de/produkte/G_62523/merkmale.html?setLanguage=en)
 
 Software Components:
-- [OpenJFX] (http://chriswhocodes.com/)
-- [Java Marine API] (http://ktuukkan.github.io/marine-api/)
-- [rxtx] (https://github.com/rxtx/rxtx)
-- [Pi4J] (http://pi4j.com/)
-- [Medusa] (https://github.com/HanSolo/Medusa)
-- [initialState-java] (https://github.com/kadualon/initialState-java)
-- [Java-WebSocket] (https://github.com/TooTallNate/Java-WebSocket)
-- [smoothie.js] (http://smoothiecharts.org/)
-- [gmaps.js] (https://hpneo.github.io/gmaps/)
+- [OpenJFX](http://chriswhocodes.com/)
+- [Java Marine API](http://ktuukkan.github.io/marine-api/)
+- [rxtx](https://github.com/rxtx/rxtx)
+- [Pi4J](http://pi4j.com/)
+- [Medusa](https://github.com/HanSolo/Medusa)
+- [initialState-java](https://github.com/kadualon/initialState-java)
+- [Java-WebSocket](https://github.com/TooTallNate/Java-WebSocket)
+- [smoothie.js](http://smoothiecharts.org/)
+- [gmaps.js](https://hpneo.github.io/gmaps/)
 
 What does it do?
 - JavaFX Mode:
