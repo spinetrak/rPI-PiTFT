@@ -8,6 +8,7 @@ Hardware Components:
 - [3.5" PiTFT](https://learn.adafruit.com/running-opengl-based-games-and-emulators-on-adafruit-pitft-displays/3-dot-5-pitft)
 - [Huawei E5770 4G Hotspot](http://consumer.huawei.com/en/mobile-broadband/mobile-wifi/features/e5770-en.htm)
 - [GPS](http://www.navilock.de/produkte/G_62523/merkmale.html?setLanguage=en)
+- [Powerbank RAVPower 26800mAh](https://www.amazon.de/dp/B012V88B90)
 
 Software Components:
 - [OpenJFX](http://chriswhocodes.com/)
